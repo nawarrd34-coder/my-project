@@ -14,3 +14,10 @@
 .hero-fade { animation-name:heroFadeUp; animation-duration:1s; }
 .hero-zoom { animation:heroZoom 1.8s cubic-bezier(0.16,1,0.3,1) forwards; }
 @media (prefers-reduced-motion: reduce){ .hero-anim,.hero-zoom{ animation:none; opacity:1; } }
+
+@keyframes onsetLogoIn { 0%{opacity:0;transform:scale(0.92);letter-spacing:0.6em} 100%{opacity:1;transform:scale(1);letter-spacing:0.35em} }
+@keyframes onsetFadeIn { 0%{opacity:0} 100%{opacity:1} }
+@keyframes onsetDrift { 0%{transform:scale(1.08) translateY(0)} 100%{transform:scale(1) translateY(-2%)} }
+.onset-body { font-family: 'Inter', sans-serif; }
+.onset-display { font-family: 'Playfair Display', serif; }
+@media (prefers-reduced-motion: reduce){ .onset-drift{ animation:none; } }
