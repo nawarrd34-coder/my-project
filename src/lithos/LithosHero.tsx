@@ -83,7 +83,7 @@ function RevealLayer({ image, cursorX, cursorY }: RevealLayerProps) {
   )
 }
 
-function App() {
+function LithosHero() {
   const mouse = useRef({ x: -999, y: -999 })
   const smooth = useRef({ x: -999, y: -999 })
   const rafRef = useRef<number | undefined>(undefined)
@@ -209,4 +209,4 @@ function App() {
   )
 }
 
-export default App
+export default LithosHero
