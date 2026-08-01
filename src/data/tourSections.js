@@ -75,5 +75,5 @@ export const TOTAL_FRAME_COUNT = TOUR_ZONES.filter((z) => z.kind === 'frames').r
 
 export function frameUrl(folder, index) {
   const n = String(index + 1).padStart(4, '0')
-  return `/frames/${folder}/f_${n}.jpg`
+  return `${import.meta.env.BASE_URL}frames/${folder}/f_${n}.jpg`
 }

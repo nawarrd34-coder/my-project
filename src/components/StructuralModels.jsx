@@ -75,7 +75,7 @@ export default function StructuralModels() {
           <Plate
             key={label}
             label={label}
-            src={`/models/${activeModel}/${i + 1}.jpg`}
+            src={`${import.meta.env.BASE_URL}models/${activeModel}/${i + 1}.jpg`}
             placeholder={t.models.placeholder}
           />
         ))}
