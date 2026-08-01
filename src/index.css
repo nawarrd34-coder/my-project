@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-serif-ar: 'Tajawal', 'Cormorant Garamond', serif;
+  --font-serif-en: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-display: 'Cinzel', 'Cormorant Garamond', serif;
+  --font-body-ar: 'Tajawal', system-ui, sans-serif;
+  --font-body-en: system-ui, -apple-system, sans-serif;
+
+  --color-ink: #0b0806;
+  --color-obsidian: #120d0a;
+  --color-espresso: #1c140f;
+  --color-bronze: #b8894f;
+  --color-bronze-light: #d9b579;
+  --color-bronze-dark: #7a5a34;
+  --color-cream: #f3ead9;
+  --color-stone: #8a7d6b;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #0b0806;
+  color: #f3ead9;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Tajawal', system-ui, sans-serif;
+}
+
+[dir='ltr'] body {
+  font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+}
+
+#root {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #b8894f;
+  color: #0b0806;
+}
+
+/* thin luxury scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #120d0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #7a5a34;
+  border-radius: 3px;
+}
+
+.font-display {
+  font-family: 'Cinzel', 'Cormorant Garamond', serif;
+}
+
+.font-ar {
+  font-family: 'Tajawal', sans-serif;
+}
+
+.text-gradient-bronze {
+  background: linear-gradient(120deg, #d9b579 0%, #b8894f 45%, #7a5a34 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
