@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloom & Co. — Fresh Flowers, Delivered</title>
+  <meta name="description" content="Hand-tied bouquets and potted plants, delivered fresh to your door." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- Announcement bar -->
+  <div class="announcement">Free delivery on orders over $50 · Same-day delivery available</div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="logo">🌸 Bloom &amp; Co.</a>
+
+      <nav class="nav" id="nav">
+        <a href="#shop">Shop</a>
+        <a href="#occasions">Occasions</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="cartBtn" aria-label="View cart">
+          🛍️ <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Farm-fresh, hand-tied</p>
+        <h1>Flowers that say<br /><em>more than words.</em></h1>
+        <p class="hero-sub">Locally sourced blooms, arranged same-day by our florists and delivered straight to your door.</p>
+        <div class="hero-actions">
+          <a href="#shop" class="btn btn-primary">Shop Bouquets</a>
+          <a href="#occasions" class="btn btn-ghost">Shop by Occasion</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 400 400" class="hero-svg">
+          <circle cx="200" cy="200" r="170" fill="#fbe9ee"/>
+          <g transform="translate(200,200)">
+            <g class="petal-group">
+              <ellipse cx="0" cy="-70" rx="34" ry="55" fill="#f4a6c1"/>
+              <ellipse cx="60" cy="-35" rx="34" ry="55" fill="#f7b8cf" transform="rotate(60 60 -35)"/>
+              <ellipse cx="60" cy="35" rx="34" ry="55" fill="#f4a6c1" transform="rotate(120 60 35)"/>
+              <ellipse cx="0" cy="70" rx="34" ry="55" fill="#f7b8cf" transform="rotate(180 0 70)"/>
+              <ellipse cx="-60" cy="35" rx="34" ry="55" fill="#f4a6c1" transform="rotate(240 -60 35)"/>
+              <ellipse cx="-60" cy="-35" rx="34" ry="55" fill="#f7b8cf" transform="rotate(300 -60 -35)"/>
+            </g>
+            <circle r="30" fill="#f6c453"/>
+          </g>
+          <g transform="translate(90,320)">
+            <ellipse cx="0" cy="-16" rx="14" ry="22" fill="#a9c99b"/>
+            <ellipse cx="14" cy="-8" rx="14" ry="22" fill="#c3dcb4" transform="rotate(60 14 -8)"/>
+            <ellipse cx="14" cy="8" rx="14" ry="22" fill="#a9c99b" transform="rotate(120 14 8)"/>
+            <circle r="12" fill="#f2ea9e"/>
+          </g>
+          <g transform="translate(320,110)">
+            <ellipse cx="0" cy="-16" rx="14" ry="22" fill="#f7b8cf"/>
+            <ellipse cx="14" cy="-8" rx="14" ry="22" fill="#f4a6c1" transform="rotate(60 14 -8)"/>
+            <ellipse cx="14" cy="8" rx="14" ry="22" fill="#f7b8cf" transform="rotate(120 14 8)"/>
+            <circle r="12" fill="#f6c453"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust strip -->
+  <section class="trust-strip">
+    <div class="container trust-inner">
+      <div><strong>🚚</strong> Same-day delivery</div>
+      <div><strong>🌱</strong> Locally grown</div>
+      <div><strong>💐</strong> Hand-tied by florists</div>
+      <div><strong>↩️</strong> 7-day freshness guarantee</div>
+    </div>
+  </section>
+
+  <!-- Shop -->
+  <section id="shop" class="shop">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">The Shop</p>
+        <h2>Best sellers this week</h2>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="bouquet">Bouquets</button>
+        <button class="filter-btn" data-filter="plant">Plants</button>
+        <button class="filter-btn" data-filter="dried">Dried &amp; Everlasting</button>
+      </div>
+
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+
+  <!-- Occasions -->
+  <section id="occasions" class="occasions">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Made for the moment</p>
+        <h2>Shop by occasion</h2>
+      </div>
+      <div class="occasion-grid">
+        <a class="occasion-card" style="--tint:#fbe9ee">🎂<span>Birthdays</span></a>
+        <a class="occasion-card" style="--tint:#eef3e5">💍<span>Weddings</span></a>
+        <a class="occasion-card" style="--tint:#fff4e0">🙏<span>Sympathy</span></a>
+        <a class="occasion-card" style="--tint:#fde9f4">❤️<span>Anniversary</span></a>
+        <a class="occasion-card" style="--tint:#e9f3f7">🎉<span>Congrats</span></a>
+        <a class="occasion-card" style="--tint:#f3ece0">🏡<span>Just Because</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="about">
+    <div class="container about-inner">
+      <div class="about-art" aria-hidden="true">
+        <svg viewBox="0 0 300 300">
+          <rect width="300" height="300" rx="24" fill="#eef3e5"/>
+          <g transform="translate(150,140)">
+            <ellipse cx="0" cy="-55" rx="26" ry="42" fill="#c3dcb4"/>
+            <ellipse cx="46" cy="-27" rx="26" ry="42" fill="#a9c99b" transform="rotate(60 46 -27)"/>
+            <ellipse cx="46" cy="27" rx="26" ry="42" fill="#c3dcb4" transform="rotate(120 46 27)"/>
+            <ellipse cx="0" cy="55" rx="26" ry="42" fill="#a9c99b" transform="rotate(180 0 55)"/>
+            <ellipse cx="-46" cy="27" rx="26" ry="42" fill="#c3dcb4" transform="rotate(240 -46 27)"/>
+            <ellipse cx="-46" cy="-27" rx="26" ry="42" fill="#a9c99b" transform="rotate(300 -46 -27)"/>
+            <circle r="24" fill="#f6c453"/>
+          </g>
+        </svg>
+      </div>
+      <div class="about-copy">
+        <p class="eyebrow">Our Story</p>
+        <h2>Rooted in the neighborhood, grown with care.</h2>
+        <p>Bloom &amp; Co. started as a single flower cart at the farmers market. Today we work directly with regional growers to bring you the freshest stems, arranged by hand every morning — never sitting in a warehouse.</p>
+        <ul class="about-list">
+          <li>✔ Sourced from growers within 150 miles</li>
+          <li>✔ Arranged fresh the morning of delivery</li>
+          <li>✔ Compostable, plastic-free packaging</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Kind words</p>
+        <h2>Loved by our customers</h2>
+      </div>
+      <div class="testimonial-grid">
+        <blockquote>
+          <p>“The bouquet lasted almost two full weeks. Genuinely the freshest flowers I've ever ordered online.”</p>
+          <cite>— Maya R.</cite>
+        </blockquote>
+        <blockquote>
+          <p>“Ordered same-day for my mom's birthday and it arrived beautifully arranged, right on time.”</p>
+          <cite>— Daniel K.</cite>
+        </blockquote>
+        <blockquote>
+          <p>“Their sympathy arrangement was so thoughtfully put together. It meant a lot to my family.”</p>
+          <cite>— Priya S.</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter">
+    <div class="container newsletter-inner">
+      <div>
+        <h2>Get 10% off your first order</h2>
+        <p>Join our list for seasonal drops, care tips, and early access to limited bouquets.</p>
+      </div>
+      <form id="newsletterForm" class="newsletter-form">
+        <input type="email" required placeholder="you@example.com" aria-label="Email address" />
+        <button type="submit" class="btn btn-primary">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Contact / Footer -->
+  <footer id="contact" class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo">🌸 Bloom &amp; Co.</a>
+        <p>Fresh flowers, delivered with care — every day of the week.</p>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <a href="#shop">Bouquets</a>
+        <a href="#shop">Plants</a>
+        <a href="#occasions">Occasions</a>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <a href="#about">About</a>
+        <a href="#">Sustainability</a>
+        <a href="#">Careers</a>
+      </div>
+      <div>
+        <h3>Get in touch</h3>
+        <a href="mailto:hello@bloomandco.example">hello@bloomandco.example</a>
+        <a href="tel:+15551234567">(555) 123-4567</a>
+        <p class="footer-address">123 Petal Lane, Portland, OR</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="year"></span> Bloom &amp; Co. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Cart drawer -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h3>Your Bouquet Cart</h3>
+      <button id="closeCart" aria-label="Close cart">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
+      <button class="btn btn-primary btn-full">Checkout</button>
+    </div>
+  </div>
+  <div class="cart-overlay" id="cartOverlay"></div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
