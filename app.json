@@ -1,0 +1,98 @@
+{
+  "expo": {
+    "name": "Uni Streak",
+    "slug": "uni-streak",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "unistreak",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "backgroundColor": "#FFFFFF",
+    "primaryColor": "#FF5A1F",
+    "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0B0F"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.unistreak.app",
+      "buildNumber": "1",
+      "config": { "usesNonExemptEncryption": false },
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "UIBackgroundModes": ["remote-notification"],
+        "NSCameraUsageDescription": "Uni Streak uses your camera when you choose to take a photo or video for a post, a chat message, or your avatar.",
+        "NSPhotoLibraryUsageDescription": "Uni Streak accesses your photo library when you choose to attach an existing photo or video to a post, a chat message, or your avatar.",
+        "NSMicrophoneUsageDescription": "Uni Streak uses your microphone when you choose to record a voice message or a sound clip.",
+        "NSUserTrackingUsageDescription": "Uni Streak does not track you across apps."
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
+      }
+    },
+    "android": {
+      "package": "com.unistreak.app",
+      "versionCode": 1,
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "adaptiveIcon": {
+        "backgroundColor": "#0B0B0F",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": { "favicon": "./assets/favicon.png", "bundler": "metro", "output": "single" },
+    "locales": { "en": "./src/locales/store/en.json", "ar": "./src/locales/store/ar.json" },
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-secure-store",
+      ["expo-splash-screen", {
+        "image": "./assets/splash-icon.png",
+        "imageWidth": 180,
+        "resizeMode": "contain",
+        "backgroundColor": "#FFFFFF",
+        "dark": { "backgroundColor": "#0B0B0F" }
+      }],
+      ["expo-image-picker", {
+        "photosPermission": "Uni Streak accesses your photo library when you choose to attach an existing photo or video.",
+        "cameraPermission": "Uni Streak uses your camera when you choose to take a photo or video."
+      }],
+      ["expo-audio", {
+        "microphonePermission": "Uni Streak uses your microphone when you choose to record a voice message or a sound clip."
+      }],
+      ["expo-notifications", {
+        "icon": "./assets/android-icon-monochrome.png",
+        "color": "#FF5A1F"
+      }],
+      ["expo-build-properties", {
+        "ios": { "deploymentTarget": "16.0" },
+        "android": { "minSdkVersion": 24, "compileSdkVersion": 36, "targetSdkVersion": 36 }
+      }]
+    ],
+    "experiments": { "typedRoutes": true },
+    "extra": {
+      "router": {},
+      "eas": { "projectId": "00000000-0000-0000-0000-000000000000" }
+    }
+  }
+}
