@@ -41,9 +41,11 @@ insert into auth.users (id, email) values
   ('22222222-2222-2222-2222-222222222222', 'b@ksu.edu'),
   ('33333333-3333-3333-3333-333333333333', 'c@ksu.edu');
 
+-- A fixture university of its own, so the suite does not depend on (or
+-- collide with) the seeded launch universities.
 insert into public.universities (id, code, name_en, name_ar, short_name_en, short_name_ar, timezone)
-values ('aaaaaaaa-0000-0000-0000-000000000001', 'KSU', 'King Saud University',
-        'جامعة الملك سعود', 'KSU', 'جامعة الملك سعود', 'Asia/Riyadh');
+values ('aaaaaaaa-0000-0000-0000-000000000001', 'TESTU', 'Test University',
+        'جامعة الاختبار', 'TESTU', 'الاختبار', 'Asia/Riyadh');
 
 insert into public.profiles (id, university_id, username, username_normalized, anon_tag, timezone)
 values
@@ -51,10 +53,8 @@ values
  ('22222222-2222-2222-2222-222222222222', 'aaaaaaaa-0000-0000-0000-000000000001', 'bilal', 'bilal', 1002, 'Asia/Riyadh'),
  ('33333333-3333-3333-3333-333333333333', 'aaaaaaaa-0000-0000-0000-000000000001', 'carim', 'carim', 1003, 'America/New_York');
 
-insert into public.badges (id, emoji, name_key, rule_kind, rule_value) values
-  ('streak_7',   '🔥', 'badges.streak7',   'streak_length', 7),
-  ('streak_30',  '🔥', 'badges.streak30',  'streak_length', 30),
-  ('streak_100', '🔥', 'badges.streak100', 'streak_length', 100);
+-- The badge catalogue ships in a migration; the suite relies on that data
+-- rather than inserting its own, so the tested rules are the shipped rules.
 
 \echo ''
 \echo '== day-1 records as PENDING, never as "1 day" (§14) =='

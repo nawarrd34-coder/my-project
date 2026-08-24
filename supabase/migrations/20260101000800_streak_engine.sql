@@ -371,7 +371,7 @@ $$;
 -- Streak restore (§18: an explicit feature, not a silent forgiveness)
 -- ---------------------------------------------------------------------------
 
-create or replace function public.restore_streak(target_streak uuid)
+create or replace function public.restore_streak(p_streak uuid)
 returns public.streaks
 language plpgsql
 security definer
@@ -382,7 +382,7 @@ declare
   last_run public.streak_history;
   grace interval := interval '24 hours';
 begin
-  select * into s from public.streaks where id = target_streak for update;
+  select * into s from public.streaks where id = p_streak for update;
   if not found then
     raise exception 'streak not found' using errcode = 'P0002';
   end if;
