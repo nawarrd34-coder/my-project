@@ -410,6 +410,34 @@ begin
   perform pg_temp.assert_eq(n, 1::bigint, 'identity scrubbed from the tombstone');
 end $$;
 
+\echo ''
+\echo '== scheduled-job entry points are not reachable by users (§32) =='
+do $$
+begin
+  perform pg_temp.act_as('aaaa0000-0000-0000-0000-00000000000a');
+
+  perform pg_temp.assert_denied(
+    'select public.expire_due_streaks_admin()',
+    'user cannot force the expiry sweep');
+  perform pg_temp.assert_denied(
+    'select public.streaks_expiring_admin(''4 hours''::interval)',
+    'user cannot enumerate everyone''s expiring streaks');
+  perform pg_temp.assert_denied(
+    'select public.cleanup_ephemeral_admin()',
+    'user cannot run housekeeping');
+  perform pg_temp.assert_denied(
+    format('select public.roll_university_streak_admin(%L, current_date)',
+           (select id from public.universities where code = 'KSU')),
+    'user cannot roll a university streak forward');
+
+  -- The private engine itself is equally out of reach.
+  perform pg_temp.assert_denied(
+    'select app_private.expire_due_streaks()',
+    'app_private schema is not reachable');
+
+  perform pg_temp.act_as_owner();
+end $$;
+
 rollback;
 
 \echo ''

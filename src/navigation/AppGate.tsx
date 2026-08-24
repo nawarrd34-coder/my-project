@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useRouter, useSegments } from 'expo-router';
 
 import { useAuthBootstrap } from '@/hooks/useAuthBootstrap';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useSession } from '@/store/session';
 import { usePreferences } from '@/store/preferences';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -20,6 +21,7 @@ export const AppGate = ({ children }: { children: ReactNode }) => {
   const segments = useSegments();
 
   useAuthBootstrap();
+  usePushNotifications();
 
   const session = useSession((s) => s.session);
   const profile = useSession((s) => s.profile);
