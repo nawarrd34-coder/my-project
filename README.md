@@ -148,7 +148,8 @@ the day" is a different instant for every streak.
 | Suite | Count | What it covers |
 |---|---|---|
 | Streak engine (SQL) | 39 | progression, spam resistance, expiry, history, timezones, restore |
-| Authorization (SQL) | 45 | cross-university isolation, DM privacy, ban evasion, escalation, deletion |
+| Authorization (SQL) | 50 | cross-university isolation, DM privacy, ban evasion, escalation, deletion, group admin |
+| Server-owned columns (SQL) | 19 | derived counters are maintained by the engine and forgeable by nobody |
 | Streak presentation | 19 | countdown, milestones, bucketing, restore eligibility |
 | Error taxonomy | 13 | SQLSTATE → localized message, retryability |
 | Locale parity | 5 | key coverage, placeholders, Arabic plural categories |
@@ -156,6 +157,17 @@ the day" is a different instant for every streak.
 The SQL suites run against real PostgreSQL and impersonate real end users
 (`set role authenticated` plus a JWT subject claim), so they exercise the same
 policy path as production rather than a mock of it.
+
+Three of these tests exist because writing them found real bugs: any member
+could join a public group as an admin or promote themselves, and any client
+talking to PostgREST directly could self-pin a post, fabricate a trending
+score, or invent a leaderboard-topping streak record. Both are fixed and
+covered.
+
+The counter tests assert two properties that pull against each other — that a
+client cannot forge a derived column, *and* that the engine can still maintain
+it. Guarding the first without checking the second silently broke every counter
+in the app, because trigger code still runs with the end user's `auth.uid()`.
 
 ---
 

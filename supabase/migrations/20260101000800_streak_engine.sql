@@ -231,9 +231,11 @@ begin
 
   -- Personal-best bookkeeping and milestone badges.
   if s.current_length > 0 then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.profiles
        set longest_streak = greatest(longest_streak, s.current_length)
      where id in (s.user_low, s.user_high);
+    perform set_config('unistreak.internal_write', 'off', true);
 
     perform app_private.award_streak_badges(s.user_low, s.current_length, s.id);
     perform app_private.award_streak_badges(s.user_high, s.current_length, s.id);
@@ -270,7 +272,7 @@ begin
   -- Notify for anything newly earned in this statement.
   insert into public.notifications (user_id, kind, title_key, params, link)
   select ub.user_id, 'badge_earned', 'notifications.badgeEarned',
-         jsonb_build_object('badge', b.name_key), '/profile/badges'
+         jsonb_build_object('badge', b.name_key), '/profile'
     from public.user_badges ub
     join public.badges b on b.id = ub.badge_id
    where ub.user_id = target_user

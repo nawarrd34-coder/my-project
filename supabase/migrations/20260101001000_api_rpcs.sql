@@ -305,12 +305,16 @@ begin
   )
   returning * into msg;
 
+  perform set_config('unistreak.internal_write', 'on', true);
   update public.conversations
      set last_message_at = msg.created_at,
          last_message_preview = left(coalesce(p_body, p_kind::text), 120)
    where id = p_conversation;
+  perform set_config('unistreak.internal_write', 'off', true);
 
+  perform set_config('unistreak.internal_write', 'on', true);
   update public.profiles set message_count = message_count + 1 where id = uid;
+  perform set_config('unistreak.internal_write', 'off', true);
   perform app_private.touch_last_active(uid);
   perform app_private.mark_university_active(convo.university_id, uid, 'message');
 
@@ -467,7 +471,9 @@ begin
   end if;
 
   if p_sound_id is not null then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.sounds set use_count = use_count + 1 where id = p_sound_id;
+    perform set_config('unistreak.internal_write', 'off', true);
   end if;
 
   perform app_private.touch_last_active(uid);

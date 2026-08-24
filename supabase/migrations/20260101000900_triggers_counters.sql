@@ -68,22 +68,34 @@ set search_path = public, pg_temp
 as $$
 begin
   if tg_op = 'INSERT' then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.profiles set post_count = post_count + 1 where id = new.author_id;
+    perform set_config('unistreak.internal_write', 'off', true);
     if new.channel_id is not null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.channels set post_count = post_count + 1 where id = new.channel_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     end if;
     perform app_private.mark_university_active(new.university_id, new.author_id, 'post');
   elsif tg_op = 'UPDATE' then
     -- Soft deletion or moderator removal decrements; restoration re-increments.
     if old.deleted_at is null and new.deleted_at is not null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.profiles set post_count = greatest(post_count - 1, 0) where id = new.author_id;
+      perform set_config('unistreak.internal_write', 'off', true);
       if new.channel_id is not null then
+        perform set_config('unistreak.internal_write', 'on', true);
         update public.channels set post_count = greatest(post_count - 1, 0) where id = new.channel_id;
+        perform set_config('unistreak.internal_write', 'off', true);
       end if;
     elsif old.deleted_at is not null and new.deleted_at is null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.profiles set post_count = post_count + 1 where id = new.author_id;
+      perform set_config('unistreak.internal_write', 'off', true);
       if new.channel_id is not null then
+        perform set_config('unistreak.internal_write', 'on', true);
         update public.channels set post_count = post_count + 1 where id = new.channel_id;
+        perform set_config('unistreak.internal_write', 'off', true);
       end if;
     end if;
   end if;
@@ -106,15 +118,23 @@ set search_path = public, pg_temp
 as $$
 begin
   if tg_op = 'INSERT' then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.posts set comment_count = comment_count + 1 where id = new.post_id;
+    perform set_config('unistreak.internal_write', 'off', true);
   elsif tg_op = 'UPDATE' then
     if old.deleted_at is null and new.deleted_at is not null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.posts set comment_count = greatest(comment_count - 1, 0) where id = new.post_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     elsif old.deleted_at is not null and new.deleted_at is null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.posts set comment_count = comment_count + 1 where id = new.post_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     end if;
   elsif tg_op = 'DELETE' then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.posts set comment_count = greatest(comment_count - 1, 0) where id = old.post_id;
+    perform set_config('unistreak.internal_write', 'off', true);
   end if;
   return null;
 end;
@@ -136,15 +156,23 @@ as $$
 begin
   if tg_op = 'INSERT' then
     if new.post_id is not null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.posts set reaction_count = reaction_count + 1 where id = new.post_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     else
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.comments set reaction_count = reaction_count + 1 where id = new.comment_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     end if;
   elsif tg_op = 'DELETE' then
     if old.post_id is not null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.posts set reaction_count = greatest(reaction_count - 1, 0) where id = old.post_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     else
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.comments set reaction_count = greatest(reaction_count - 1, 0) where id = old.comment_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     end if;
   end if;
   -- An UPDATE only swaps the emoji, so the total is unchanged.
@@ -209,14 +237,22 @@ set search_path = public, pg_temp
 as $$
 begin
   if tg_op = 'INSERT' then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.conversations set member_count = member_count + 1 where id = new.conversation_id;
+    perform set_config('unistreak.internal_write', 'off', true);
   elsif tg_op = 'DELETE' then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.conversations set member_count = greatest(member_count - 1, 0) where id = old.conversation_id;
+    perform set_config('unistreak.internal_write', 'off', true);
   elsif tg_op = 'UPDATE' then
     if old.left_at is null and new.left_at is not null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.conversations set member_count = greatest(member_count - 1, 0) where id = new.conversation_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     elsif old.left_at is not null and new.left_at is null then
+      perform set_config('unistreak.internal_write', 'on', true);
       update public.conversations set member_count = member_count + 1 where id = new.conversation_id;
+      perform set_config('unistreak.internal_write', 'off', true);
     end if;
   end if;
   return null;
@@ -281,6 +317,8 @@ language sql
 security definer
 set search_path = public, pg_temp
 as $$
+  -- Only touches last_active_at, which no column guard protects, so this
+  -- needs no internal-write marker.
   update public.profiles set last_active_at = now()
    where id = p_user and last_active_at < now() - interval '2 minutes';
 $$;
@@ -296,9 +334,13 @@ set search_path = public, pg_temp
 as $$
 begin
   if tg_op = 'INSERT' then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.universities set member_count = member_count + 1 where id = new.university_id;
+    perform set_config('unistreak.internal_write', 'off', true);
   elsif tg_op = 'DELETE' then
+    perform set_config('unistreak.internal_write', 'on', true);
     update public.universities set member_count = greatest(member_count - 1, 0) where id = old.university_id;
+    perform set_config('unistreak.internal_write', 'off', true);
   end if;
   return null;
 end;

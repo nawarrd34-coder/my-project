@@ -92,5 +92,26 @@ as $$
   select lower(regexp_replace(value, '\s+', '', 'g'));
 $$;
 
+
+-- ---------------------------------------------------------------------------
+-- Internal-write marker
+-- ---------------------------------------------------------------------------
+-- Counter maintenance runs inside triggers and security-definer functions,
+-- which still see the end user's `auth.uid()` - security definer changes the
+-- role, not the JWT claims. The column guards therefore cannot tell "the
+-- engine is incrementing a counter" from "a client is forging one".
+--
+-- This transaction-local marker is that signal. It is set for the duration of
+-- a single UPDATE and cleared immediately, so it can never be left on for a
+-- client statement. `set_config` lives in pg_catalog and is not exposed
+-- through PostgREST, so a client cannot raise the flag itself.
+create or replace function app_private.is_internal_write()
+returns boolean
+language sql
+stable
+as $$
+  select coalesce(current_setting('unistreak.internal_write', true), '') = 'on';
+$$;
+
 comment on schema app_private is
   'Internal helpers and privileged logic. Not exposed via PostgREST.';

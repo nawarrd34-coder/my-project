@@ -62,6 +62,8 @@ export default function RootLayout() {
                     <Stack.Screen name="(onboarding)" />
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name="chat/[id]" />
+                    <Stack.Screen name="search" />
+                    <Stack.Screen name="notifications" />
                     <Stack.Screen name="post/[id]" />
                     <Stack.Screen name="profile/[id]" />
                     <Stack.Screen name="settings" />

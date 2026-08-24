@@ -114,7 +114,7 @@ Deno.serve(async (request: Request) => {
         kind: 'streak_expiring' as const,
         title_key: 'notifications.streakExpiring',
         params: { count: row.current_length, name: partnerName.get(row.partner_id) ?? '' },
-        link: `/chat`,
+        link: '/streaks',
         actor_id: row.partner_id,
       })),
     );

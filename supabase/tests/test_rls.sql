@@ -438,6 +438,58 @@ begin
   perform pg_temp.act_as_owner();
 end $$;
 
+\echo ''
+\echo '== group admin cannot be self-granted (§13/§32) =='
+do $$
+declare cid uuid; ksu uuid; promoted boolean;
+begin
+  select id into ksu from public.universities where code='KSU';
+
+  -- ksu_a creates a public group and is seeded as its admin.
+  perform pg_temp.act_as('aaaa0000-0000-0000-0000-00000000000a');
+  insert into public.conversations (kind, title, university_id, created_by, is_public)
+  values ('group', 'STAT 107', ksu, 'aaaa0000-0000-0000-0000-00000000000a', true)
+  returning id into cid;
+
+  insert into public.conversation_members (conversation_id, user_id, is_admin)
+  values (cid, 'aaaa0000-0000-0000-0000-00000000000a', true);
+
+  select is_admin into promoted from public.conversation_members
+   where conversation_id = cid and user_id = 'aaaa0000-0000-0000-0000-00000000000a';
+  perform pg_temp.assert_eq(promoted, true, 'creator is seeded as admin');
+
+  -- ksu_b joins the public group, but must not arrive as an admin.
+  perform pg_temp.act_as('bbbb0000-0000-0000-0000-00000000000b');
+  perform pg_temp.assert_denied(
+    format('insert into public.conversation_members (conversation_id, user_id, is_admin) values (%L, %L, true)',
+           cid, 'bbbb0000-0000-0000-0000-00000000000b'),
+    'cannot join a public group as admin');
+
+  insert into public.conversation_members (conversation_id, user_id)
+  values (cid, 'bbbb0000-0000-0000-0000-00000000000b');
+
+  -- ... and must not be able to promote themselves afterwards.
+  perform pg_temp.assert_denied(
+    format('update public.conversation_members set is_admin = true where conversation_id = %L and user_id = %L',
+           cid, 'bbbb0000-0000-0000-0000-00000000000b'),
+    'cannot self-promote to group admin');
+
+  perform pg_temp.act_as_owner();
+  select is_admin into promoted from public.conversation_members
+   where conversation_id = cid and user_id = 'bbbb0000-0000-0000-0000-00000000000b';
+  perform pg_temp.assert_eq(promoted, false, 'member is still not an admin');
+
+  -- A real admin promoting someone else is still allowed.
+  perform pg_temp.act_as('aaaa0000-0000-0000-0000-00000000000a');
+  update public.conversation_members set is_admin = true
+   where conversation_id = cid and user_id = 'bbbb0000-0000-0000-0000-00000000000b';
+
+  perform pg_temp.act_as_owner();
+  select is_admin into promoted from public.conversation_members
+   where conversation_id = cid and user_id = 'bbbb0000-0000-0000-0000-00000000000b';
+  perform pg_temp.assert_eq(promoted, true, 'an existing admin can promote a member');
+end $$;
+
 rollback;
 
 \echo ''

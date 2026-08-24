@@ -154,6 +154,22 @@ export default function UniversityScreen() {
 
       {myUniversity && rival ? <BattleCard a={myUniversity} b={rival} /> : null}
 
+      <Card
+        onPress={() => router.push('/sounds')}
+        accessibilityLabel={t('sounds.title')}
+        elevation="none"
+      >
+        <View style={styles.row}>
+          <Text variant="h3">🎵</Text>
+          <View style={{ flex: 1 }}>
+            <Text variant="bodyStrong">{t('sounds.trending')}</Text>
+            <Text variant="caption" color="muted">
+              {t('sounds.uses', { count: pulseQuery.data?.trending_sounds.length ?? 0 })}
+            </Text>
+          </View>
+        </View>
+      </Card>
+
       <View style={{ gap: theme.spacing.sm }}>
         <Text variant="h3">{t('university.channels')}</Text>
         <View style={styles.channelGrid}>
