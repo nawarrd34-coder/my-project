@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  app:
+    name: App (typecheck, lint, tests, bundle)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      # Bundling is the real proof the app builds: a typecheck alone will not
+      # catch a bad plugin config or an unresolvable native import.
+      - name: Bundle for iOS and Android
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+        run: |
+          npx expo export --platform ios --output-dir /tmp/export-ios
+          npx expo export --platform android --output-dir /tmp/export-android
+
+  database:
+    name: Database (migrations, RLS, streak engine)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Apply migrations and run SQL suites
+        env:
+          PGPASSWORD: postgres
+        run: |
+          bash scripts/localdb.sh --test
+        # The script talks to Postgres over TCP in CI rather than a socket.
+      - name: Verify generated types match the schema
+        env:
+          PGPASSWORD: postgres
+        run: |
+          node scripts/gen-types.mjs \
+            --psql "psql -h localhost -p 5432 -U postgres -d unistreak_test"
+          # A drifted type file means someone edited the schema without
+          # regenerating; fail loudly rather than shipping stale types.
+          git diff --exit-code src/types/database.types.ts

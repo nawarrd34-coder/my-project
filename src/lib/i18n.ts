@@ -1,5 +1,5 @@
 import * as Localization from 'expo-localization';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import {
@@ -10,6 +10,13 @@ import {
   type AppLanguage,
 } from '@/locales';
 import { getPreferences } from '@/store/preferences';
+
+/**
+ * The shared i18next instance. Aliased from the default export so lint can
+ * tell it apart from i18next's same-named named exports (`use`,
+ * `changeLanguage`), which are a different thing entirely.
+ */
+const i18n = i18next;
 
 /**
  * Language resolution order:

@@ -3,13 +3,15 @@
 # and (optionally) run the SQL test suite. Used by CI and by `npm run db:verify`.
 set -euo pipefail
 
-PGBIN=${PGBIN:-/usr/lib/postgresql/16/bin}
-PGSOCK=${PGSOCK:-/tmp/pgsock}
+# Connection defaults suit a local socket-based cluster; CI overrides PGHOST
+# and PGPORT to reach a TCP service container.
+PGHOST=${PGHOST:-/tmp/pgsock}
 PGPORT=${PGPORT:-55432}
+PGUSER=${PGUSER:-postgres}
 DB=${DB:-unistreak_test}
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-psql_root() { psql -h "$PGSOCK" -p "$PGPORT" -U postgres -v ON_ERROR_STOP=1 "$@"; }
+psql_root() { psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -v ON_ERROR_STOP=1 "$@"; }
 
 echo "==> recreating database $DB"
 psql_root -d postgres -q -c "drop database if exists $DB;" -c "create database $DB;"

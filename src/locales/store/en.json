@@ -1,0 +1,6 @@
+{
+  "CFBundleDisplayName": "Uni Streak",
+  "NSCameraUsageDescription": "Uni Streak uses your camera when you choose to take a photo or video for a post, a chat message, or your avatar.",
+  "NSPhotoLibraryUsageDescription": "Uni Streak accesses your photo library when you choose to attach an existing photo or video to a post, a chat message, or your avatar.",
+  "NSMicrophoneUsageDescription": "Uni Streak uses your microphone when you choose to record a voice message or a sound clip."
+}
