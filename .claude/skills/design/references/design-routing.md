@@ -7,7 +7,7 @@ When to use each design sub-skill.
 | Skill | Purpose | Key Files |
 |-------|---------|-----------|
 | brand | Brand identity, voice, assets | SKILL.md + 10 references + 3 scripts |
-| design-system | Token architecture, specs | SKILL.md + 7 references + 2 scripts |
+| ui-design-system | Token architecture, specs | SKILL.md + 7 references + 2 scripts |
 | ui-styling | Component implementation | SKILL.md + 7 references + 2 scripts |
 | logo-design | AI logo generation (55 styles, 30 palettes) | SKILL.md + 4 references + 2 scripts |
 | cip-design | Corporate Identity Program (50 deliverables) | SKILL.md + 3 references + 3 scripts |
@@ -28,7 +28,7 @@ When to use each design sub-skill.
 - Audit brand consistency
 
 ### Token System Tasks
-**→ design-system**
+**→ ui-design-system**
 
 - Create design tokens JSON
 - Generate CSS variables
@@ -93,10 +93,10 @@ When to use each design sub-skill.
 | Question | Skill |
 |----------|-------|
 | "What color should this be?" | brand |
-| "How do I create a token for X?" | design-system |
+| "How do I create a token for X?" | ui-design-system |
 | "How do I build a button component?" | ui-styling |
 | "Is this on-brand?" | brand |
-| "Should I use a CSS variable here?" | design-system |
+| "Should I use a CSS variable here?" | ui-design-system |
 | "How do I add dark mode?" | ui-styling |
 | "Create a logo for my brand" | logo-design |
 | "Generate business card mockups" | cip-design |
@@ -118,7 +118,7 @@ When to use each design sub-skill.
 1. brand → Define identity
    - Colors, typography, voice
 
-2. design-system → Create tokens
+2. ui-design-system → Create tokens
    - Primitive, semantic, component
 
 3. ui-styling → Implement
@@ -131,7 +131,7 @@ When to use each design sub-skill.
 1. brand → Audit existing
    - Extract brand colors, fonts
 
-2. design-system → Formalize tokens
+2. ui-design-system → Formalize tokens
    - Create three-layer architecture
 
 3. ui-styling → Update code
@@ -141,7 +141,7 @@ When to use each design sub-skill.
 ### Component Creation
 
 ```
-1. design-system → Reference specs
+1. ui-design-system → Reference specs
    - Button states, sizes, variants
 
 2. ui-styling → Implement
@@ -153,7 +153,7 @@ When to use each design sub-skill.
 ```
 brand
     ↓ (colors, typography)
-design-system
+ui-design-system
     ↓ (tokens, specs)
 ui-styling
     ↓ (components)
@@ -170,8 +170,8 @@ node .claude/skills/brand/scripts/validate-asset.cjs <path>
 
 **Tokens:**
 ```bash
-node .claude/skills/design-system/scripts/generate-tokens.cjs -c tokens.json
-node .claude/skills/design-system/scripts/validate-tokens.cjs -d src/
+node .claude/skills/ui-design-system/scripts/generate-tokens.cjs -c tokens.json
+node .claude/skills/ui-design-system/scripts/validate-tokens.cjs -d src/
 ```
 
 **Components:**
@@ -184,7 +184,7 @@ npx shadcn@latest add button card input
 Use **all eight** when:
 - Complete brand package from scratch (logo → CIP → presentation)
 
-Use **brand + design-system + ui-styling** when:
+Use **brand + ui-design-system + ui-styling** when:
 - Design system setup and implementation
 
 Use **logo-design + cip-design** when:
@@ -196,12 +196,12 @@ Use **logo-design + cip-design + slides** when:
 Use **banner-design + brand** when:
 - Social media presence: branded banners across all platforms
 
-Use **icon-design + design-system** when:
+Use **icon-design + ui-design-system** when:
 - Custom icon set matching design tokens and component specs
 
-Use **brand + design-system** when:
+Use **brand + ui-design-system** when:
 - Defining design language without implementation
 
-Use **design-system + ui-styling** when:
+Use **ui-design-system + ui-styling** when:
 - Implementing existing brand in code
 - Building component library

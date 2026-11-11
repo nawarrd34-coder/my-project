@@ -84,7 +84,7 @@ Output summary:
 ## Skills Used
 
 - `brand` - Brand context extraction and sync
-- `design-system` - Token generation
+- `ui-design-system` - Token generation
 
 ## Examples
 

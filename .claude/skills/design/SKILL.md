@@ -28,7 +28,7 @@ Unified design skill: brand, tokens, UI, logo, CIP, slides, banners, social phot
 | Task | Sub-skill | Details |
 |------|-----------|---------|
 | Brand identity, voice, assets | `brand` | External skill |
-| Tokens, specs, CSS vars | `design-system` | External skill |
+| Tokens, specs, CSS vars | `ui-design-system` | External skill |
 | shadcn/ui, Tailwind, code | `ui-styling` | External skill |
 | Logo creation, AI generation | Logo (built-in) | `references/logo-design.md` |
 | CIP mockups, deliverables | CIP (built-in) | `references/cip-design.md` |
@@ -216,7 +216,7 @@ python3 ~/.claude/skills/design/scripts/icon/generate.py --prompt "user profile"
 
 ## Social Photos (Built-in)
 
-Multi-platform social image design: HTML/CSS → screenshot export. Uses `ui-ux-pro-max`, `brand`, `design-system`, `chrome-devtools` skills.
+Multi-platform social image design: HTML/CSS → screenshot export. Uses `ui-ux-pro-max`, `brand`, `ui-design-system`, `chrome-devtools` skills.
 
 Load `references/social-photos-design.md` for sizes, templates, best practices.
 
@@ -225,7 +225,7 @@ Load `references/social-photos-design.md` for sizes, templates, best practices.
 1. **Orchestrate** — `project-management` skill for TODO tasks; parallel subagents for independent work
 2. **Analyze** — Parse prompt: subject, platforms, style, brand context, content elements
 3. **Ideate** — 3-5 concepts, present via `AskUserQuestion`
-4. **Design** — `/ckm:brand` → `/ckm:design-system` → randomly invoke `/ck:ui-ux-pro-max` OR `/ck:frontend-design`; HTML per idea × size
+4. **Design** — `/ckm:brand` → `/ckm:ui-design-system` → randomly invoke `/ck:ui-ux-pro-max` OR `/ck:frontend-design`; HTML per idea × size
 5. **Export** — `chrome-devtools` or Playwright screenshot at exact px (2x deviceScaleFactor)
 6. **Verify** — Use Chrome MCP or `chrome-devtools` skill to visually inspect exported designs; fix layout/styling issues and re-export
 7. **Report** — Summary to `plans/reports/` with design decisions
@@ -251,7 +251,7 @@ Load `references/social-photos-design.md` for sizes, templates, best practices.
 ### New Design System
 
 1. **Brand** (brand skill) → Define colors, typography, voice
-2. **Tokens** (design-system skill) → Create semantic token layers
+2. **Tokens** (ui-design-system skill) → Create semantic token layers
 3. **Implement** (ui-styling skill) → Configure Tailwind, shadcn/ui
 
 ## References
@@ -309,5 +309,5 @@ pip install google-genai pillow
 
 ## Integration
 
-**External sub-skills:** brand, design-system, ui-styling
+**External sub-skills:** brand, ui-design-system, ui-styling
 **Related Skills:** frontend-design, ui-ux-pro-max, ai-multimodal, chrome-devtools

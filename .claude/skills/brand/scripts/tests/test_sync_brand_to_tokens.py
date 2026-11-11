@@ -20,7 +20,7 @@ SCRIPTS = Path(__file__).resolve().parent.parent
 SCRIPT = SCRIPTS / "sync-brand-to-tokens.cjs"
 BRAND_STARTER = SCRIPTS.parent / "templates" / "brand-guidelines-starter.md"
 TOKENS_STARTER = (
-    SCRIPTS.parent.parent / "design-system" / "templates" / "design-tokens-starter.json"
+    SCRIPTS.parent.parent / "ui-design-system" / "templates" / "design-tokens-starter.json"
 )
 
 
