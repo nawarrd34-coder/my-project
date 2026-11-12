@@ -319,15 +319,25 @@
     "type": "command",
     "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/statusline.sh\""
   },
+  "enabledPlugins": {
+    "headroom-skill@headroom-marketplace": true,
+    "feature-dev@claude-code-plugins": true,
+    "code-review@claude-code-plugins": true,
+    "commit-commands@claude-code-plugins": true,
+    "pr-review-toolkit@claude-code-plugins": true
+  },
   "extraKnownMarketplaces": {
     "headroom-marketplace": {
       "source": {
         "source": "github",
         "repo": "headroomlabs-ai/headroom"
       }
+    },
+    "claude-code-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-code"
+      }
     }
-  },
-  "enabledPlugins": {
-    "headroom-skill@headroom-marketplace": true
   }
 }
