@@ -252,7 +252,7 @@ export function Report({ report, onRescan, onNew }: { report: AuditReport; onRes
                         const v = d?.metrics[id].value ?? null;
                         return (
                           <td key={i} className={`${i === 0 ? 'px-4' : 'px-6'} py-3.5 text-end`}>
-                            <span className="num inline-flex items-center gap-2 text-ink">
+                            <span className="num inline-flex items-center gap-2 whitespace-nowrap text-ink">
                               {v !== null && <span className="h-1.5 w-1.5 rounded-full" style={{ background: BAND_COLOR[metricBand(id, v)] }} />}
                               {v === null ? <span className="text-faint">—</span> : formatMetric(id, v)}
                             </span>

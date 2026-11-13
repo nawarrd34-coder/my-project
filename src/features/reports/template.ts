@@ -126,7 +126,7 @@ li { margin-bottom: 1.4mm; }
 
 function metricsTable(t: Dict, mobile: StrategyData | null, desktop: StrategyData | null): string {
   const ids: MetricId[] = ['fcp', 'lcp', 'si', 'tbt', 'cls'];
-  const cell = (d: StrategyData | null, id: MetricId) => `<td class="n mono">${esc(formatMetric(id, d?.metrics[id].value ?? null))}</td>`;
+  const cell = (d: StrategyData | null, id: MetricId) => `<td class="n mono">${ltr(formatMetric(id, d?.metrics[id].value ?? null))}</td>`;
   return `<table>
     <thead><tr><th></th><th class="n">${esc(t.results.mobile)}</th><th class="n">${esc(t.results.desktop)}</th></tr></thead>
     <tbody>${ids

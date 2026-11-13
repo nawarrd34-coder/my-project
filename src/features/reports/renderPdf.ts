@@ -20,14 +20,16 @@ function loadAssets(): ReportAssets {
   if (cachedAssets) return cachedAssets;
   const read = (file: string) => {
     try {
-      return fs.readFileSync(path.join(process.cwd(), file)).toString('base64');
+      return fs.readFileSync(file).toString('base64');
     } catch {
       return '';
     }
   };
+  // Paths are scoped to two folders so the deployment bundle traces only those files.
+  const fontDir = path.join(process.cwd(), 'assets', 'fonts');
   const fonts: Record<string, string> = {};
-  for (const name of FONT_FILES) fonts[name] = read(`assets/fonts/${name}.woff2`);
-  cachedAssets = { fonts, logo: read('public/brand/youth-studio.jpg') };
+  for (const name of FONT_FILES) fonts[name] = read(path.join(fontDir, `${name}.woff2`));
+  cachedAssets = { fonts, logo: read(path.join(process.cwd(), 'public', 'brand', 'youth-studio.jpg')) };
   return cachedAssets;
 }
 
