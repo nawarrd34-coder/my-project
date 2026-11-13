@@ -28,6 +28,10 @@ export interface SafeFetchOptions {
   /** Cap on the decompressed body. Extra bytes are discarded. */
   maxBytes?: number;
   maxRedirects?: number;
+  /** Read any 2xx body as raw bytes (images, feeds) instead of HTML/text only. */
+  binary?: boolean;
+  /** Extra request headers (e.g. Range, Accept). */
+  headers?: Record<string, string>;
 }
 
 export interface SafeFetchResult {
@@ -38,6 +42,8 @@ export interface SafeFetchResult {
   truncated: boolean;
   redirectCount: number;
   ttfbMs: number;
+  /** Raw body when `binary` was requested. */
+  bytes?: Buffer;
 }
 
 const USER_AGENT =
@@ -67,6 +73,8 @@ function requestOnce(
   pinned: PinnedAddress,
   deadline: number,
   maxBytes: number,
+  binary = false,
+  extraHeaders: Record<string, string> = {},
 ): Promise<RawResponse> {
   return new Promise((resolve, reject) => {
     const remaining = deadline - Date.now();
@@ -94,6 +102,7 @@ function requestOnce(
         accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.5',
         'accept-language': 'ar,en;q=0.8',
         'accept-encoding': 'gzip, deflate, br',
+        ...extraHeaders,
         host: url.host,
       },
       // Connect to the address we validated; never re-resolve the name.
@@ -126,7 +135,7 @@ function requestOnce(
       const headers = flattenHeaders(res.headers);
       const status = res.statusCode ?? 0;
       const type = headers['content-type'] ?? '';
-      const wantsBody = status >= 200 && status < 300 && /html|xml|text\/plain/i.test(type);
+      const wantsBody = status >= 200 && status < 300 && (binary || /html|xml|text\/plain|json/i.test(type));
       if (!wantsBody) {
         res.resume();
         res.destroy();
@@ -204,7 +213,7 @@ export async function safeFetch(rawUrl: string, opts: SafeFetchOptions = {}): Pr
       throw err;
     }
 
-    const res = await requestOnce(url, pinned, deadline, maxBytes);
+    const res = await requestOnce(url, pinned, deadline, maxBytes, opts.binary, opts.headers);
     const location = res.headers.location;
     if ([301, 302, 303, 307, 308].includes(res.status) && location) {
       if (redirectCount >= maxRedirects) throw new SafeFetchError('too_many_redirects');
@@ -228,6 +237,7 @@ export async function safeFetch(rawUrl: string, opts: SafeFetchOptions = {}): Pr
       truncated: res.truncated,
       redirectCount,
       ttfbMs: res.ttfbMs,
+      ...(opts.binary ? { bytes: res.body } : {}),
     };
   }
 }

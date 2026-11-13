@@ -5,6 +5,7 @@ import { summarizeWithAi } from '@/features/recommendations/ai';
 import { buildFindings } from '@/features/recommendations/rules';
 import { scoreAudit } from '@/features/scoring/engine';
 import type { AuditErrorCode, AuditEvent, AuditReport, PsiOutcome } from '@/types/audit';
+import { analyzeBusiness } from '@/features/business/analyze';
 import { BlockedTargetError, probeSite } from './probe';
 
 export class AuditError extends Error {
@@ -52,9 +53,9 @@ export async function runAudit(target: URL, emit: Emit): Promise<AuditReport> {
 
   // 1. Connect: fetch the page ourselves (headers, HTTPS behaviour, HTML).
   emit({ t: 'task', id: 'connect', s: 'start' });
-  let site;
+  let probed;
   try {
-    site = await probeSite(target);
+    probed = await probeSite(target);
   } catch (err) {
     if (err instanceof BlockedTargetError) {
       emit({ t: 'task', id: 'connect', s: 'fail', code: 'blocked' });
@@ -62,6 +63,8 @@ export async function runAudit(target: URL, emit: Emit): Promise<AuditReport> {
     }
     throw err;
   }
+  // The raw HTML feeds the business analysis; it is not stored in the report.
+  const { html, ...site } = probed;
   if (site.error === 'dns_failed') {
     emit({ t: 'task', id: 'connect', s: 'fail', code: site.error });
     throw new AuditError('unreachable', 'dns_failed');
@@ -82,6 +85,17 @@ export async function runAudit(target: URL, emit: Emit): Promise<AuditReport> {
   const mobilePromise = psi('mobile');
   const desktopPromise = psi('desktop');
 
+  // Business analysis (crawl, platform, catalogue, search, design) runs alongside PageSpeed.
+  const businessPromise = analyzeBusiness({
+    url: site.finalUrl,
+    html: html ?? null,
+    headers: site.headers,
+    emit: (id, s, code) => emit({ t: 'task', id, s, code }),
+  }).catch((err) => {
+    console.error('[business] analysis failed', err);
+    return null;
+  });
+
   // 4 + 5. On-page and security analysis use the probe and finish at once;
   // they are reported honestly as done (or failed when the page was unreadable).
   emit({ t: 'task', id: 'onpage', s: 'start' });
@@ -90,7 +104,7 @@ export async function runAudit(target: URL, emit: Emit): Promise<AuditReport> {
   const securityRead = site.status !== null || site.error === 'tls_error';
   emit({ t: 'task', id: 'security', s: securityRead ? 'done' : 'fail', code: securityRead ? undefined : site.error });
 
-  const [mobile, desktop] = await Promise.all([mobilePromise, desktopPromise]);
+  const [mobile, desktop, business] = await Promise.all([mobilePromise, desktopPromise, businessPromise]);
 
   if (!site.ok && site.error !== 'tls_error' && !mobile.ok && !desktop.ok) {
     throw new AuditError('unreachable', site.error ?? 'no_data');
@@ -102,7 +116,7 @@ export async function runAudit(target: URL, emit: Emit): Promise<AuditReport> {
   const { findings, strengths } = buildFindings({ site, mobile, desktop });
   const finalUrl = site.status !== null ? site.finalUrl : target.toString();
   const host = new URL(finalUrl).hostname;
-  const ai = await summarizeWithAi({ host, overall: overall.score, categories, findings });
+  const ai = await summarizeWithAi({ host, overall: overall.score, categories, findings, business });
   emit({ t: 'task', id: 'scoring', s: 'done' });
 
   return {
@@ -120,5 +134,6 @@ export async function runAudit(target: URL, emit: Emit): Promise<AuditReport> {
     findings,
     strengths,
     ai,
+    business,
   };
 }

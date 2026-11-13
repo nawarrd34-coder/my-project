@@ -4,6 +4,7 @@ import { formatDate, formatMetric, GRADE_COLOR, SEVERITY_COLOR, scoreColor } fro
 import { ar } from '@/lib/i18n/ar';
 import { en, type Dict } from '@/lib/i18n/en';
 import type { AuditReport, Locale, MetricId, StrategyData } from '@/types/audit';
+import { BUSINESS_CSS, businessHtml, compactFindings } from './businessTemplate';
 
 export interface ReportAssets {
   /** base64 woff2 payloads keyed by file name (without extension). */
@@ -230,6 +231,49 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
     studio.email ? `<div>${esc(t.cta.email)}: <a href="mailto:${esc(studio.email)}">${ltr(studio.email)}</a></div>` : '',
   ].join('');
 
+  const hasBiz = !!report.business;
+  const resolveShort = (f: Parameters<typeof resolveFinding>[0], l: Locale) => resolveFinding(f, l);
+  const biz = businessHtml(report, locale, t, hasBiz ? `<h3>${esc(t.categories.ux.name)}</h3>${compactFindings(report.findings, ['ux'], locale, t, resolveShort)}` : '');
+  const S = biz.b.sections;
+  const brandName = report.business?.identity.brandName?.value ?? null;
+
+  const scoreSection = (n: number | null) => `<section>
+  <h2>${n ? `<span class="mono small muted" style="font-weight:400">${String(n).padStart(2, '0')}</span>&nbsp; ` : ''}${esc(hasBiz ? S.score : t.pdf.scores)}</h2>
+  ${hasBiz ? `<div class="box score-note" style="margin-bottom:4mm">${esc(S.scoreNote)}</div><p class="lead">${overall.score === null ? esc(t.results.noOverall) : `<b>${overall.score}/100</b>${overall.grade ? ` · <span style="color:${gradeColor}">${esc(t.grades[overall.grade])}</span>` : ''}`} <span class="small muted">${esc(t.results.counts(critical, high, report.findings.length))}</span></p>` : ''}
+  <table><tbody>${categoryRows}</tbody></table>
+  ${strengths ? `<h3>${esc(t.results.strengthsTitle)}</h3><ul>${strengths}</ul>` : ''}
+</section>`;
+
+  const compare = mobile || desktop
+    ? `${lighthouseTable(t, mobile, desktop)}
+  <h3>${esc(t.results.metricsTitle)}</h3>
+  ${metricsTable(t, mobile, desktop)}
+  <p class="small muted" style="margin-top:2mm">${esc(t.results.metricsNote)} ${esc(t.results.vitalsTbtNote)}</p>`
+    : '';
+
+  const businessBody = `
+${notices.length ? `<section>${notices.map((n) => `<div class="box notice">${esc(n)}</div>`).join('')}</section>` : ''}
+${biz.front}
+${biz.section(8, S.performance, t.results.compareSubtitle, compare + `<h3>${esc(t.pdf.findings)}</h3>` + compactFindings(report.findings, ['performance', 'mobile'], locale, t, resolveShort))}
+${biz.section(9, S.seo, null, compactFindings(report.findings, ['seo', 'accessibility'], locale, t, resolveShort))}
+${biz.section(10, S.security, null, compactFindings(report.findings, ['security'], locale, t, resolveShort))}
+${biz.recommendations(11)}
+${scoreSection(12)}`;
+
+  const legacyBody = `
+<section>
+  <h2>${esc(t.pdf.summary)}</h2>
+  <p class="lead">${esc(t.results.counts(critical, high, report.findings.length))}</p>
+  ${report.ai ? `<div class="box ai"><p>${esc(report.ai[locale])}</p><p class="small muted" style="margin:0">${esc(t.results.aiLabel)}</p></div>` : ''}
+  ${notices.map((n) => `<div class="box notice">${esc(n)}</div>`).join('')}
+</section>
+${scoreSection(null)}
+${compare ? `<section><h2>${esc(t.results.compareTitle)}</h2>${compare}</section>` : ''}
+<section>
+  <h2>${esc(t.pdf.findings)}</h2>
+  ${findings || `<p class="muted">${esc(t.results.counts(0, 0, 0))}</p>`}
+</section>`;
+
   const coverNote = overall.score === null ? t.results.noOverallBody(overall.coveredWeight) : overall.coveredWeight < 100 ? t.results.partialNote(overall.coveredWeight) : '';
 
   return `<!doctype html>
@@ -237,7 +281,7 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
 <head>
 <meta charset="utf-8">
 <title>${esc(t.results.title)} — ${esc(report.host)}</title>
-<style>${fontFaces(assets.fonts)}${CSS}</style>
+<style>${fontFaces(assets.fonts)}${CSS}${BUSINESS_CSS}</style>
 </head>
 <body>
 <div class="cover">
@@ -245,13 +289,14 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
   <div class="cover-main">
     <div class="cover-kicker">${esc(t.pdf.reportFor)}</div>
     <h1 class="cover-title">${esc(t.results.title)}</h1>
-    <div class="cover-host mono">${ltr(report.host)}</div>
+    ${brandName ? `<div class="cover-host" style="color:#fff;font-family:'Display','Display Arabic',sans-serif;font-weight:800" dir="auto">${esc(brandName)}</div>` : ''}
+    <div class="cover-host mono"${brandName ? ' style="margin-top:4px;font-size:11pt"' : ''}>${ltr(report.host)}</div>
     <div class="cover-meta">${esc(t.pdf.date)}: ${esc(formatDate(report.generatedAt, locale))}</div>
   </div>
   <div class="cover-score">
     <div dir="ltr">${gauge(overall.score, gradeColor)}</div>
     <div>
-      <h3>${esc(t.results.overall)}</h3>
+      <h3>${esc(hasBiz ? S.score : t.results.overall)}</h3>
       ${overall.grade ? `<span class="cover-grade" style="color:${gradeColor};background:${gradeColor}26">${esc(t.grades[overall.grade])}</span>` : `<span class="cover-grade" style="color:#f2c14e;background:#f2c14e22">${esc(t.results.noOverall)}</span>`}
       ${coverNote ? `<p class="cover-note">${esc(coverNote)}</p>` : ''}
     </div>
@@ -262,36 +307,7 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
   </div>
 </div>
 
-<section>
-  <h2>${esc(t.pdf.summary)}</h2>
-  <p class="lead">${esc(t.results.counts(critical, high, report.findings.length))}</p>
-  ${report.ai ? `<div class="box ai"><p>${esc(report.ai[locale])}</p><p class="small muted" style="margin:0">${esc(t.results.aiLabel)}</p></div>` : ''}
-  ${notices.map((n) => `<div class="box notice">${esc(n)}</div>`).join('')}
-</section>
-
-<section>
-  <h2>${esc(t.pdf.scores)}</h2>
-  <table><tbody>${categoryRows}</tbody></table>
-</section>
-
-${
-  mobile || desktop
-    ? `<section>
-  <h2>${esc(t.results.compareTitle)}</h2>
-  ${lighthouseTable(t, mobile, desktop)}
-  <h3>${esc(t.results.metricsTitle)}</h3>
-  ${metricsTable(t, mobile, desktop)}
-  <p class="small muted" style="margin-top:2mm">${esc(t.results.metricsNote)} ${esc(t.results.vitalsTbtNote)}</p>
-</section>`
-    : ''
-}
-
-${strengths ? `<section><h2>${esc(t.results.strengthsTitle)}</h2><ul>${strengths}</ul></section>` : ''}
-
-<section>
-  <h2>${esc(t.pdf.findings)}</h2>
-  ${findings || `<p class="muted">${esc(t.results.counts(0, 0, 0))}</p>`}
-</section>
+${hasBiz ? businessBody : legacyBody}
 
 ${gaps ? `<section><h2>${esc(t.results.gapsTitle)}</h2><p class="small muted">${esc(t.results.gapsSubtitle)}</p><table><tbody>${gaps}</tbody></table></section>` : ''}
 

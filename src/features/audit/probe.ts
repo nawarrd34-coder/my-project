@@ -14,6 +14,12 @@ const KEPT_HEADERS = [
   'x-powered-by',
   'server',
   'content-type',
+  // Platform fingerprints
+  'x-shopid',
+  'powered-by',
+  'x-shopify-stage',
+  'x-wix-request-id',
+  'x-magento-tags',
 ];
 
 const pick = (headers: Record<string, string>) => {
@@ -50,7 +56,7 @@ async function checkHttpUpgrade(finalUrl: URL): Promise<boolean | null> {
  * server-delivered HTML. Network failures are returned as data, not thrown,
  * because PageSpeed may still be able to analyse the page.
  */
-export async function probeSite(url: URL): Promise<SiteProbe> {
+export async function probeSite(url: URL): Promise<SiteProbe & { html?: string }> {
   const requestedUrl = url.toString();
   const base: SiteProbe = {
     ok: false,
@@ -93,5 +99,5 @@ export async function probeSite(url: URL): Promise<SiteProbe> {
   }
   if (!res.body.trim()) return { ...probe, error: 'not_html' };
 
-  return { ...probe, ok: true, onPage: analyzeHtml(res.body, res.url) };
+  return { ...probe, ok: true, onPage: analyzeHtml(res.body, res.url), html: res.body };
 }

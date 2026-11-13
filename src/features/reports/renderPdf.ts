@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { Browser } from 'puppeteer-core';
+import { launchBrowser } from '@/lib/browser';
 import type { AuditReport, Locale } from '@/types/audit';
 import { buildReportHtml, type ReportAssets } from './template';
 
@@ -37,36 +37,6 @@ function loadAssets(): ReportAssets {
   return cachedAssets;
 }
 
-const LOCAL_CHROME = [
-  process.env.CHROME_EXECUTABLE_PATH,
-  process.env.PUPPETEER_EXECUTABLE_PATH,
-  process.env.CHROME_PATH,
-  '/usr/bin/google-chrome',
-  '/usr/bin/chromium',
-  '/usr/bin/chromium-browser',
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-];
-
-async function launch(): Promise<Browser> {
-  const puppeteer = (await import('puppeteer-core')).default;
-  const local = process.env.VERCEL ? undefined : LOCAL_CHROME.find((p) => p && fs.existsSync(p));
-  if (local) {
-    return puppeteer.launch({
-      executablePath: local,
-      headless: true,
-      args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--font-render-hinting=none'],
-    });
-  }
-  // Serverless (Vercel): a Chromium build packaged for Lambda-style runtimes.
-  const chromium = (await import('@sparticuz/chromium')).default;
-  return puppeteer.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
-    headless: 'shell',
-  });
-}
-
 const FOOTER = `<div style="width:100%;padding:0 15mm;font-family:Arial,Helvetica,sans-serif;font-size:7px;letter-spacing:0.12em;color:#8d8d9c;display:flex;justify-content:space-between;direction:ltr;">
   <span>BUSINESS HEALTH CHECK · BY YOUTH STUDIO</span>
   <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
@@ -77,9 +47,14 @@ const FOOTER = `<div style="width:100%;padding:0 15mm;font-family:Arial,Helvetic
  * handles right-to-left layout correctly. The page runs with JavaScript off
  * and every network request blocked: it can only show what we put in it.
  */
+/** The same document as HTML, used for the browser-print fallback. */
+export function renderReportHtml(report: AuditReport, locale: Locale): string {
+  return buildReportHtml(report, locale, loadAssets());
+}
+
 export async function renderReportPdf(report: AuditReport, locale: Locale): Promise<Uint8Array> {
   const html = buildReportHtml(report, locale, loadAssets());
-  const browser = await launch();
+  const browser = await launchBrowser();
   try {
     const page = await browser.newPage();
     await page.setJavaScriptEnabled(false);

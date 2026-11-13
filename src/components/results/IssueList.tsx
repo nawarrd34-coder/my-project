@@ -20,7 +20,7 @@ function Field({ label, children, mono }: { label: string; children: string; mon
   );
 }
 
-export function IssueList({ findings }: { findings: Finding[] }) {
+export function IssueList({ findings, categories, emptyText }: { findings: Finding[]; categories?: CategoryId[]; emptyText?: string }) {
   const { t, locale } = useI18n();
   const [filter, setFilter] = useState<CategoryId | 'all'>('all');
   const [open, setOpen] = useState<string | null>(null);
@@ -28,18 +28,19 @@ export function IssueList({ findings }: { findings: Finding[] }) {
   const items = useMemo(
     () =>
       findings
+        .filter((f) => !categories || categories.includes(f.category))
         .map((f, i) => ({ key: `${f.id}-${i}`, finding: f, copy: resolveFinding(f, locale) }))
         .filter((x): x is typeof x & { copy: NonNullable<typeof x.copy> } => x.copy !== null),
-    [findings, locale],
+    [findings, locale, categories],
   );
   const present = CATEGORY_ORDER.filter((c) => items.some((i) => i.finding.category === c));
   const shown = filter === 'all' ? items : items.filter((i) => i.finding.category === filter);
 
-  if (items.length === 0) return <p className="text-sm text-muted">{t.results.counts(0, 0, 0)}</p>;
+  if (items.length === 0) return <p className="text-sm text-muted">{emptyText ?? t.results.counts(0, 0, 0)}</p>;
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label={t.results.issuesTitle}>
+      <div className={`flex flex-wrap gap-2 ${present.length < 2 ? 'hidden' : ''}`} role="tablist" aria-label={t.results.issuesTitle}>
         {(['all', ...present] as const).map((id) => {
           const count = id === 'all' ? items.length : items.filter((i) => i.finding.category === id).length;
           const active = filter === id;

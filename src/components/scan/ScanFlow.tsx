@@ -12,22 +12,51 @@ import type { AuditErrorCode, AuditEvent, AuditReport, AuditTaskId } from '@/typ
 
 type TaskState = 'pending' | 'running' | 'done' | 'failed';
 type StageState = 'pending' | 'running' | 'done' | 'partial' | 'failed';
-type StageId = 'connect' | 'performance' | 'mobile' | 'seo' | 'accessibility' | 'security' | 'recommendations';
+type StageId =
+  | 'connect'
+  | 'identity'
+  | 'crawl'
+  | 'products'
+  | 'performance'
+  | 'mobile'
+  | 'seo'
+  | 'accessibility'
+  | 'security'
+  | 'search'
+  | 'design'
+  | 'recommendations';
 type ClientError = AuditErrorCode | 'network';
 
 /** Each visible stage is complete only when the real tasks behind it have settled. */
 const STAGES: { id: StageId; tasks: AuditTaskId[] }[] = [
   { id: 'connect', tasks: ['connect'] },
+  { id: 'identity', tasks: ['identity'] },
+  { id: 'crawl', tasks: ['crawl'] },
+  { id: 'products', tasks: ['products'] },
   { id: 'performance', tasks: ['psi_mobile', 'psi_desktop'] },
   { id: 'mobile', tasks: ['psi_mobile'] },
   { id: 'seo', tasks: ['onpage', 'psi_mobile'] },
   { id: 'accessibility', tasks: ['psi_mobile'] },
   { id: 'security', tasks: ['security'] },
+  { id: 'search', tasks: ['search'] },
+  { id: 'design', tasks: ['design'] },
   { id: 'recommendations', tasks: ['scoring'] },
 ];
 
 /** Share of the total work each task represents (sums to 100). */
-const TASK_SHARE: Record<AuditTaskId, number> = { connect: 8, onpage: 4, security: 4, psi_mobile: 37, psi_desktop: 37, scoring: 10 };
+const TASK_SHARE: Record<AuditTaskId, number> = {
+  connect: 5,
+  onpage: 2,
+  security: 2,
+  psi_mobile: 25,
+  psi_desktop: 25,
+  identity: 4,
+  crawl: 10,
+  products: 6,
+  search: 6,
+  design: 8,
+  scoring: 7,
+};
 
 const INITIAL: Record<AuditTaskId, TaskState> = {
   connect: 'pending',
@@ -35,6 +64,11 @@ const INITIAL: Record<AuditTaskId, TaskState> = {
   security: 'pending',
   psi_mobile: 'pending',
   psi_desktop: 'pending',
+  identity: 'pending',
+  crawl: 'pending',
+  products: 'pending',
+  search: 'pending',
+  design: 'pending',
   scoring: 'pending',
 };
 
@@ -273,7 +307,7 @@ export function ScanFlow() {
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.05 * i, duration: 0.4 }}
-                          className="relative flex items-center gap-5 py-3"
+                          className="relative flex items-center gap-5 py-2"
                           data-stage={stage.id}
                           data-state={state}
                         >

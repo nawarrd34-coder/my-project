@@ -7,7 +7,7 @@ import { z } from 'zod';
  */
 const text = (max: number) => z.string().max(max);
 const score = z.number().min(0).max(100).nullable();
-const params = z.record(text(40), z.union([text(500), z.number(), z.boolean(), z.null()]));
+const params = z.record(text(40), z.union([text(2100), z.number(), z.boolean(), z.null()]));
 const basis = z.enum(['verified', 'inferred']);
 const category = z.enum(['performance', 'mobile', 'seo', 'security', 'accessibility', 'ux']);
 const reason = z.enum(['psi_unavailable', 'site_unreachable', 'client_rendered', 'not_applicable', 'not_reported']);
@@ -75,6 +75,151 @@ const onPage = z.object({
   likelyClientRendered: z.boolean(),
 });
 
+/* Business analysis. Identifiers are checked by shape; the template looks
+ * them up in its own dictionaries and escapes everything it prints. */
+const slug = z.string().regex(/^[a-z_]{1,32}$/);
+const conf = z.enum(['high', 'medium', 'low']);
+const url = text(2100);
+const evidence = z.array(text(300)).max(16);
+const detected = z.object({ value: slug, confidence: conf, evidence });
+/** Only small raster images inlined by our own scanner are accepted. */
+const imageData = (max: number) => z.string().max(max).regex(/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/);
+
+const business = z.object({
+  version: z.literal(1),
+  identity: z.object({
+    brandName: z.object({ value: text(200), source: text(40) }).nullable(),
+    siteTitle: text(300).nullable(),
+    description: text(600).nullable(),
+    logo: z.object({ url, source: text(40), dataUri: imageData(240_000).optional() }).nullable(),
+    colors: z.array(z.object({ hex: z.string().regex(/^#[0-9a-f]{6}$/i), source: z.enum(['theme-color', 'css', 'rendered']), weight: z.number() })).max(12),
+    websiteType: detected,
+    industry: detected.nullable(),
+    language: z.object({ primary: text(20).nullable(), declared: text(40).nullable(), arabicShare: z.number().nullable() }),
+    country: z.object({ code: text(4), evidence }).nullable(),
+    contact: z.object({ phone: z.boolean(), email: z.boolean(), whatsapp: z.boolean(), contactPage: z.boolean(), form: z.boolean(), social: z.array(text(30)).max(12) }),
+  }),
+  platform: z.object({ id: slug, confidence: conf.nullable(), evidence, frameworks: z.array(text(40)).max(8) }),
+  coverage: z.object({
+    pagesAnalyzed: z.number(),
+    requests: z.number(),
+    robots: z.enum(['found', 'missing', 'error']),
+    robotsBlocked: z.number(),
+    sitemap: z.object({ found: z.boolean(), files: z.number(), urls: z.number(), productUrls: z.number(), categoryUrls: z.number() }),
+    pages: z.array(z.object({ url, kind: slug, status: z.number().nullable(), ok: z.boolean() })).max(40),
+    budgetReached: z.boolean(),
+    durationMs: z.number(),
+  }),
+  catalog: z
+    .object({
+      productUrlsDiscovered: z.number(),
+      productPagesAnalyzed: z.number(),
+      catalogTotal: z.object({ value: z.number(), verified: z.boolean(), source: z.enum(['shopify-products-json', 'sitemap']) }).nullable(),
+      products: z
+        .array(
+          z.object({
+            url,
+            name: text(300).nullable(),
+            image: url.nullable(),
+            imageCount: z.number(),
+            price: text(40).nullable(),
+            currency: text(10).nullable(),
+            descriptionLength: z.number(),
+            availability: text(60).nullable(),
+            addToCart: z.boolean(),
+            related: z.boolean(),
+            source: z.enum(['json-ld', 'microdata', 'open-graph', 'html', 'platform-json']),
+          }),
+        )
+        .max(20),
+      categories: z.object({ count: z.number(), names: z.array(text(120)).max(40) }),
+    })
+    .nullable(),
+  banners: z.object({
+    count: z.number(),
+    sliders: z.number(),
+    banners: z
+      .array(
+        z.object({
+          src: url,
+          alt: text(300).nullable(),
+          width: z.number().nullable(),
+          height: z.number().nullable(),
+          ratio: z.number().nullable(),
+          bytes: z.number().nullable(),
+          format: text(20).nullable(),
+          responsive: z.boolean(),
+          mobileVariant: z.boolean(),
+          inSlider: z.boolean(),
+          linked: z.boolean(),
+          measured: z.boolean(),
+        }),
+      )
+      .max(12),
+  }),
+  search: z.object({
+    present: z.boolean(),
+    source: z.enum(['html', 'component', 'rendered']).nullable(),
+    action: url.nullable(),
+    inputName: text(80).nullable(),
+    placeholder: text(200).nullable(),
+    visibleDesktop: z.boolean().nullable(),
+    visibleMobile: z.boolean().nullable(),
+    autocomplete: z.boolean().nullable(),
+    tests: z
+      .array(
+        z.object({
+          query: text(120),
+          kind: z.enum(['representative', 'no_result']),
+          status: z.enum(['ok', 'failed', 'blocked_by_robots', 'skipped']),
+          resultCount: z.number().nullable(),
+          relevantCount: z.number().nullable(),
+          noResultMessage: z.boolean().nullable(),
+          url: url.nullable(),
+          via: z.enum(['http', 'browser']),
+        }),
+      )
+      .max(6),
+  }),
+  journey: z.object({
+    cartLink: z.boolean(),
+    accountLink: z.boolean(),
+    paymentMethods: z.array(text(40)).max(20),
+    deliveryInfo: z.boolean(),
+    returnPolicy: z.boolean(),
+    privacyPolicy: z.boolean(),
+    trust: z.object({ maroof: z.boolean(), commercialRegistration: z.boolean(), vatNumber: z.boolean(), businessCenter: z.boolean() }),
+    reviews: z.boolean(),
+    navLinks: z.number(),
+  }),
+  design: z.object({
+    rendered: z.boolean(),
+    screenshots: z.object({ desktop: imageData(1_600_000).nullable(), mobile: imageData(1_600_000).nullable() }),
+    fonts: z.array(z.object({ family: text(80), share: z.number() })).max(8),
+    sizes: z.object({ h1: z.number().nullable(), h2: z.number().nullable(), body: z.number().nullable(), mobileBody: z.number().nullable() }),
+    palette: z.array(z.string().regex(/^#[0-9a-f]{6}$/i)).max(12),
+    primaryCta: z.object({ text: text(120), contrast: z.number().nullable(), aboveFoldDesktop: z.boolean(), aboveFoldMobile: z.boolean() }).nullable(),
+    mobile: z.object({ horizontalOverflow: z.boolean(), smallTapTargets: z.number(), tinyText: z.number() }).nullable(),
+    heroText: z.object({ text: text(300), contrast: z.number().nullable() }).nullable(),
+    productCardRatios: z.array(z.number()).max(20),
+    topNavItems: z.number().nullable(),
+    notes: z.array(text(200)).max(20),
+  }),
+  recommendations: z
+    .array(
+      z.object({
+        id: text(60),
+        group: z.enum(['critical', 'high', 'design', 'conversion', 'seo', 'longterm']),
+        priority: z.enum(['critical', 'high', 'medium', 'low', 'info']),
+        complexity: z.enum(['low', 'medium', 'high']),
+        basis,
+        params,
+      }),
+    )
+    .max(60),
+  limits: z.array(text(40)).max(20),
+});
+
 export const reportSchema = z.object({
   version: z.literal(1),
   id: text(60),
@@ -120,6 +265,7 @@ export const reportSchema = z.object({
   findings: z.array(z.object({ id: text(40), category, severity: z.enum(['critical', 'high', 'medium', 'low', 'info']), basis, params })).max(80),
   strengths: z.array(z.object({ id: text(40), category, params })).max(20),
   ai: z.object({ en: text(1300), ar: text(1300), model: text(60) }).nullable(),
+  business: business.nullable().optional(),
 });
 
 export const pdfRequestSchema = z.object({ report: reportSchema, locale: z.enum(['ar', 'en']) });

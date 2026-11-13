@@ -1,3 +1,5 @@
+import type { BusinessAnalysis } from './business';
+
 export type Locale = 'ar' | 'en';
 export type CategoryId = 'performance' | 'mobile' | 'seo' | 'security' | 'accessibility' | 'ux';
 export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
@@ -181,9 +183,22 @@ export interface AuditReport {
   findings: Finding[];
   strengths: Strength[];
   ai: AiSummary | null;
+  /** Business-level analysis (absent in reports made before it existed). */
+  business?: BusinessAnalysis | null;
 }
 
-export type AuditTaskId = 'connect' | 'onpage' | 'security' | 'psi_mobile' | 'psi_desktop' | 'scoring';
+export type AuditTaskId =
+  | 'connect'
+  | 'onpage'
+  | 'security'
+  | 'psi_mobile'
+  | 'psi_desktop'
+  | 'identity'
+  | 'crawl'
+  | 'products'
+  | 'search'
+  | 'design'
+  | 'scoring';
 
 export type AuditErrorCode =
   | 'invalid_url'
