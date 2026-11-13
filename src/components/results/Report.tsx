@@ -3,7 +3,9 @@
 import { motion } from 'motion/react';
 import { useMemo, useState, type ReactNode } from 'react';
 import { CategoryIcon } from '@/components/ui/icons';
-import { MiniRing, ScoreGauge } from '@/components/ui/ScoreGauge';
+import { GlassOrb } from '@/components/brand/GlassOrb';
+import { CountUp } from '@/components/ui/CountUp';
+import { MiniRing } from '@/components/ui/ScoreGauge';
 import { resolveFinding, resolveStrength } from '@/features/recommendations/content';
 import { BAND_COLOR, formatDate, formatMetric, GRADE_COLOR, metricBand, metricGoodLimit, scoreColor } from '@/lib/format';
 import { useI18n } from '@/lib/i18n';
@@ -135,24 +137,24 @@ export function Report({ report, onRescan, onNew }: { report: AuditReport; onRes
   };
 
   return (
-    <article className="container-page pb-8 pt-10 md:pt-14" data-testid="report">
+    <article className="relative container-page pb-8 pt-28 md:pt-36" data-testid="report">
       {/* Header */}
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div className="min-w-0">
           <p className="eyebrow">{t.results.title}</p>
-          <h1 className="num mt-3 break-all text-3xl font-semibold tracking-tight text-ink md:text-5xl">{report.host}</h1>
+          <h1 className="display-black num mt-4 break-all text-[40px] text-ink md:text-[72px]">{report.host}</h1>
           <p className="mt-3 text-sm text-faint">
             {t.results.scannedOn}: <span className="text-muted">{formatDate(report.generatedAt, locale)}</span>
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <button type="button" onClick={downloadPdf} disabled={pdfState === 'busy'} className="btn-ghost !border-transparent bg-ink !text-bg hover:!bg-white" data-testid="download-pdf">
+          <button type="button" onClick={downloadPdf} disabled={pdfState === 'busy'} className="btn-solid h-12 px-6" data-testid="download-pdf">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14" />
             </svg>
             {pdfState === 'busy' ? t.results.downloading : t.results.download}
           </button>
-          <button type="button" onClick={onNew} className="btn-ghost">
+          <button type="button" onClick={onNew} className="btn-ghost h-12 px-6">
             {t.results.newScan}
           </button>
         </div>
@@ -183,14 +185,18 @@ export function Report({ report, onRescan, onNew }: { report: AuditReport; onRes
       {/* Overview */}
       <div className="panel relative mt-6 overflow-hidden p-6 md:p-10">
         <div className="pointer-events-none absolute -top-44 start-0 h-80 w-80 rounded-full blur-[110px]" style={{ background: `${scoreColor(overall.score)}22` }} aria-hidden="true" />
-        <div className="relative grid gap-10 lg:grid-cols-[300px_1fr] lg:gap-14">
+        <div className="relative grid gap-10 lg:grid-cols-[320px_1fr] lg:gap-16">
           <div className="flex flex-col items-center text-center">
             <p className="text-sm text-muted">{t.results.overall}</p>
-            <div className="mt-4">
-              <ScoreGauge score={overall.score} label={t.results.overall} sublabel={overall.score === null ? undefined : t.results.outOf} />
+            <div className="relative mt-2 flex h-[260px] w-[260px] items-center justify-center">
+              <GlassOrb size={260} energy={0.35} tint={overall.score === null ? '#2f6bff' : scoreColor(overall.score)} tintAmount={overall.score === null ? 0 : 0.8} className="absolute inset-0" />
             </div>
+            <p className="num-display -mt-6 text-[92px] leading-none text-ink md:text-[112px]" data-testid="overall-score" aria-label={overall.score === null ? t.results.noOverall : `${overall.score}/100`}>
+              {overall.score === null ? <span className="text-faint">—</span> : <CountUp to={overall.score} />}
+              {overall.score !== null && <span className="ms-1 text-[0.28em] font-bold text-faint">/100</span>}
+            </p>
             {overall.grade ? (
-              <span className="mt-1 rounded-full px-4 py-1.5 text-sm font-medium" style={{ color: GRADE_COLOR[overall.grade], background: `${GRADE_COLOR[overall.grade]}18` }} data-testid="grade">
+              <span className="mt-4 rounded-full px-4 py-1.5 text-sm font-semibold" style={{ color: GRADE_COLOR[overall.grade], background: `${GRADE_COLOR[overall.grade]}18` }} data-testid="grade">
                 {t.grades[overall.grade]}
               </span>
             ) : (
@@ -203,7 +209,7 @@ export function Report({ report, onRescan, onNew }: { report: AuditReport; onRes
 
           <div className="min-w-0">
             <h2 className="text-sm font-medium text-muted">{t.results.summaryTitle}</h2>
-            <p className="mt-2 text-lg leading-relaxed text-ink">{t.results.counts(critical, high, report.findings.length)}</p>
+            <p className="heading mt-2 text-2xl text-ink md:text-[28px]">{t.results.counts(critical, high, report.findings.length)}</p>
             {report.ai && (
               <div className="mt-4 rounded-xl border border-accent/25 bg-accent/[0.06] p-4">
                 <p className="text-[15px] leading-relaxed text-ink/90">{report.ai[locale]}</p>

@@ -13,6 +13,7 @@ export const en = {
     cta: 'Check my website',
     switchTo: 'العربية',
     switchLabel: 'Switch language to Arabic',
+    menu: 'Menu',
   },
   hero: {
     eyebrow: 'Free website audit',
@@ -22,14 +23,26 @@ export const en = {
     placeholder: 'https://yourbusiness.com',
     cta: 'Analyze My Website',
     notes: ['No sign-up', 'Results in about a minute', 'Arabic and English report'],
+    rotatePrefix: 'We check',
     invalid: 'Enter a website address such as yourbusiness.com',
   },
+  trust: ['Built on Google Lighthouse', 'PageSpeed Insights data', 'Measured on your live site', 'A published scoring formula'],
   what: {
+    eyebrow: 'What we analyze',
     title: 'Six areas, one score',
     subtitle: 'Each area contributes a fixed share of the 100-point Digital Health Score.',
     points: 'pts',
+    detail: {
+      performance: 'Loading speed on a simulated phone and on desktop: LCP, TBT, CLS and more.',
+      mobile: 'Viewport setup, tap targets, text size and mobile loading thresholds.',
+      seo: 'Title, description, indexing, canonical URL and heading structure.',
+      security: 'HTTPS, redirects, protective headers and insecure content.',
+      accessibility: 'Automated checks for contrast, labels, alt text and more.',
+      ux: 'Navigation, contact options, calls to action and content structure.',
+    },
   },
   how: {
+    eyebrow: 'The process',
     title: 'How the audit works',
     steps: [
       { title: 'Enter your address', body: 'Paste your website link. Nothing to install, no account needed.' },
@@ -39,6 +52,7 @@ export const en = {
     ],
   },
   sample: {
+    eyebrow: 'The report',
     title: 'What your report looks like',
     subtitle: 'A score, the reasons behind it, and a prioritised list of fixes.',
     badge: 'Illustrative sample · not a real audit',
@@ -48,6 +62,7 @@ export const en = {
     issueC: 'No security policy header',
   },
   benefits: {
+    eyebrow: 'Why it helps',
     title: 'Built for business owners',
     items: [
       { title: 'Plain language', body: 'Each finding explains what it means for your visitors, without jargon.' },
@@ -57,6 +72,7 @@ export const en = {
     ],
   },
   faq: {
+    eyebrow: 'FAQ',
     title: 'Questions',
     items: [
       { q: 'Is it really free?', a: 'Yes. The health check is free and does not ask for an account, an email address, or payment details.' },
@@ -66,6 +82,14 @@ export const en = {
       { q: 'Why might my score differ from another tool?', a: 'Speed measurements vary with network conditions and server load, and every tool weights things differently. Treat the score as a guide to priorities, not an absolute grade.' },
       { q: 'Is this a full security audit?', a: 'No. It checks basic indicators such as HTTPS and protective headers. It is not a penetration test and cannot confirm that a site is secure.' },
     ],
+  },
+  studio: {
+    eyebrow: 'Developer & owner',
+    title: 'Designed and built by Youth Studio',
+    body: 'Business Health Check is developed and owned by Youth Studio, a Saudi digital studio.',
+  },
+  closing: {
+    cta: 'Start your free audit',
   },
   footer: {
     rights: 'All rights reserved.',

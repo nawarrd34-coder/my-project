@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
   // Fonts and the brand mark are read from disk when the PDF is rendered.
   outputFileTracingIncludes: {
-    '/api/report/pdf': ['./assets/fonts/*.woff2', './public/brand/*'],
+    '/api/report/pdf': ['./assets/fonts/*.woff2', './public/brand/*.png'],
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];

@@ -12,6 +12,10 @@ const FONT_FILES = [
   'PlexArabic-500',
   'PlexArabic-600',
   'GeistMono-Regular',
+  'Alexandria-Latin-800',
+  'Alexandria-Latin-900',
+  'Alexandria-Arabic-800',
+  'Alexandria-Arabic-900',
 ];
 
 let cachedAssets: ReportAssets | null = null;
@@ -29,7 +33,7 @@ function loadAssets(): ReportAssets {
   const fontDir = path.join(process.cwd(), 'assets', 'fonts');
   const fonts: Record<string, string> = {};
   for (const name of FONT_FILES) fonts[name] = read(path.join(fontDir, `${name}.woff2`));
-  cachedAssets = { fonts, logo: read(path.join(process.cwd(), 'public', 'brand', 'youth-studio.jpg')) };
+  cachedAssets = { fonts, logo: read(path.join(process.cwd(), 'public', 'brand', 'youth-studio-mark.png')) };
   return cachedAssets;
 }
 

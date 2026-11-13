@@ -37,6 +37,28 @@ const plexArabic = localFont({
   ],
 });
 
+// Alexandria ships as separate Arabic and Latin subsets; the stack below lets
+// each script fall through to the file that contains it.
+const displayLatin = localFont({
+  variable: '--font-display-latin',
+  display: 'swap',
+  src: [
+    { path: '../../assets/fonts/Alexandria-Latin-700.woff2', weight: '700' },
+    { path: '../../assets/fonts/Alexandria-Latin-800.woff2', weight: '800' },
+    { path: '../../assets/fonts/Alexandria-Latin-900.woff2', weight: '900' },
+  ],
+});
+
+const displayArabic = localFont({
+  variable: '--font-display-arabic',
+  display: 'swap',
+  src: [
+    { path: '../../assets/fonts/Alexandria-Arabic-700.woff2', weight: '700' },
+    { path: '../../assets/fonts/Alexandria-Arabic-800.woff2', weight: '800' },
+    { path: '../../assets/fonts/Alexandria-Arabic-900.woff2', weight: '900' },
+  ],
+});
+
 export const metadata: Metadata = {
   title: 'Business Health Check — by Youth Studio',
   description:
@@ -46,7 +68,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#050507',
+  themeColor: '#0b0b11',
   width: 'device-width',
   initialScale: 1,
 };
@@ -57,9 +79,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale: Locale = stored === 'en' ? 'en' : 'ar';
 
   return (
-    <html lang={locale} data-scroll-behavior="smooth" dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`${geist.variable} ${geistMono.variable} ${plexArabic.variable}`}>
+    <html lang={locale} data-scroll-behavior="smooth" dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`${geist.variable} ${geistMono.variable} ${plexArabic.variable} ${displayLatin.variable} ${displayArabic.variable}`}>
       <body>
-        <div className="backdrop" aria-hidden="true" />
+        <div className="page-bg" aria-hidden="true" />
         <LocaleProvider initial={locale}>{children}</LocaleProvider>
       </body>
     </html>

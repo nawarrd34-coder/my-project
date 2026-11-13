@@ -67,6 +67,14 @@ src/
 - **Honesty.** Every finding carries the measured value it is based on, and is marked *Verified* (measured) or *Inferred* (heuristic over HTML). Missing data is listed under "Checks that could not be completed".
 - **Security.** Only http/https on default ports; no IP literals, credentials, or internal/reserved names; every DNS answer must be public unicast; the connection is pinned to the validated IP (DNS-rebinding safe); every redirect hop is re-validated (max 5); 15 s timeout; 2 MB body cap (also guards decompression bombs); per-IP rate limits; API keys stay server-side; the PDF page renders with JavaScript disabled and all network requests blocked.
 
+## Visual system
+
+- **Type:** Alexandria 700–900 for display (Arabic and Latin subsets), IBM Plex Sans Arabic and Geist for text, Geist Mono for figures. All self-hosted from `assets/fonts` (SIL OFL).
+- **Signature visual:** `GlassOrb`, a single WebGL2 fragment shader (no models or video). It creates its context only near the viewport, starts animating after the page is idle, and draws one still frame on software renderers or with reduced motion.
+- **React Bits** (`src/components/reactbits`): StarBorder (primary buttons), RotatingText (hero line; whole-word split in Arabic so letters stay joined), MagicBento (six areas), AnimatedContent (scroll reveals), ElectricBorder (Youth Studio card, mounted only when near view), SpringCheck (action plan).
+- **Brand:** `public/brand/youth-studio-mark.png` is a transparent cut-out of the Youth Studio mark, used in the header, the studio section, the footer and the PDF.
+- **Own score:** a production build of the landing page measured 100 performance on desktop and ~90 on mobile in a local Lighthouse 13 run, with 100 accessibility and SEO.
+
 ## Limitations
 
 - One page (the URL entered) is audited, not the whole site.

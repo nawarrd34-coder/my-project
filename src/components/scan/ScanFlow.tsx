@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Report } from '@/components/results/Report';
+import { GlassOrb } from '@/components/brand/GlassOrb';
 import { SiteFooter, SiteHeader } from '@/components/ui/Chrome';
 import { useI18n } from '@/lib/i18n';
 import type { AuditErrorCode, AuditEvent, AuditReport, AuditTaskId } from '@/types/audit';
@@ -81,27 +82,32 @@ function StageIcon({ state }: { state: StageState }) {
   return <span className="h-1.5 w-1.5 rounded-full bg-white/20" />;
 }
 
-function ProgressDial({ percent }: { percent: number }) {
+/** The orb at the centre of the scan; the ring around it is the real share of finished work. */
+function OrbProgress({ percent }: { percent: number }) {
   const reduce = useReducedMotion();
-  const r = 86;
+  const r = 148;
   const c = 2 * Math.PI * r;
   return (
-    <div className="relative h-[220px] w-[220px]" dir="ltr">
-      <svg viewBox="0 0 200 200" className="h-full w-full -rotate-90" aria-hidden="true">
+    <div className="relative mx-auto h-[300px] w-[300px] sm:h-[340px] sm:w-[340px]" dir="ltr">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <GlassOrb size={340} energy={1} label={`${Math.round(percent)}%`} />
+      </div>
+      <svg viewBox="0 0 320 320" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden="true">
         <defs>
-          <linearGradient id="dial" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#a79cff" />
-            <stop offset="1" stopColor="#4aa3ff" />
+          <linearGradient id="scan-ring" x1="0" y1="0" x2="320" y2="320" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#2f6bff" />
+            <stop offset="0.6" stopColor="#7c4dff" />
+            <stop offset="1" stopColor="#b9a8ff" />
           </linearGradient>
         </defs>
-        <circle cx="100" cy="100" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="6" />
+        <circle cx="160" cy="160" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2" />
         <motion.circle
-          cx="100"
-          cy="100"
+          cx="160"
+          cy="160"
           r={r}
           fill="none"
-          stroke="url(#dial)"
-          strokeWidth="6"
+          stroke="url(#scan-ring)"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeDasharray={c}
           initial={{ strokeDashoffset: c }}
@@ -109,14 +115,6 @@ function ProgressDial({ percent }: { percent: number }) {
           transition={{ duration: reduce ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }}
         />
       </svg>
-      {/* Activity sweep: shows work is happening without claiming progress. */}
-      <div className="absolute inset-3 animate-[spin_2.6s_linear_infinite] rounded-full motion-reduce:hidden" style={{ background: 'conic-gradient(from 0deg, transparent 0 78%, rgba(123,108,255,0.22) 96%, transparent 100%)', mask: 'radial-gradient(circle, transparent 62%, #000 63%)', WebkitMask: 'radial-gradient(circle, transparent 62%, #000 63%)' }} aria-hidden="true" />
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="num text-5xl font-semibold tracking-tight text-ink" data-testid="scan-percent">
-          {Math.round(percent)}
-          <span className="text-2xl text-faint">%</span>
-        </span>
-      </div>
     </div>
   );
 }
@@ -245,22 +243,28 @@ export function ScanFlow() {
   return (
     <>
       <SiteHeader />
-      <main className="min-h-[70dvh]">
+      <main className="relative min-h-[80dvh] overflow-hidden">
+        <div className="top-light" aria-hidden="true" />
         <AnimatePresence mode="wait">
           {phase === 'scanning' && (
-            <motion.section key="scan" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="container-page py-12 md:py-20" data-testid="scan-screen">
-              <div className="mx-auto max-w-4xl">
-                <p className="eyebrow text-center">{t.scan.title}</p>
-                <h1 className="num mt-3 break-all text-center text-2xl font-medium text-ink md:text-4xl">{host}</h1>
+            <motion.section key="scan" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="relative container-page pb-16 pt-28 md:pb-24 md:pt-32" data-testid="scan-screen">
+              <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+                <div className="flex flex-col items-center text-center">
+                  <OrbProgress percent={shown} />
+                  <p className="num-display mt-4 text-[64px] leading-none text-ink md:text-[80px]" data-testid="scan-percent">
+                    {Math.round(shown)}
+                    <span className="text-[0.45em] text-faint">%</span>
+                  </p>
+                  <p className="mt-3 text-xs tabular-nums text-faint" aria-live="off">
+                    {t.scan.elapsed(elapsed)}
+                  </p>
+                </div>
 
-                <div className="panel mt-10 grid items-center gap-8 p-6 md:grid-cols-[auto_1fr] md:gap-14 md:p-10">
-                  <div className="flex flex-col items-center gap-4">
-                    <ProgressDial percent={shown} />
-                    <p className="text-xs tabular-nums text-faint" aria-live="off">
-                      {t.scan.elapsed(elapsed)}
-                    </p>
-                  </div>
-                  <ol className="space-y-1" aria-label={t.scan.progress}>
+                <div>
+                  <p className="eyebrow">{t.scan.title}</p>
+                  <h1 className="display num mt-4 break-all text-start text-[34px] text-ink md:text-5xl">{host}</h1>
+                  <ol className="relative mt-10" aria-label={t.scan.progress}>
+                    <span className="absolute bottom-3 start-[11px] top-3 w-px bg-line" aria-hidden="true" />
                     {STAGES.map((stage, i) => {
                       const state = stageState(tasks, stage.tasks);
                       return (
@@ -269,24 +273,21 @@ export function ScanFlow() {
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.05 * i, duration: 0.4 }}
-                          className={`flex items-center gap-4 rounded-xl px-4 py-3 transition-colors duration-500 ${state === 'running' ? 'bg-white/[0.04]' : ''}`}
+                          className="relative flex items-center gap-5 py-3"
                           data-stage={stage.id}
                           data-state={state}
                         >
-                          <span className="flex h-5 w-5 items-center justify-center">
+                          <span className={`relative z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-bg transition-colors duration-500 ${state === 'running' ? 'border-[#5a4cf5]/60 shadow-[0_0_16px_rgba(90,76,245,.6)]' : 'border-line'}`}>
                             <StageIcon state={state} />
                           </span>
-                          <span className={`flex-1 text-[15px] transition-colors duration-500 ${state === 'pending' ? 'text-faint' : 'text-ink'}`}>{t.scan.stages[stage.id]}</span>
-                          <span className={`text-xs ${state === 'failed' ? 'text-bad' : state === 'partial' ? 'text-warn' : 'text-faint'}`}>{t.scan.state[state]}</span>
+                          <span className={`heading flex-1 text-[17px] transition-colors duration-500 md:text-lg ${state === 'pending' ? 'text-white/30' : 'text-ink'}`}>{t.scan.stages[stage.id]}</span>
+                          <span className={`text-xs ${state === 'failed' ? 'text-bad' : state === 'partial' ? 'text-warn' : state === 'running' ? 'text-[#9fb4ff]' : 'text-faint'}`}>{t.scan.state[state]}</span>
                         </motion.li>
                       );
                     })}
                   </ol>
-                </div>
-
-                <p className="mx-auto mt-6 max-w-xl text-center text-sm leading-relaxed text-faint">{t.scan.hint}</p>
-                <div className="mt-6 flex justify-center">
-                  <Link href="/" className="btn-ghost">
+                  <p className="mt-8 max-w-md text-sm leading-relaxed text-faint">{t.scan.hint}</p>
+                  <Link href="/" className="btn-ghost mt-6">
                     {t.scan.cancel}
                   </Link>
                 </div>
@@ -295,7 +296,7 @@ export function ScanFlow() {
           )}
 
           {phase === 'error' && (
-            <motion.section key="error" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="container-page py-16 md:py-28" data-testid="scan-error" data-error={error}>
+            <motion.section key="error" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="relative container-page pb-16 pt-32 md:pb-28 md:pt-40" data-testid="scan-error" data-error={error}>
               <div className="panel mx-auto max-w-xl p-8 text-center md:p-12">
                 <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-bad/30 bg-bad/10 text-bad">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -303,7 +304,7 @@ export function ScanFlow() {
                     <circle cx="12" cy="12" r="9.5" />
                   </svg>
                 </span>
-                <h1 className="mt-6 text-2xl font-semibold text-ink">{t.scan.errorTitle}</h1>
+                <h1 className="display mt-6 text-3xl text-ink">{t.scan.errorTitle}</h1>
                 {host && <p className="num mt-2 break-all text-sm text-faint">{host}</p>}
                 <p className="mt-4 text-base leading-relaxed text-muted" role="alert">
                   {t.scan.errors[error]}

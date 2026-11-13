@@ -34,13 +34,13 @@ export function UrlForm({ autoFocus = false, id }: { autoFocus?: boolean; id?: s
   };
 
   return (
-    <form onSubmit={submit} noValidate id={id} className="w-full" data-testid="url-form">
+    <form onSubmit={submit} noValidate id={id} className="w-full scroll-mt-32" data-testid="url-form">
       <label htmlFor={inputId} className="sr-only">
         {t.hero.inputLabel}
       </label>
       <div
-        className={`glass flex flex-col gap-2 rounded-[22px] p-2 transition-colors sm:flex-row sm:items-center sm:rounded-full ${
-          error ? '!border-crit/70' : 'focus-within:!border-white/30'
+        className={`hairline-frame flex flex-col gap-2 rounded-[20px] p-2 shadow-[0_24px_80px_-24px_rgba(47,107,255,.45)] transition-[box-shadow] duration-300 sm:flex-row sm:items-center ${
+          error ? '!border-crit/80 [background:linear-gradient(#111118,#111118)_padding-box,linear-gradient(#ff5468,#ff5468)_border-box]' : 'focus-within:shadow-[0_24px_90px_-18px_rgba(90,76,245,.6)]'
         }`}
       >
         <div className="flex min-w-0 flex-1 items-center gap-3 px-4">
@@ -65,25 +65,25 @@ export function UrlForm({ autoFocus = false, id }: { autoFocus?: boolean; id?: s
             placeholder={t.hero.placeholder}
             aria-invalid={error}
             aria-describedby={error ? `${inputId}-err` : undefined}
-            className="h-12 w-full min-w-0 bg-transparent text-left text-[16px] text-ink outline-none placeholder:text-faint"
+            className="h-14 w-full min-w-0 bg-transparent text-left text-[17px] text-ink outline-none placeholder:text-[#7d8aa8]"
           />
         </div>
         <StarBorder
           type="submit"
-          color="#b9b0ff"
-          trailColor="#4aa3ff"
+          color="#9fb4ff"
+          trailColor="#7c4dff"
           duration={5}
-          radius={999}
+          radius={14}
           thickness={1.2}
           glow={0.7}
           hover="lap"
-          backgroundColor="#f5f5f7"
-          textColor="#0a0a0f"
-          borderColor="rgba(255,255,255,0.4)"
-          className="h-12 shrink-0 whitespace-nowrap !px-6 text-[15px] !font-semibold"
+          backgroundColor="#ffffff"
+          textColor="#0b0b11"
+          borderColor="rgba(255,255,255,0.5)"
+          className="h-14 shrink-0 whitespace-nowrap !px-7 font-[family-name:var(--font-display)] text-[16px] !font-bold"
         >
           {t.hero.cta}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rtl:-scale-x-100" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="rtl:-scale-x-100" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </StarBorder>

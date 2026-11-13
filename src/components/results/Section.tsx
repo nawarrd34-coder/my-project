@@ -11,9 +11,9 @@ export function Section({ title, subtitle, children, id }: { title: string; subt
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="mt-16 md:mt-20"
+      className="mt-20 md:mt-28"
     >
-      <h2 className="text-2xl font-semibold tracking-tight text-ink md:text-[28px]">{title}</h2>
+      <h2 className="display text-[30px] text-ink md:text-[44px]">{title}</h2>
       {subtitle && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{subtitle}</p>}
       <div className="mt-7">{children}</div>
     </motion.section>

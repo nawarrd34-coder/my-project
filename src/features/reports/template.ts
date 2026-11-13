@@ -8,7 +8,7 @@ import type { AuditReport, Locale, MetricId, StrategyData } from '@/types/audit'
 export interface ReportAssets {
   /** base64 woff2 payloads keyed by file name (without extension). */
   fonts: Record<string, string>;
-  /** base64 JPEG of the Youth Studio mark. */
+  /** base64 PNG (transparent) of the Youth Studio mark. */
   logo: string;
 }
 
@@ -36,6 +36,10 @@ function fontFaces(fonts: Record<string, string>): string {
     face('Plex Arabic', 'PlexArabic-500', 500),
     face('Plex Arabic', 'PlexArabic-600', 600),
     face('Geist Mono', 'GeistMono-Regular', 400),
+    face('Display', 'Alexandria-Latin-800', 800),
+    face('Display', 'Alexandria-Latin-900', 900),
+    face('Display Arabic', 'Alexandria-Arabic-800', 800),
+    face('Display Arabic', 'Alexandria-Arabic-900', 900),
   ].join('');
 }
 
@@ -52,7 +56,7 @@ function gauge(score: number | null, color: string): string {
   return `<svg viewBox="0 0 240 240" width="210" height="210" xmlns="http://www.w3.org/2000/svg">
     <path d="${arc(405)}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12" stroke-linecap="round"/>
     ${value}
-    <text x="120" y="${score === null ? 132 : 138}" text-anchor="middle" font-family="Geist, sans-serif" font-weight="600" font-size="${score === null ? 40 : 70}" fill="#f5f5f7">${score === null ? '—' : score}</text>
+    <text x="120" y="${score === null ? 132 : 142}" text-anchor="middle" font-family="Display, Geist, sans-serif" font-weight="900" font-size="${score === null ? 40 : 76}" letter-spacing="-3" fill="#ffffff">${score === null ? '—' : score}</text>
   </svg>`;
 }
 
@@ -61,20 +65,21 @@ const CSS = `
 @page :first { margin: 0; }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.display { font-family: 'Display', 'Display Arabic', 'Geist', 'Plex Arabic', sans-serif; font-weight: 800; }
 body { margin: 0; font-family: 'Geist', 'Plex Arabic', sans-serif; font-size: 10.2pt; line-height: 1.55; color: #17171c; }
 html[lang='ar'] body { line-height: 1.8; }
 .mono { font-family: 'Geist Mono', 'Plex Arabic', monospace; }
 bdi { unicode-bidi: isolate; }
 
-.cover { height: 297mm; background: #050507; color: #f5f5f7; padding: 22mm 20mm 18mm; display: flex; flex-direction: column; position: relative; overflow: hidden; break-after: page; }
-.cover::before { content: ''; position: absolute; inset: 0; background: radial-gradient(520px 320px at 50% 0%, rgba(123,108,255,0.32), transparent 70%), radial-gradient(420px 300px at 100% 30%, rgba(74,163,255,0.14), transparent 70%); }
+.cover { height: 297mm; background: #0b0b11; color: #f5f5f7; padding: 22mm 20mm 18mm; display: flex; flex-direction: column; position: relative; overflow: hidden; break-after: page; }
+.cover::before { content: ''; position: absolute; inset: 0; background: radial-gradient(520px 340px at 50% -4%, rgba(64,110,255,0.55), transparent 70%), radial-gradient(420px 300px at 66% 0%, rgba(124,72,240,0.3), transparent 72%); }
 .cover > * { position: relative; }
 .wordmark { font-size: 9pt; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; direction: ltr; }
 .wordmark small { display: block; margin-top: 5px; font-size: 7pt; letter-spacing: 0.26em; color: #8d8d9c; font-weight: 400; }
 .cover-main { margin-top: 34mm; }
 .cover-kicker { font-size: 10pt; color: #a6a6b4; }
-.cover-title { font-size: 34pt; line-height: 1.15; font-weight: 600; margin: 10px 0 0; letter-spacing: -0.01em; }
-html[lang='ar'] .cover-title { letter-spacing: 0; line-height: 1.4; }
+.cover-title { font-family: 'Display', 'Display Arabic', sans-serif; font-size: 40pt; line-height: 1.08; font-weight: 900; margin: 10px 0 0; letter-spacing: -0.03em; }
+html[lang='ar'] .cover-title, html[lang='ar'] h2 { letter-spacing: 0; } html[lang='ar'] .cover-title { line-height: 1.45; }
 .cover-host { margin-top: 14px; font-size: 15pt; color: #c9c4ff; word-break: break-all; }
 .cover-meta { margin-top: 8px; font-size: 9.5pt; color: #8d8d9c; }
 .cover-score { margin-top: 20mm; display: flex; align-items: center; gap: 12mm; }
@@ -82,10 +87,10 @@ html[lang='ar'] .cover-title { letter-spacing: 0; line-height: 1.4; }
 .cover-grade { display: inline-block; margin-top: 8px; padding: 5px 14px; border-radius: 99px; font-size: 12pt; font-weight: 600; }
 .cover-note { margin-top: 10px; max-width: 80mm; font-size: 8.5pt; color: #8d8d9c; }
 .cover-foot { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 10mm; }
-.cover-foot img { width: 52mm; height: auto; display: block; }
+.cover-foot img { width: 62mm; height: auto; display: block; }
 .cover-foot p { margin: 0; font-size: 7.5pt; letter-spacing: 0.2em; text-transform: uppercase; color: #8d8d9c; direction: ltr; }
 
-h2 { font-size: 15pt; font-weight: 600; margin: 0 0 4mm; padding-bottom: 2.5mm; border-bottom: 1px solid #e3e3ea; break-after: avoid; }
+h2 { font-family: 'Display', 'Display Arabic', 'Geist', sans-serif; font-size: 17pt; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 4mm; padding-bottom: 2.5mm; border-bottom: 1px solid #e3e3ea; break-after: avoid; }
 h3 { font-size: 10.5pt; font-weight: 600; margin: 6mm 0 2mm; break-after: avoid; }
 section { margin-bottom: 9mm; }
 p { margin: 0 0 2.5mm; }
@@ -106,7 +111,7 @@ td.n, th.n { text-align: end; white-space: nowrap; }
 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 99px; margin-inline-end: 5px; }
 
 .finding { border: 1px solid #e3e3ea; border-radius: 8px; padding: 4mm 5mm 3.2mm; margin-bottom: 3.5mm; break-inside: avoid; border-inline-start-width: 4px; }
-.finding h4 { margin: 0; font-size: 11pt; font-weight: 600; }
+.finding h4 { margin: 0; font-family: 'Display', 'Display Arabic', 'Geist', sans-serif; font-size: 11.5pt; font-weight: 800; }
 .tags { margin: 1.2mm 0 2.8mm; font-size: 8.2pt; color: #5d5d6b; }
 .tags b { font-weight: 600; }
 .tags span { margin-inline-end: 8px; }
@@ -116,8 +121,8 @@ td.n, th.n { text-align: end; white-space: nowrap; }
 .ev { font-size: 8.4pt; background: #f5f5f8; border-radius: 5px; padding: 1.6mm 2.4mm; overflow-wrap: anywhere; }
 ul { margin: 0; padding-inline-start: 5mm; }
 li { margin-bottom: 1.4mm; }
-.cta { background: #050507; color: #f5f5f7; border-radius: 10px; padding: 9mm 10mm; break-inside: avoid; }
-.cta h2 { border: 0; color: #fff; font-size: 17pt; margin-bottom: 2mm; padding: 0; }
+.cta { background: #0b0b11; color: #f5f5f7; border-radius: 10px; padding: 9mm 10mm; break-inside: avoid; }
+.cta h2 { border: 0; color: #fff; font-size: 20pt; margin-bottom: 2mm; padding: 0; }
 .cta p { color: #b9b9c6; }
 .cta a { color: #c9c4ff; text-decoration: none; }
 .cta .links { margin-top: 4mm; font-size: 9.6pt; }
@@ -252,7 +257,7 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
     </div>
   </div>
   <div class="cover-foot">
-    ${assets.logo ? `<img src="data:image/jpeg;base64,${assets.logo}" alt="Youth Studio">` : '<span></span>'}
+    ${assets.logo ? `<img src="data:image/png;base64,${assets.logo}" alt="Youth Studio">` : '<span></span>'}
     <p>Saudi Digital Studio</p>
   </div>
 </div>
@@ -304,6 +309,8 @@ ${gaps ? `<section><h2>${esc(t.results.gapsTitle)}</h2><p class="small muted">${
 </section>
 
 <div class="cta">
+  ${assets.logo ? `<img src="data:image/png;base64,${assets.logo}" alt="Youth Studio" style="width:46mm;height:auto;display:block;margin-bottom:5mm">` : ''}
+  <p class="small" style="color:#8d8d9c;margin-bottom:4mm">${esc(t.studio.title)} · ${esc(t.brand.studio)}</p>
   <h2>${esc(t.cta.title)}</h2>
   <p>${esc(t.cta.body)}</p>
   ${links ? `<div class="links">${links}</div>` : ''}
