@@ -27,6 +27,16 @@ function blocked(wrapper: HTMLElement): boolean {
       }
     }
   }
+  // Second check that does not depend on paint order: any visible control whose box meets the
+  // button's area (decorative overlays or a component swapping in can hide it from hit-testing).
+  const box = { l: r.left - GAP, t: r.top - GAP, r: r.right + GAP, b: r.bottom + GAP };
+  for (const el of document.querySelectorAll(AVOID)) {
+    if (wrapper.contains(el)) continue;
+    const e = el.getBoundingClientRect();
+    if (!e.width || !e.height || e.right <= box.l || e.left >= box.r || e.bottom <= box.t || e.top >= box.b) continue;
+    if (el.checkVisibility?.({ opacityProperty: true, visibilityProperty: true }) === false) continue;
+    return true;
+  }
   return false;
 }
 
