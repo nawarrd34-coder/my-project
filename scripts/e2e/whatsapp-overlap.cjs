@@ -36,7 +36,9 @@ const probe = () => {
     const y = (Math.max(e.top, box.t) + Math.min(e.bottom, box.b)) / 2;
     if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) continue;
     const top = document.elementsFromPoint(x, y).find((n) => !wrap.contains(n));
-    if (!top || !(top === el || el.contains(top) || top.contains(el))) continue;
+    // The element must itself be painted at that point (not just "inside" <html>/<body>, and not pointer-events:none).
+    if (st.pointerEvents === 'none' || !top || top === document.documentElement || top === document.body) continue;
+    if (!(top === el || el.contains(top) || top.contains(el))) continue;
     hits.push(`${el.tagName.toLowerCase()}.${String(el.className).slice(0, 40)}${el.dataset.testid ? '#' + el.dataset.testid : ''} "${(el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 30)}"${fixed ? ' [fixed]' : ''}`);
   }
   return { visible, hits };
