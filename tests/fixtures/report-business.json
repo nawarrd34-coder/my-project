@@ -1,0 +1,1539 @@
+{
+ "version": 1,
+ "id": "8e90a505-c2ca-4f3f-a5b6-1bfd7d06bab6",
+ "requestedUrl": "http://localhost:4801/",
+ "finalUrl": "http://localhost:4801/",
+ "host": "localhost",
+ "generatedAt": "2026-11-12T19:35:49.371Z",
+ "durationMs": 15868,
+ "overall": {
+  "score": 70,
+  "grade": "needs_improvement",
+  "coveredWeight": 100
+ },
+ "categories": [
+  {
+   "id": "performance",
+   "weight": 25,
+   "score": 97,
+   "status": "complete",
+   "coverage": 1,
+   "checks": [
+    {
+     "id": "perf_mobile",
+     "weight": 60,
+     "score": 95,
+     "basis": "verified",
+     "params": {
+      "score": 95
+     }
+    },
+    {
+     "id": "perf_desktop",
+     "weight": 40,
+     "score": 100,
+     "basis": "verified",
+     "params": {
+      "score": 100
+     }
+    }
+   ]
+  },
+  {
+   "id": "mobile",
+   "weight": 20,
+   "score": 98,
+   "status": "complete",
+   "coverage": 1,
+   "checks": [
+    {
+     "id": "mobile_perf",
+     "weight": 50,
+     "score": 95,
+     "basis": "verified",
+     "params": {
+      "score": 95
+     }
+    },
+    {
+     "id": "mobile_viewport",
+     "weight": 20,
+     "score": 100,
+     "basis": "verified",
+     "params": {
+      "viewport": "width=device-width, initial-scale=1"
+     }
+    },
+    {
+     "id": "mobile_vitals",
+     "weight": 20,
+     "score": 100,
+     "basis": "verified",
+     "params": {
+      "passed": 3,
+      "measured": 3
+     }
+    },
+    {
+     "id": "mobile_touch_text",
+     "weight": 10,
+     "score": 100,
+     "basis": "verified",
+     "params": {
+      "tap": 100,
+      "font": null
+     }
+    }
+   ]
+  },
+  {
+   "id": "seo",
+   "weight": 20,
+   "score": 71,
+   "status": "complete",
+   "coverage": 1,
+   "checks": [
+    {
+     "id": "seo_lighthouse",
+     "weight": 50,
+     "score": 82,
+     "basis": "verified",
+     "params": {
+      "score": 82,
+      "source": "mobile"
+     }
+    },
+    {
+     "id": "seo_title",
+     "weight": 10,
+     "score": 100,
+     "basis": "verified",
+     "params": {
+      "length": 11
+     }
+    },
+    {
+     "id": "seo_description",
+     "weight": 10,
+     "score": 0,
+     "basis": "verified",
+     "params": {
+      "length": 0
+     }
+    },
+    {
+     "id": "seo_indexable",
+     "weight": 10,
+     "score": 100,
+     "basis": "verified",
+     "params": {
+      "directive": null
+     }
+    },
+    {
+     "id": "seo_h1",
+     "weight": 10,
+     "score": 100,
+     "basis": "verified",
+     "params": {
+      "count": 1
+     }
+    },
+    {
+     "id": "seo_canonical",
+     "weight": 5,
+     "score": 0,
+     "basis": "verified",
+     "params": {
+      "canonical": null
+     }
+    },
+    {
+     "id": "seo_lang",
+     "weight": 5,
+     "score": 0,
+     "basis": "verified",
+     "params": {
+      "lang": null
+     }
+    }
+   ]
+  },
+  {
+   "id": "security",
+   "weight": 15,
+   "score": 0,
+   "status": "complete",
+   "coverage": 1,
+   "checks": [
+    {
+     "id": "sec_https",
+     "weight": 40,
+     "score": 0,
+     "basis": "verified",
+     "params": {
+      "https": false,
+      "tls": "ok"
+     }
+    },
+    {
+     "id": "sec_redirect",
+     "weight": 10,
+     "score": 0,
+     "basis": "verified",
+     "params": {}
+    },
+    {
+     "id": "sec_hsts",
+     "weight": 10,
+     "score": 0,
+     "basis": "verified",
+     "params": {
+      "value": null
+     }
+    },
+    {
+     "id": "sec_csp",
+     "weight": 10,
+     "score": 0,
+     "basis": "verified",
+     "params": {
+      "reportOnly": false
+     }
+    },
+    {
+     "id": "sec_mixed",
+     "weight": 10,
+     "score": null,
+     "basis": "verified",
+     "params": {},
+     "reason": "not_applicable"
+    },
+    {
+     "id": "sec_xcto",
+     "weight": 5,
+     "score": 0,
+     "basis": "verified",
+     "params": {}
+    },
+    {
+     "id": "sec_frame",
+     "weight": 5,
+     "score": 0,
+     "basis": "verified",
+     "params": {}
+    },
+    {
+     "id": "sec_referrer",
+     "weight": 5,
+     "score": 0,
+     "basis": "verified",
+     "params": {
+      "value": null
+     }
+    },
+    {
+     "id": "sec_permissions",
+     "weight": 5,
+     "score": 0,
+     "basis": "verified",
+     "params": {}
+    }
+   ]
+  },
+  {
+   "id": "accessibility",
+   "weight": 10,
+   "score": 79,
+   "status": "complete",
+   "coverage": 1,
+   "checks": [
+    {
+     "id": "a11y_lighthouse",
+     "weight": 100,
+     "score": 79,
+     "basis": "verified",
+     "params": {
+      "score": 79,
+      "source": "mobile"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ux",
+   "weight": 10,
+   "score": 43,
+   "status": "complete",
+   "coverage": 1,
+   "checks": [
+    {
+     "id": "ux_navigation",
+     "weight": 25,
+     "score": 0,
+     "basis": "inferred",
+     "params": {
+      "links": 0,
+      "landmark": false
+     }
+    },
+    {
+     "id": "ux_contact",
+     "weight": 25,
+     "score": 100,
+     "basis": "inferred",
+     "params": {
+      "channels": 2
+     }
+    },
+    {
+     "id": "ux_cta",
+     "weight": 25,
+     "score": 0,
+     "basis": "inferred",
+     "params": {
+      "count": 0,
+      "sample": null
+     }
+    },
+    {
+     "id": "ux_structure",
+     "weight": 25,
+     "score": 70,
+     "basis": "inferred",
+     "params": {
+      "words": 41,
+      "headings": 3,
+      "h1": 1
+     }
+    }
+   ]
+  }
+ ],
+ "psi": {
+  "mobile": {
+   "ok": true,
+   "data": {
+    "strategy": "mobile",
+    "lighthouseVersion": "13.6.0",
+    "scores": {
+     "performance": 95,
+     "accessibility": 79,
+     "seo": 82,
+     "bestPractices": 96
+    },
+    "metrics": {
+     "fcp": {
+      "value": 2366.8251,
+      "score": 0.72
+     },
+     "lcp": {
+      "value": 2366.8251,
+      "score": 0.92
+     },
+     "si": {
+      "value": 2366.8251,
+      "score": 0.98
+     },
+     "tbt": {
+      "value": 0,
+      "score": 1
+     },
+     "cls": {
+      "value": 0,
+      "score": 1
+     }
+    },
+    "audits": {
+     "viewport-insight": {
+      "id": "viewport-insight",
+      "title": "Optimize viewport for mobile",
+      "score": 1,
+      "items": 1
+     },
+     "target-size": {
+      "id": "target-size",
+      "title": "Touch targets have sufficient size and spacing.",
+      "score": 1,
+      "items": 0
+     },
+     "render-blocking-insight": {
+      "id": "render-blocking-insight",
+      "title": "Render-blocking requests",
+      "score": 0,
+      "displayValue": "Est savings of 1,700 ms",
+      "items": 2
+     },
+     "image-delivery-insight": {
+      "id": "image-delivery-insight",
+      "title": "Improve image delivery",
+      "score": 1,
+      "items": 0
+     },
+     "unused-javascript": {
+      "id": "unused-javascript",
+      "title": "Reduce unused JavaScript",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "unused-css-rules": {
+      "id": "unused-css-rules",
+      "title": "Reduce unused CSS",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "unminified-javascript": {
+      "id": "unminified-javascript",
+      "title": "Minify JavaScript",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "unminified-css": {
+      "id": "unminified-css",
+      "title": "Minify CSS",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "legacy-javascript-insight": {
+      "id": "legacy-javascript-insight",
+      "title": "Legacy JavaScript",
+      "score": 1,
+      "items": 0
+     },
+     "duplicated-javascript-insight": {
+      "id": "duplicated-javascript-insight",
+      "title": "Duplicated JavaScript",
+      "score": 1,
+      "items": 0
+     },
+     "server-response-time": {
+      "id": "server-response-time",
+      "title": "Initial server response time was short",
+      "score": 1,
+      "displayValue": "Root document took 0 ms",
+      "items": 1
+     },
+     "document-latency-insight": {
+      "id": "document-latency-insight",
+      "title": "Document request latency",
+      "score": 1
+     },
+     "cache-insight": {
+      "id": "cache-insight",
+      "title": "Use efficient cache lifetimes",
+      "score": 0.5,
+      "displayValue": "Est savings of 1 KiB",
+      "items": 3
+     },
+     "document-title": {
+      "id": "document-title",
+      "title": "Document has a `<title>` element",
+      "score": 1,
+      "items": 0
+     },
+     "meta-description": {
+      "id": "meta-description",
+      "title": "Document does not have a meta description",
+      "score": 0
+     },
+     "is-crawlable": {
+      "id": "is-crawlable",
+      "title": "Page isn’t blocked from indexing",
+      "score": 1,
+      "items": 0
+     },
+     "link-text": {
+      "id": "link-text",
+      "title": "Links have descriptive text",
+      "score": 1,
+      "items": 0
+     },
+     "crawlable-anchors": {
+      "id": "crawlable-anchors",
+      "title": "Links are crawlable",
+      "score": 1,
+      "items": 0
+     },
+     "hreflang": {
+      "id": "hreflang",
+      "title": "Document has a valid `hreflang`",
+      "score": 1,
+      "items": 0
+     },
+     "http-status-code": {
+      "id": "http-status-code",
+      "title": "Page has successful HTTP status code",
+      "score": 1
+     },
+     "is-on-https": {
+      "id": "is-on-https",
+      "title": "Uses HTTPS",
+      "score": 1,
+      "items": 0
+     },
+     "errors-in-console": {
+      "id": "errors-in-console",
+      "title": "Browser errors were logged to the console",
+      "score": 0,
+      "items": 1
+     },
+     "image-alt": {
+      "id": "image-alt",
+      "title": "Image elements do not have `[alt]` attributes",
+      "score": 0,
+      "items": 1
+     }
+    },
+    "a11yFailures": [
+     {
+      "id": "heading-order",
+      "title": "Heading elements are not in a sequentially-descending order",
+      "score": 0,
+      "items": 1
+     },
+     {
+      "id": "html-has-lang",
+      "title": "`<html>` element does not have a `[lang]` attribute",
+      "score": 0,
+      "items": 1
+     },
+     {
+      "id": "image-alt",
+      "title": "Image elements do not have `[alt]` attributes",
+      "score": 0,
+      "items": 1
+     }
+    ],
+    "seoFailures": [
+     {
+      "id": "meta-description",
+      "title": "Document does not have a meta description",
+      "score": 0
+     },
+     {
+      "id": "image-alt",
+      "title": "Image elements do not have `[alt]` attributes",
+      "score": 0,
+      "items": 1
+     }
+    ],
+    "field": null
+   }
+  },
+  "desktop": {
+   "ok": true,
+   "data": {
+    "strategy": "desktop",
+    "lighthouseVersion": "13.6.0",
+    "scores": {
+     "performance": 100,
+     "accessibility": 79,
+     "seo": 82,
+     "bestPractices": 96
+    },
+    "metrics": {
+     "fcp": {
+      "value": 612.2797,
+      "score": 0.99
+     },
+     "lcp": {
+      "value": 612.2797,
+      "score": 0.99
+     },
+     "si": {
+      "value": 612.2797,
+      "score": 1
+     },
+     "tbt": {
+      "value": 0,
+      "score": 1
+     },
+     "cls": {
+      "value": 0,
+      "score": 1
+     }
+    },
+    "audits": {
+     "viewport-insight": {
+      "id": "viewport-insight",
+      "title": "Optimize viewport for mobile",
+      "score": 1,
+      "items": 1
+     },
+     "target-size": {
+      "id": "target-size",
+      "title": "Touch targets have sufficient size and spacing.",
+      "score": 1,
+      "items": 0
+     },
+     "render-blocking-insight": {
+      "id": "render-blocking-insight",
+      "title": "Render-blocking requests",
+      "score": 0,
+      "displayValue": "Est savings of 430 ms",
+      "items": 2
+     },
+     "image-delivery-insight": {
+      "id": "image-delivery-insight",
+      "title": "Improve image delivery",
+      "score": 1,
+      "items": 0
+     },
+     "unused-javascript": {
+      "id": "unused-javascript",
+      "title": "Reduce unused JavaScript",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "unused-css-rules": {
+      "id": "unused-css-rules",
+      "title": "Reduce unused CSS",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "unminified-javascript": {
+      "id": "unminified-javascript",
+      "title": "Minify JavaScript",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "unminified-css": {
+      "id": "unminified-css",
+      "title": "Minify CSS",
+      "score": 1,
+      "displayValue": "",
+      "items": 0
+     },
+     "legacy-javascript-insight": {
+      "id": "legacy-javascript-insight",
+      "title": "Legacy JavaScript",
+      "score": 1,
+      "items": 0
+     },
+     "duplicated-javascript-insight": {
+      "id": "duplicated-javascript-insight",
+      "title": "Duplicated JavaScript",
+      "score": 1,
+      "items": 0
+     },
+     "server-response-time": {
+      "id": "server-response-time",
+      "title": "Initial server response time was short",
+      "score": 1,
+      "displayValue": "Root document took 0 ms",
+      "items": 1
+     },
+     "document-latency-insight": {
+      "id": "document-latency-insight",
+      "title": "Document request latency",
+      "score": 1
+     },
+     "cache-insight": {
+      "id": "cache-insight",
+      "title": "Use efficient cache lifetimes",
+      "score": 0.5,
+      "displayValue": "Est savings of 1 KiB",
+      "items": 3
+     },
+     "document-title": {
+      "id": "document-title",
+      "title": "Document has a `<title>` element",
+      "score": 1,
+      "items": 0
+     },
+     "meta-description": {
+      "id": "meta-description",
+      "title": "Document does not have a meta description",
+      "score": 0
+     },
+     "is-crawlable": {
+      "id": "is-crawlable",
+      "title": "Page isn’t blocked from indexing",
+      "score": 1,
+      "items": 0
+     },
+     "link-text": {
+      "id": "link-text",
+      "title": "Links have descriptive text",
+      "score": 1,
+      "items": 0
+     },
+     "crawlable-anchors": {
+      "id": "crawlable-anchors",
+      "title": "Links are crawlable",
+      "score": 1,
+      "items": 0
+     },
+     "hreflang": {
+      "id": "hreflang",
+      "title": "Document has a valid `hreflang`",
+      "score": 1,
+      "items": 0
+     },
+     "http-status-code": {
+      "id": "http-status-code",
+      "title": "Page has successful HTTP status code",
+      "score": 1
+     },
+     "is-on-https": {
+      "id": "is-on-https",
+      "title": "Uses HTTPS",
+      "score": 1,
+      "items": 0
+     },
+     "errors-in-console": {
+      "id": "errors-in-console",
+      "title": "Browser errors were logged to the console",
+      "score": 0,
+      "items": 1
+     },
+     "image-alt": {
+      "id": "image-alt",
+      "title": "Image elements do not have `[alt]` attributes",
+      "score": 0,
+      "items": 1
+     }
+    },
+    "a11yFailures": [
+     {
+      "id": "heading-order",
+      "title": "Heading elements are not in a sequentially-descending order",
+      "score": 0,
+      "items": 1
+     },
+     {
+      "id": "html-has-lang",
+      "title": "`<html>` element does not have a `[lang]` attribute",
+      "score": 0,
+      "items": 1
+     },
+     {
+      "id": "image-alt",
+      "title": "Image elements do not have `[alt]` attributes",
+      "score": 0,
+      "items": 1
+     }
+    ],
+    "seoFailures": [
+     {
+      "id": "meta-description",
+      "title": "Document does not have a meta description",
+      "score": 0
+     },
+     {
+      "id": "image-alt",
+      "title": "Image elements do not have `[alt]` attributes",
+      "score": 0,
+      "items": 1
+     }
+    ],
+    "field": null
+   }
+  }
+ },
+ "site": {
+  "ok": true,
+  "requestedUrl": "http://localhost:4801/",
+  "finalUrl": "http://localhost:4801/",
+  "status": 200,
+  "redirectCount": 0,
+  "https": false,
+  "httpRedirectsToHttps": false,
+  "ttfbMs": 14,
+  "headers": {
+   "x-powered-by": "TestSite",
+   "content-type": "text/html; charset=utf-8"
+  },
+  "onPage": {
+   "title": "مخبز الواحة",
+   "metaDescription": null,
+   "canonical": null,
+   "robotsMeta": null,
+   "lang": null,
+   "viewport": "width=device-width, initial-scale=1",
+   "h1Count": 1,
+   "headingCount": 3,
+   "headingOrderOk": false,
+   "wordCount": 41,
+   "imageCount": 1,
+   "imagesMissingAlt": 1,
+   "navLinkCount": 0,
+   "hasNavLandmark": false,
+   "headerLinkCount": 2,
+   "contact": {
+    "tel": false,
+    "email": true,
+    "whatsapp": false,
+    "contactLink": true,
+    "form": false
+   },
+   "ctaCount": 0,
+   "ctaSamples": [],
+   "mixedContentCount": 0,
+   "mixedContentSamples": [],
+   "scriptCount": 1,
+   "likelyClientRendered": false
+  }
+ },
+ "findings": [
+  {
+   "id": "sec_no_https",
+   "category": "security",
+   "severity": "critical",
+   "basis": "verified",
+   "params": {
+    "url": "http://localhost:4801/"
+   }
+  },
+  {
+   "id": "perf_render_blocking",
+   "category": "performance",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {
+    "audits": "Render-blocking requests (Est savings of 1,700 ms)",
+    "strategy": "mobile"
+   }
+  },
+  {
+   "id": "seo_description_missing",
+   "category": "seo",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "seo_image_alt",
+   "category": "seo",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {
+    "missing": 1,
+    "total": 1
+   }
+  },
+  {
+   "id": "sec_csp_missing",
+   "category": "security",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {
+    "reportOnly": false
+   }
+  },
+  {
+   "id": "a11y_score_medium",
+   "category": "accessibility",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {
+    "score": 79
+   }
+  },
+  {
+   "id": "a11y_issue",
+   "category": "accessibility",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {
+    "audit": "heading-order",
+    "title": "Heading elements are not in a sequentially-descending order",
+    "items": 1
+   }
+  },
+  {
+   "id": "a11y_issue",
+   "category": "accessibility",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {
+    "audit": "html-has-lang",
+    "title": "`<html>` element does not have a `[lang]` attribute",
+    "items": 1
+   }
+  },
+  {
+   "id": "a11y_issue",
+   "category": "accessibility",
+   "severity": "medium",
+   "basis": "verified",
+   "params": {
+    "audit": "image-alt",
+    "title": "Image elements do not have `[alt]` attributes",
+    "items": 1
+   }
+  },
+  {
+   "id": "ux_no_navigation",
+   "category": "ux",
+   "severity": "medium",
+   "basis": "inferred",
+   "params": {}
+  },
+  {
+   "id": "ux_no_cta",
+   "category": "ux",
+   "severity": "medium",
+   "basis": "inferred",
+   "params": {}
+  },
+  {
+   "id": "perf_fcp",
+   "category": "performance",
+   "severity": "low",
+   "basis": "verified",
+   "params": {
+    "value": 2366.8251,
+    "strategy": "mobile"
+   }
+  },
+  {
+   "id": "perf_caching",
+   "category": "performance",
+   "severity": "low",
+   "basis": "verified",
+   "params": {
+    "audits": "Use efficient cache lifetimes (Est savings of 1 KiB)",
+    "strategy": "mobile"
+   }
+  },
+  {
+   "id": "seo_canonical_missing",
+   "category": "seo",
+   "severity": "low",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "seo_heading_order",
+   "category": "seo",
+   "severity": "low",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "seo_lang_missing",
+   "category": "seo",
+   "severity": "low",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "sec_xcto_missing",
+   "category": "security",
+   "severity": "low",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "sec_frame_missing",
+   "category": "security",
+   "severity": "low",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "sec_referrer_missing",
+   "category": "security",
+   "severity": "low",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "ux_thin_content",
+   "category": "ux",
+   "severity": "low",
+   "basis": "inferred",
+   "params": {
+    "words": 41
+   }
+  },
+  {
+   "id": "ux_console_errors",
+   "category": "ux",
+   "severity": "low",
+   "basis": "verified",
+   "params": {
+    "items": 1
+   }
+  },
+  {
+   "id": "sec_permissions_missing",
+   "category": "security",
+   "severity": "info",
+   "basis": "verified",
+   "params": {}
+  },
+  {
+   "id": "sec_tech_disclosure",
+   "category": "security",
+   "severity": "info",
+   "basis": "verified",
+   "params": {
+    "value": "TestSite"
+   }
+  },
+  {
+   "id": "ux_no_whatsapp",
+   "category": "ux",
+   "severity": "info",
+   "basis": "inferred",
+   "params": {}
+  }
+ ],
+ "strengths": [
+  {
+   "id": "strength_performance",
+   "category": "performance",
+   "params": {
+    "score": 95,
+    "strategy": "mobile"
+   }
+  },
+  {
+   "id": "strength_viewport",
+   "category": "mobile",
+   "params": {}
+  },
+  {
+   "id": "strength_contact",
+   "category": "ux",
+   "params": {
+    "channels": 2
+   }
+  }
+ ],
+ "ai": null,
+ "business": {
+  "version": 1,
+  "identity": {
+   "brandName": {
+    "value": "عطور المثال",
+    "source": "og:site_name"
+   },
+   "siteTitle": "عطور المثال | متجر العود والعطور",
+   "description": "متجر عطور سعودي يقدم دهن العود والبخور والعطور الشرقية الفاخرة مع شحن سريع لجميع مدن المملكة.",
+   "logo": {
+    "url": "http://127.0.0.1:4811/logo.png",
+    "source": "logo image in page",
+    "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+   },
+   "colors": [
+    {
+     "hex": "#5b2a86",
+     "source": "rendered",
+     "weight": 1
+    },
+    {
+     "hex": "#d9c7ec",
+     "source": "rendered",
+     "weight": 0.85
+    }
+   ],
+   "websiteType": {
+    "value": "ecommerce",
+    "confidence": "high",
+    "evidence": [
+     "store platform: salla",
+     "cart link"
+    ]
+   },
+   "industry": {
+    "value": "perfume",
+    "confidence": "high",
+    "evidence": [
+     "\"عطور\"",
+     "\"عود\"",
+     "\"دهن العود\"",
+     "\"بخور\""
+    ]
+   },
+   "language": {
+    "primary": "ar",
+    "declared": "ar",
+    "arabicShare": 0.97
+   },
+   "country": {
+    "code": "SA",
+    "evidence": [
+     "local phone number format",
+     "local currency"
+    ]
+   },
+   "contact": {
+    "phone": false,
+    "email": false,
+    "whatsapp": true,
+    "contactPage": true,
+    "form": false,
+    "social": []
+   }
+  },
+  "platform": {
+   "id": "salla",
+   "confidence": "high",
+   "evidence": [
+    "assets on cdn.salla.sa / salla.network (×20)",
+    "<salla-*> web components (×15)"
+   ],
+   "frameworks": []
+  },
+  "coverage": {
+   "pagesAnalyzed": 10,
+   "requests": 16,
+   "robots": "found",
+   "robotsBlocked": 0,
+   "sitemap": {
+    "found": true,
+    "files": 1,
+    "urls": 13,
+    "productUrls": 10,
+    "categoryUrls": 3
+   },
+   "pages": [
+    {
+     "url": "http://127.0.0.1:4811/",
+     "kind": "home",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/oud/c1100001",
+     "kind": "category",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/perfume/c1100002",
+     "kind": "category",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/dehn-oud-cambodi/p1000001",
+     "kind": "product",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/dehn-oud-hindi/p1000002",
+     "kind": "product",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/oud-moattar/p1000003",
+     "kind": "product",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/musk-tahara/p1000004",
+     "kind": "product",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/perfume-sahra/p1000005",
+     "kind": "product",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/pages/about",
+     "kind": "about",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "url": "http://127.0.0.1:4811/pages/contact",
+     "kind": "contact",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "budgetReached": false,
+   "durationMs": 2815
+  },
+  "catalog": {
+   "productUrlsDiscovered": 10,
+   "productPagesAnalyzed": 5,
+   "catalogTotal": {
+    "value": 10,
+    "verified": false,
+    "source": "sitemap"
+   },
+   "products": [
+    {
+     "url": "http://127.0.0.1:4811/dehn-oud-cambodi/p1000001",
+     "name": "دهن عود كمبودي فاخر",
+     "image": "http://127.0.0.1:4811/img/dehn-oud-cambodi.png",
+     "imageCount": 1,
+     "price": "450",
+     "currency": "SAR",
+     "descriptionLength": 16,
+     "availability": "InStock",
+     "addToCart": true,
+     "related": false,
+     "source": "json-ld"
+    },
+    {
+     "url": "http://127.0.0.1:4811/dehn-oud-hindi/p1000002",
+     "name": "دهن عود هندي",
+     "image": "http://127.0.0.1:4811/img/dehn-oud-hindi.png",
+     "imageCount": 1,
+     "price": "380",
+     "currency": "SAR",
+     "descriptionLength": 125,
+     "availability": "InStock",
+     "addToCart": true,
+     "related": false,
+     "source": "json-ld"
+    },
+    {
+     "url": "http://127.0.0.1:4811/oud-moattar/p1000003",
+     "name": "عود معطر للبخور",
+     "image": "http://127.0.0.1:4811/img/oud-moattar.png",
+     "imageCount": 1,
+     "price": "120",
+     "currency": "SAR",
+     "descriptionLength": 16,
+     "availability": "InStock",
+     "addToCart": true,
+     "related": false,
+     "source": "json-ld"
+    },
+    {
+     "url": "http://127.0.0.1:4811/musk-tahara/p1000004",
+     "name": "مسك الطهارة الأبيض",
+     "image": "http://127.0.0.1:4811/img/musk-tahara.png",
+     "imageCount": 1,
+     "price": null,
+     "currency": null,
+     "descriptionLength": 125,
+     "availability": null,
+     "addToCart": true,
+     "related": false,
+     "source": "json-ld"
+    },
+    {
+     "url": "http://127.0.0.1:4811/perfume-sahra/p1000005",
+     "name": "عطر الصحراء",
+     "image": "http://127.0.0.1:4811/img/perfume-sahra.png",
+     "imageCount": 1,
+     "price": "220",
+     "currency": "SAR",
+     "descriptionLength": 16,
+     "availability": "InStock",
+     "addToCart": true,
+     "related": false,
+     "source": "json-ld"
+    }
+   ],
+   "categories": {
+    "count": 3,
+    "names": [
+     "العود",
+     "العطور",
+     "البخور"
+    ]
+   }
+  },
+  "banners": {
+   "count": 2,
+   "sliders": 1,
+   "banners": [
+    {
+     "src": "http://127.0.0.1:4811/banners/b1.jpg",
+     "alt": null,
+     "width": 1920,
+     "height": 600,
+     "ratio": 3.2,
+     "bytes": 1073495,
+     "format": "jpeg",
+     "responsive": false,
+     "mobileVariant": false,
+     "inSlider": true,
+     "linked": true,
+     "measured": true
+    },
+    {
+     "src": "http://127.0.0.1:4811/banners/b2.jpg",
+     "alt": null,
+     "width": 1100,
+     "height": 620,
+     "ratio": 1.77,
+     "bytes": 331183,
+     "format": "jpeg",
+     "responsive": false,
+     "mobileVariant": false,
+     "inSlider": true,
+     "linked": false,
+     "measured": true
+    }
+   ]
+  },
+  "search": {
+   "present": true,
+   "source": "html",
+   "action": "http://127.0.0.1:4811/search",
+   "inputName": "q",
+   "placeholder": "ابحث في المتجر",
+   "visibleDesktop": true,
+   "visibleMobile": true,
+   "autocomplete": null,
+   "tests": [
+    {
+     "query": "كمبودي",
+     "kind": "representative",
+     "status": "ok",
+     "resultCount": 1,
+     "relevantCount": 1,
+     "noResultMessage": false,
+     "url": "http://127.0.0.1:4811/search?q=%D9%83%D9%85%D8%A8%D9%88%D8%AF%D9%8A",
+     "via": "http"
+    },
+    {
+     "query": "zqxv nonexistent 7391",
+     "kind": "no_result",
+     "status": "ok",
+     "resultCount": 0,
+     "relevantCount": 0,
+     "noResultMessage": true,
+     "url": "http://127.0.0.1:4811/search?q=zqxv+nonexistent+7391",
+     "via": "http"
+    }
+   ]
+  },
+  "journey": {
+   "cartLink": true,
+   "accountLink": false,
+   "paymentMethods": [
+    "mada",
+    "Apple Pay",
+    "Tamara"
+   ],
+   "deliveryInfo": true,
+   "returnPolicy": false,
+   "privacyPolicy": false,
+   "trust": {
+    "maroof": false,
+    "commercialRegistration": false,
+    "vatNumber": false,
+    "businessCenter": false
+   },
+   "reviews": false,
+   "navLinks": 5
+  },
+  "design": {
+   "rendered": true,
+   "screenshots": {
+    "desktop": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    "mobile": null
+   },
+   "fonts": [
+    {
+     "family": "Tahoma",
+     "share": 1
+    }
+   ],
+   "sizes": {
+    "h1": 30,
+    "h2": 24,
+    "body": 16,
+    "mobileBody": 16
+   },
+   "palette": [
+    "#5b2a86",
+    "#d9c7ec"
+   ],
+   "primaryCta": {
+    "text": "تسوق الآن",
+    "contrast": 1.58,
+    "aboveFoldDesktop": false,
+    "aboveFoldMobile": true
+   },
+   "mobile": {
+    "horizontalOverflow": true,
+    "smallTapTargets": 7,
+    "tinyText": 0
+   },
+   "heroText": null,
+   "productCardRatios": [
+    1,
+    0.77,
+    1,
+    1,
+    0.77,
+    1
+   ],
+   "topNavItems": 4,
+   "notes": []
+  },
+  "recommendations": [
+   {
+    "id": "design_mobile_overflow",
+    "group": "critical",
+    "priority": "high",
+    "complexity": "medium",
+    "basis": "verified",
+    "params": {}
+   },
+   {
+    "id": "product_price_missing",
+    "group": "high",
+    "priority": "medium",
+    "complexity": "low",
+    "basis": "inferred",
+    "params": {
+     "count": 1,
+     "total": 5,
+     "example": "http://127.0.0.1:4811/musk-tahara/p1000004"
+    }
+   },
+   {
+    "id": "banner_heavy",
+    "group": "high",
+    "priority": "medium",
+    "complexity": "low",
+    "basis": "verified",
+    "params": {
+     "count": 1,
+     "largestKb": 1048,
+     "example": "http://127.0.0.1:4811/banners/b1.jpg"
+    }
+   },
+   {
+    "id": "journey_no_return_policy",
+    "group": "high",
+    "priority": "medium",
+    "complexity": "low",
+    "basis": "inferred",
+    "params": {}
+   },
+   {
+    "id": "product_few_images",
+    "group": "conversion",
+    "priority": "medium",
+    "complexity": "medium",
+    "basis": "verified",
+    "params": {
+     "count": 5,
+     "total": 5,
+     "example": "دهن عود كمبودي فاخر"
+    }
+   },
+   {
+    "id": "journey_no_trust_details",
+    "group": "conversion",
+    "priority": "medium",
+    "complexity": "low",
+    "basis": "inferred",
+    "params": {}
+   },
+   {
+    "id": "product_no_related",
+    "group": "conversion",
+    "priority": "low",
+    "complexity": "medium",
+    "basis": "inferred",
+    "params": {
+     "total": 5
+    }
+   },
+   {
+    "id": "banner_no_mobile_version",
+    "group": "design",
+    "priority": "medium",
+    "complexity": "medium",
+    "basis": "inferred",
+    "params": {
+     "count": 1,
+     "ratio": 3.2,
+     "example": "http://127.0.0.1:4811/banners/b1.jpg"
+    }
+   },
+   {
+    "id": "design_cta_low_contrast",
+    "group": "design",
+    "priority": "medium",
+    "complexity": "low",
+    "basis": "verified",
+    "params": {
+     "text": "تسوق الآن",
+     "contrast": 1.58
+    }
+   },
+   {
+    "id": "banner_mixed_ratios",
+    "group": "design",
+    "priority": "low",
+    "complexity": "low",
+    "basis": "verified",
+    "params": {
+     "min": 1.77,
+     "max": 3.2
+    }
+   },
+   {
+    "id": "design_inconsistent_cards",
+    "group": "design",
+    "priority": "low",
+    "complexity": "medium",
+    "basis": "verified",
+    "params": {
+     "min": 0.77,
+     "max": 1
+    }
+   },
+   {
+    "id": "product_short_description",
+    "group": "seo",
+    "priority": "medium",
+    "complexity": "medium",
+    "basis": "verified",
+    "params": {
+     "count": 3,
+     "total": 5,
+     "example": "دهن عود كمبودي فاخر",
+     "length": 16
+    }
+   },
+   {
+    "id": "banner_missing_alt",
+    "group": "seo",
+    "priority": "low",
+    "complexity": "low",
+    "basis": "verified",
+    "params": {
+     "count": 2,
+     "total": 2
+    }
+   },
+   {
+    "id": "journey_no_reviews",
+    "group": "longterm",
+    "priority": "low",
+    "complexity": "medium",
+    "basis": "inferred",
+    "params": {}
+   },
+   {
+    "id": "longterm_bilingual",
+    "group": "longterm",
+    "priority": "info",
+    "complexity": "high",
+    "basis": "inferred",
+    "params": {}
+   }
+  ],
+  "limits": []
+ }
+}
