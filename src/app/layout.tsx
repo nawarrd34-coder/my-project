@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import { cookies } from 'next/headers';
+import { WhatsAppFloat } from '@/components/ui/WhatsAppFloat';
 import { LocaleProvider } from '@/lib/i18n';
 import { LOCALE_COOKIE } from '@/lib/i18n/constants';
 import type { Locale } from '@/types/audit';
@@ -82,7 +83,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} data-scroll-behavior="smooth" dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`${geist.variable} ${geistMono.variable} ${plexArabic.variable} ${displayLatin.variable} ${displayArabic.variable}`}>
       <body>
         <div className="page-bg" aria-hidden="true" />
-        <LocaleProvider initial={locale}>{children}</LocaleProvider>
+        <LocaleProvider initial={locale}>
+          {children}
+          <WhatsAppFloat />
+        </LocaleProvider>
       </body>
     </html>
   );

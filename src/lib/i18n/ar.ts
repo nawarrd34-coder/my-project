@@ -287,6 +287,8 @@ export const ar: Dict = {
     button: 'ابنِ موقعي مع Youth Studio',
     whatsapp: 'تواصل عبر واتساب',
     email: 'راسلنا بالبريد',
+    whatsappFloat: 'تواصل مع Youth Studio عبر واتساب',
+    contactTitle: 'تواصل مع Youth Studio',
     unset: 'لم تُضبط روابط التواصل بعد. عيّن NEXT_PUBLIC_WHATSAPP_URL أو NEXT_PUBLIC_CONTACT_URL.',
   },
   pdf: {

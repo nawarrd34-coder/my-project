@@ -164,6 +164,26 @@ export function SiteFooter() {
           Business Health Check · By Youth Studio · Saudi Digital Studio
         </div>
         <p className="heading max-w-md text-base text-ink/90">{t.brand.tagline}</p>
+        {(studio.email || studio.whatsapp) && (
+          <nav aria-label={t.cta.contactTitle} className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" data-testid="footer-contact">
+            {studio.whatsapp && (
+              <a href={studio.whatsapp} target="_blank" rel="noopener noreferrer" className="text-muted transition-colors hover:text-ink">
+                {t.cta.whatsapp}
+                {studio.whatsappDisplay && ' · '}
+                {studio.whatsappDisplay && (
+                  <span dir="ltr" className="num text-faint">
+                    {studio.whatsappDisplay}
+                  </span>
+                )}
+              </a>
+            )}
+            {studio.email && (
+              <a href={`mailto:${studio.email}`} dir="ltr" className="font-mono text-[13px] text-muted transition-colors hover:text-ink" data-testid="footer-email">
+                {studio.email}
+              </a>
+            )}
+          </nav>
+        )}
         <p className="max-w-xl text-xs leading-relaxed text-faint">{t.footer.disclaimer}</p>
         <p className="text-xs text-faint">
           <span className="num">© {year}</span> Youth Studio. {t.footer.rights}

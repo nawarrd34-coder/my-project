@@ -41,14 +41,14 @@ to scan a site on localhost (both are ignored in production).
 | Variable | Needed | Purpose |
 |---|---|---|
 | `PAGESPEED_API_KEY` | Yes | Server-side key for the PageSpeed Insights API. Without it Google's shared anonymous quota is usually exhausted and Lighthouse categories show "Not tested". Get one: Google Cloud Console → enable **PageSpeed Insights API** → Credentials → API key ([guide](https://developers.google.com/speed/docs/insights/v5/get-started)). |
-| `NEXT_PUBLIC_WHATSAPP_URL` | Recommended | e.g. `https://wa.me/9665XXXXXXXX`. Shown in the report CTA and PDF. |
+| `NEXT_PUBLIC_WHATSAPP_URL` | Optional | Overrides the built-in Youth Studio WhatsApp link (`wa.me/966533896219` with a pre-filled Arabic message), used by the floating button, CTA, footer and PDF. |
 | `NEXT_PUBLIC_CONTACT_URL` | Recommended | Contact / booking page (https). Used as the primary CTA. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Optional | Contact email. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Optional | Overrides the built-in email `youthstudio2026@outlook.com`. |
 | `NEXT_PUBLIC_STUDIO_URL` | Optional | Youth Studio website (footer logo link). |
 | `AUDIT_RENDER` | Optional | `off` skips the headless-browser pass (screenshots, design and mobile-layout checks, in-browser search). |
 | `ANTHROPIC_API_KEY` | Optional | Enables the AI executive summary (Claude). Without it the deterministic rules engine is used alone. `AI_RECOMMENDATIONS=off` disables it. |
 
-No contact details are hard-coded; any link left empty is simply not shown.
+The official Youth Studio WhatsApp number and email are built in (`src/lib/config.ts`); the variables above only override them.
 
 ## Deploy to Vercel
 

@@ -227,7 +227,7 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
 
   const links = [
     studio.contact ? `<div><a href="${esc(studio.contact)}">${ltr(studio.contact)}</a></div>` : '',
-    studio.whatsapp ? `<div>${esc(t.cta.whatsapp)}: <a href="${esc(studio.whatsapp)}">${ltr(studio.whatsapp)}</a></div>` : '',
+    studio.whatsapp ? `<div>${esc(t.cta.whatsapp)}: <a href="${esc(studio.whatsapp)}">${ltr(studio.whatsappDisplay || studio.whatsapp)}</a></div>` : '',
     studio.email ? `<div>${esc(t.cta.email)}: <a href="mailto:${esc(studio.email)}">${ltr(studio.email)}</a></div>` : '',
   ].join('');
 

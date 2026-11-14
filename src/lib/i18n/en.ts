@@ -285,6 +285,8 @@ export const en = {
     button: 'Build My Website With Youth Studio',
     whatsapp: 'Chat on WhatsApp',
     email: 'Email us',
+    whatsappFloat: 'Chat with Youth Studio on WhatsApp',
+    contactTitle: 'Contact Youth Studio',
     unset: 'Contact links are not configured yet. Set NEXT_PUBLIC_WHATSAPP_URL or NEXT_PUBLIC_CONTACT_URL.',
   },
   pdf: {
