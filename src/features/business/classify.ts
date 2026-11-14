@@ -15,6 +15,7 @@ import type {
 } from '@/types/business';
 import { clean, clip, jsonLd, ldTypes, str, type Doc } from './html';
 import { STORE_PLATFORMS } from './platform';
+import { WEAK_HEADLINE } from './headline';
 
 /**
  * Website classification: what kind of website this is and how the business
@@ -33,7 +34,7 @@ export interface ClassifyPage {
 const TRANSACTIONAL: BusinessModel[] = ['direct_sales', 'online_booking', 'appointments', 'subscription', 'quotation'];
 
 const RE = {
-  addToCart: /add[\s-]?to[\s-]?(cart|bag|basket)|أضف (الى|إلى|ل)ل?سلة|اضف (الى|إلى|ل)ل?سلة|إضافة (الى|إلى|ل)ل?سلة|أضف للسلة|اضف للسلة|اشتر الآن|اشتري الآن|buy now/i,
+  addToCart: /add[\s-]?to[\s-]?(cart|bag|basket)|(أضف|اضف|إضافة|اضافة)\s*(إلى|الى|ل)?\s*(ال)?سلة|اشتر[يِ]? الآن|buy now/i,
   reservation: /reserve a table|book (a|your) (table|trip|tour|room|stay|package)|book your (trip|tour|stay)|check availability|حجز طاولة|احجز طاولت?ك|احجز رحلت?ك|احجز الرحلة|احجز باقت?ك|احجز إقامت?ك|تحقق من التوفر/i,
   appointment: /book (an |your )?appointment|schedule (a |your )?(call|consultation|meeting|visit|demo)|book a (consultation|call|session|demo)|احجز موعد|احجز موعدك|حجز موعد|حجز المواعيد|احجز استشارة|احجز استشارتك|حجز استشارة|احجز جلسة/i,
   bookingWidget: /calendly\.com|setmore\.com|simplybook\.|acuityscheduling\.com|fresha\.com|booksy\.com|vezeeta\.com|cal\.com\/|zcal\.co|youcanbook\.me|opentable\.com|sevenrooms\.com|resy\.com/i,
@@ -41,7 +42,7 @@ const RE = {
   subscription: /per month|\/\s?mo(nth)?\b|monthly plan|annual plan|billed (monthly|annually|yearly)|free trial|start (your )?free|try (it )?free|شهري[اًا]?\s|\/\s?شهر|سنوي[اًا]?\s|تجربة مجانية|ابدأ مجان[اًا]|اشترك الآن|خطط الأسعار/i,
   hours: /opening hours|working hours|business hours|open (daily|every day)|ساعات العمل|أوقات العمل|مواعيد العمل|أوقات الدوام|ساعات الدوام/i,
   contactCta: /contact us|get in touch|talk to us|request (a )?consultation|get (a )?(free )?consultation|تواصل معنا|اتصل بنا|اطلب استشارة|احصل على استشارة|استشارة مجانية|راسلنا/i,
-  services: /^(our )?services$|what we (do|offer)|practice areas|our expertise|خدماتنا|الخدمات|خدمات|مجالات (عملنا|العمل|الممارسة)|ماذا نقدم|حلولنا/i,
+  services: /^(our )?services$|what we (do|offer)|practice areas|our expertise|specialt(y|ies)|departments|our (packages|trips|tours)|خدماتنا|الخدمات|خدمات|مجالات (عملنا|العمل|الممارسة)|ماذا نقدم|حلولنا|العيادات|التخصصات|الأقسام الطبية|الباقات|أشهر الباقات|رحلاتنا/i,
   b2b: /\b(b2b|for businesses|for companies|enterprises?|corporate clients|organizations|for teams|government entities)\b|للشركات|الشركات والمؤسسات|للمؤسسات|قطاع الأعمال|الجهات الحكومية|القطاع الحكومي|عملائنا من الشركات/gi,
   b2c: /\b(for you and your family|for him|for her|shop now|your home|perfect gift)\b|تسوق الآن|تسوقي الآن|لك ولعائلتك|للأفراد|الأفراد|هديتك|هدية مثالية|اطلبه الآن/gi,
   map: /google\.[a-z.]+\/maps|maps\.google\.|goo\.gl\/maps|maps\.app\.goo\.gl|maps\.apple\.com/i,
@@ -65,6 +66,13 @@ const GENERIC_PHRASES: RegExp[] = [
   /\bcustomer satisfaction is our (top )?priority\b/i,
   /\bworld[- ]class\b/i,
   /\bleading (company|provider)\b/i,
+];
+
+const PROOF: { kind: 'numbers' | 'clients' | 'cases' | 'team'; re: RegExp }[] = [
+  { kind: 'numbers', re: /(\+\s?\d[\d,]*|أكثر من\s?\d[\d,]*|over\s\d[\d,]*|more than\s\d[\d,]*)\s?(عميل|مشروع|قضية|مسافر|مريض|طالب|عقار|clients?|projects?|customers?|cases?|travell?ers?|patients?|students?)|منذ\s?(19|20)\d\d|since\s(19|20)\d\d|\d+\s?(سنة|سنوات|عام(اً|ا)?|years?)\s(من الخبرة|خبرة|of experience)/i },
+  { kind: 'clients', re: /عملاؤنا|عملائنا|شركاؤنا|شركاء النجاح|our clients|our partners|trusted by/i },
+  { kind: 'cases', re: /case stud(y|ies)|دراسة حالة|دراسات الحالة|مشاريعنا|أعمالنا السابقة|سابقة أعمال|portfolio|our work/i },
+  { kind: 'team', re: /فريقنا|فريق العمل|فريق المحامين|أطباؤنا|our team|meet the team|our doctors|our lawyers/i },
 ];
 
 const INDUSTRY_CATEGORY: Partial<Record<IndustryId, SiteCategory>> = {
@@ -287,6 +295,11 @@ function services(pages: ClassifyPage[]): { name: string; source: string }[] {
     headings.slice(0, 2).each((_, h) => {
       const section = $(h).closest('section, [class*="service" i], [id*="service" i], main > div');
       section.find('h3, h4').slice(0, 10).each((__, el) => push($(el).text(), `${where(p.kind)} services section`));
+      // No wrapping section: the sub-headings that follow, up to the next heading of the same level.
+      if (!section.length) {
+        const level = h.tagName.toLowerCase();
+        $(h).nextUntil(level === 'h1' ? 'h1' : 'h1, h2').filter('h3, h4').slice(0, 10).each((__, el) => push($(el).text(), `${where(p.kind)} services section`));
+      }
       // Services written as a short list right after the heading.
       $(h).nextAll('ul, ol').first().children('li').slice(0, 10).each((__, el) => push($(el).text(), `${where(p.kind)} services list`));
     });
@@ -366,6 +379,23 @@ export function classifySite(args: {
   const $ = home.$;
   const homeText = `${$('h1, h2, h3, p').map((_, el) => $(el).text()).get().join(' \n ')}`.slice(0, 200_000);
   const generic = [...new Set(GENERIC_PHRASES.map((re) => homeText.match(re)?.[0]).filter((m): m is string => !!m))].slice(0, 6);
+
+  // The homepage's main message: its first h1, and a sentence near it that explains it.
+  const h1 = $('h1').first();
+  const headline = clean(h1.text());
+  const near = h1.length ? [...h1.nextAll('p').slice(0, 2).toArray(), ...h1.parent().find('p').slice(0, 2).toArray()].map((el) => clean($(el).text()) ?? '') : [];
+  const hero = { headline: headline ? clip(headline, 140) : null, support: near.some((t) => t.length >= 40) };
+
+  const proof: NonNullable<SiteClassification['signals']['proof']> = [];
+  for (const { kind, re } of PROOF) {
+    for (const p of pages) {
+      const m = textOf(p.$).match(re);
+      if (m) {
+        proof.push({ kind, value: clip(m[0].trim(), 80), url: p.url });
+        break;
+      }
+    }
+  }
   const allTypes = [...new Set(pages.flatMap((p) => jsonLd(p.$).flatMap(ldTypes)))].slice(0, 16);
 
   return {
@@ -385,6 +415,8 @@ export function classifySite(args: {
       dateInputs: pages.some((p) => p.$('form input[type="date"], form input[type="datetime-local"], form input[type="time"]').length > 0),
       genericPhrases: generic,
       homepageProducts,
+      hero,
+      proof,
     },
   };
 }

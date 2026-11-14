@@ -13,6 +13,15 @@ export interface CriterionCopy {
 
 const n = (v: unknown) => Number(v ?? 0);
 const yes = (s: number | null) => (s ?? 0) >= 70;
+const TRUST: Record<string, string> = { maroof: 'Maroof', commercialRegistration: 'commercial registration', vatNumber: 'VAT number', businessCenter: 'Saudi Business Center' };
+const PROOF: Record<string, string> = { numbers: 'numbers', clients: 'clients', cases: 'case studies', team: 'team' };
+const CHANNELS: Record<string, string> = { phone: 'phone', email: 'email', whatsapp: 'WhatsApp', form: 'form', contactPage: 'contact page' };
+const labels = (v: unknown, map: Record<string, string>) =>
+  String(v ?? '')
+    .split(/,\s*/)
+    .filter(Boolean)
+    .map((k) => map[k] ?? k)
+    .join(', ');
 
 const criteriaEn = {
   home_products: {
@@ -197,26 +206,19 @@ const criteriaEn = {
     fix: 'Organise the homepage into titled sections that answer the visitor’s main questions.',
     observed: (p) => `${n(p.count)} headings on the homepage.`,
   },
-  title: {
-    name: 'Page title',
-    rule: '15–65 characters = 100, other length = 70, missing = 0.',
-    why: 'The title is the headline in search results and browser tabs.',
-    fix: 'Write a title with the business name and what it offers.',
-    observed: (p) => (n(p.length) ? `Title is ${n(p.length)} characters.` : 'No page title.'),
+  value_proposition: {
+    name: 'Clear main message',
+    rule: 'Specific headline with a supporting sentence = 100, headline only = 65, generic headline (“Welcome”, stock phrase) = 30, none = 20.',
+    why: 'Visitors decide in seconds whether they are in the right place. A specific headline says what you do and for whom.',
+    fix: 'Write a headline that names the service and the customer (e.g. “Corporate lawyers for companies in Riyadh”) and add one sentence under it.',
+    observed: (p) => (p.headline ? `Headline: «${p.headline}»${p.weak ? ' (generic)' : p.support ? ', with a supporting sentence' : ', no supporting sentence'}.` : 'No main headline (h1).'),
   },
-  meta_description: {
-    name: 'Meta description',
-    rule: '70–170 characters = 100, other length = 75, missing = 20.',
-    why: 'It is the summary under the title in search results.',
-    fix: 'Write a one-sentence summary of the business and its main offer.',
-    observed: (p) => (n(p.length) ? `Meta description is ${n(p.length)} characters.` : 'No meta description.'),
-  },
-  single_h1: {
-    name: 'One main heading',
-    rule: 'Exactly one <h1> = 100, several = 70, none = 30.',
-    why: 'One clear main heading tells visitors and search engines what the page is about.',
-    fix: 'Use a single <h1> for the main message.',
-    observed: (p) => `${n(p.count)} main headings (h1).`,
+  proof_elements: {
+    name: 'Proof of experience',
+    rule: 'Kinds of proof found (numbers, clients, case studies, team): 3+ = 100, 2 = 80, 1 = 55, none = 30.',
+    why: 'Concrete proof (years, projects, named clients, the team) is what turns a claim into something a visitor believes.',
+    fix: 'Add real numbers (years, projects), client names or logos, a few case studies, and the team behind the work.',
+    observed: (p) => (Number(p.count) ? `Found: ${labels(p.kinds, PROOF)}.` : 'No numbers, client list, case studies or team were found.'),
   },
   home_words: {
     name: 'Homepage content depth',
@@ -293,7 +295,7 @@ const criteriaEn = {
     rule: '3+ channels = 100, 2 = 75, 1 = 45, none = 10 (phone, email, WhatsApp, form, contact page).',
     why: 'Different customers prefer different channels; more choice means fewer lost enquiries.',
     fix: 'Offer at least phone or WhatsApp plus email or a form.',
-    observed: (p) => (n(p.count) ? `${n(p.count)} channels: ${p.channels}.` : 'No contact channels were found.'),
+    observed: (p) => (n(p.count) ? `${n(p.count)} channels: ${labels(p.channels, CHANNELS)}.` : 'No contact channels were found.'),
   },
   action_on_home: {
     name: 'Main action reachable from the homepage',
@@ -384,7 +386,7 @@ const criteriaEn = {
     rule: 'Maroof, commercial registration, VAT number or Saudi Business Center shown = 100, none = 30. Saudi businesses only.',
     why: 'Official registration details reassure customers that the business is real.',
     fix: 'Show the CR or VAT number (and Maroof / Business Center badge) in the footer.',
-    observed: (p, s) => (yes(s) ? `Shown: ${p.found}.` : 'No registration details were found on the pages read.'),
+    observed: (p, s) => (yes(s) ? `Shown: ${labels(p.found, TRUST)}.` : 'No registration details were found on the pages read.'),
   },
   https: {
     name: 'Secure connection (HTTPS)',
@@ -442,6 +444,19 @@ export const proEn = {
     strongest: 'Strongest areas',
     weakest: 'Weakest areas',
     visualNote: 'Visual quality is judged here only from measurable signals (contrast, fonts, sizes, layout). A full visual assessment from screenshots comes in a later phase.',
+    howTitle: 'How this score is calculated',
+    howPillar: 'Each pillar is the average of its tested criteria, weighted by each criterion’s share. Untested and not-applicable criteria are left out — never counted as zero.',
+    howOverall: (parts: string, total: number, score: number | null) => (score === null ? 'Too few pillars could be scored for an overall result.' : `(${parts}) ÷ ${total} = ${score}`),
+    overallLabel: 'Overall',
+    pillarMath: (tested: number, total: number, pct: number) => `Average of ${tested} of ${total} criteria; ${pct}% of this pillar was tested.`,
+    basisTitle: 'How each result was obtained',
+    noAi: 'This score uses no AI judgement: every criterion is measured or detected on the website, or marked as unverified or not applicable.',
+    coverageLine: (pct: number) => `${pct}% of the applicable criteria were tested`,
+    confidence: { high: 'High confidence', medium: 'Medium confidence', low: 'Low confidence' },
+    levelCap: {
+      needs_visual_assessment: 'Scored 90 or more, but “Excellent” is only awarded after a visual assessment of the design from screenshots, which is not part of this version. Shown as “Professional”.',
+      low_coverage: 'Scored 90 or more, but too few criteria could be tested to award “Excellent”. Shown as “Professional”.',
+    },
     levelsNote: 'Levels: 90+ Excellent · 80–89 Professional · 70–79 Good · 50–69 Needs improvement · under 50 Significant issues. These are product thresholds, not an external standard.',
   },
   classification: {

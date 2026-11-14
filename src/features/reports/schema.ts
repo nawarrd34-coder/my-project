@@ -112,6 +112,8 @@ const classification = z.object({
     dateInputs: z.boolean(),
     genericPhrases: z.array(text(120)).max(8),
     homepageProducts: z.number(),
+    hero: z.object({ headline: text(160).nullable(), support: z.boolean() }).optional(),
+    proof: z.array(z.object({ kind: z.enum(['numbers', 'clients', 'cases', 'team']), value: text(100), url })).max(8).optional(),
   }),
 });
 

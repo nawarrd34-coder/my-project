@@ -384,7 +384,7 @@ function professionalHtml(pro: ProfessionalScore, locale: Locale, covered: Set<s
   const detail = pro.pillars
     .map((p) => {
       const items = pro.criteria.filter((c) => c.pillar === p.id);
-      return `<h3>${esc(d.pillars[p.id].name)} <span class="small muted" style="font-weight:400">${p.score === null ? esc(d.section.untested) : `${p.score}/100`}</span></h3>
+      return `<h3>${esc(d.pillars[p.id].name)} <span class="small muted" style="font-weight:400">${p.score === null ? esc(d.section.untested) : `${p.score}/100`} · ${esc(d.section.pillarMath(items.filter((c) => c.status === 'scored').length, items.filter((c) => c.status !== 'na').length, Math.round(p.coverage * 100)))}</span></h3>
       <table><tbody>${items
         .map((c) => {
           const copy = criterionCopy(locale, c.id)!;
@@ -404,11 +404,25 @@ function professionalHtml(pro: ProfessionalScore, locale: Locale, covered: Set<s
     ${o.level ? `<div style="margin-top:2mm;font-weight:600">${esc(d.levels[o.level])}</div>` : `<div class="small muted">${esc(d.section.noOverall)}</div>`}</div>
     <div class="small">
       <p>${esc(d.section.profile)}: <b>${esc(d.profiles[pro.profile])}</b> · ${esc(d.categories[pro.category])}</p>
-      <p class="muted">${esc(d.section.coverage(o.coveredWeight))}</p>
+      <p class="muted">${esc(d.section.confidence[o.confidence])} · ${esc(d.section.coverageLine(Math.round(o.criteriaCoverage * 100)))} · ${esc(d.section.coverage(o.coveredWeight))}</p>
+      ${o.levelCap ? `<p>${esc(d.section.levelCap[o.levelCap])}</p>` : ''}
       <p class="muted">${esc(d.section.levelsNote)}</p>
     </div>
   </div>
   <table style="margin-top:3mm"><tbody>${pillarRows}</tbody></table>
+  <div class="grid" style="margin-top:3mm">
+    <div class="box small" style="break-inside:avoid">
+      <div class="k">${esc(d.section.basisTitle)}</div>
+      ${(['measured', 'detected', 'ai', 'unverified', 'na'] as const).map((k) => `<div><b class="mono">${pro.basisCounts[k]}</b> · ${esc(d.basis[k].label)} <span class="muted">— ${esc(d.basis[k].hint)}</span></div>`).join('')}
+      ${pro.basisCounts.ai === 0 ? `<p class="muted" style="margin-top:1.5mm">${esc(d.section.noAi)}</p>` : ''}
+    </div>
+    <div class="box small" style="break-inside:avoid">
+      <div class="k">${esc(d.section.howTitle)}</div>
+      <p class="muted">${esc(d.section.howPillar)}</p>
+      <div class="k" style="margin-top:1.5mm">${esc(d.section.overallLabel)}</div>
+      <p class="mono" dir="ltr" style="text-align:left">${esc(d.section.howOverall(pro.pillars.filter((p) => p.score !== null).map((p) => `${p.score}×${p.weight}`).join(' + '), o.coveredWeight, o.score))}</p>
+    </div>
+  </div>
   <p class="small muted" style="margin-top:2mm">${esc(d.section.visualNote)}</p>
   ${detail}`;
 }

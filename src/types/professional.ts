@@ -68,7 +68,22 @@ export interface ProfessionalScore {
   profile: ProfileId;
   category: SiteCategory;
   categorySource: 'detected' | 'user';
-  overall: { score: number | null; level: QualityLevel | null; coveredWeight: number };
+  overall: {
+    score: number | null;
+    level: QualityLevel | null;
+    /** Points (of 100) of pillars that produced a score. */
+    coveredWeight: number;
+    /** Share (0–1) of all applicable criteria, by weight, that were actually tested. */
+    criteriaCoverage: number;
+    /** How much to rely on the overall score, from criteriaCoverage. */
+    confidence: Confidence;
+    /** Why the level is lower than the score alone would give, if it is. */
+    levelCap: 'needs_visual_assessment' | 'low_coverage' | null;
+  };
+  /** Whether a screenshot-based visual assessment was part of this score. */
+  visualAssessment: boolean;
+  /** Number of criteria per evidence basis. */
+  basisCounts: Record<EvidenceBasis, number>;
   pillars: PillarResult[];
   criteria: CriterionResult[];
 }

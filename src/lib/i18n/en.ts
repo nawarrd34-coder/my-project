@@ -179,7 +179,7 @@ export const en = {
     pdfFailed: 'The PDF could not be generated. Please try again.',
     newScan: 'New scan',
     summaryTitle: 'Summary',
-    aiLabel: 'Summary written by AI from the verified findings below',
+    aiLabel: 'AI-written summary of the findings below — an interpretation, not a measurement',
     counts: (c: number, h: number, total: number) =>
       total === 0
         ? 'No issues were detected in the checks that ran.'
@@ -277,7 +277,7 @@ export const en = {
     ux: { name: 'User experience', desc: 'Navigation, contact options and calls to action.' },
   },
   severity: { critical: 'Critical', high: 'High', medium: 'Medium', low: 'Low', info: 'Informational' },
-  basis: { verified: 'Verified', inferred: 'Inferred', verifiedHint: 'Measured directly', inferredHint: 'Estimated from the page’s HTML' },
+  basis: { verified: 'Measured', inferred: 'Inferred from page HTML', verifiedHint: 'Measured directly (Lighthouse, headers or the rendered page)', inferredHint: 'Read from the page’s HTML; may not reflect what visitors see' },
   grades: { excellent: 'Excellent', good: 'Good', needs_improvement: 'Needs improvement', weak: 'Weak', critical: 'Critical' },
   metrics: {
     fcp: { name: 'First Contentful Paint', desc: 'First text or image appears' },

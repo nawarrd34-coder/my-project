@@ -20,14 +20,14 @@ export const PROFILE_WEIGHTS: Record<ProfileId, Partial<Record<PillarId, number>
     seo_trust: 10,
   },
   general: {
-    visual: 15,
-    structure: 15,
-    content: 15,
-    conversion: 20,
+    visual: 10,
+    structure: 10,
+    content: 30,
+    conversion: 15,
     mobile: 10,
     technical: 5,
-    seo: 10,
-    trust: 10,
+    seo: 5,
+    trust: 15,
   },
 };
 
@@ -64,5 +64,15 @@ export const QUALITY_LEVELS: { level: QualityLevel; min: number }[] = [
 export const MIN_PILLAR_COVERAGE = 0.4;
 /** The overall score is shown only when pillars worth this many points were scored. */
 export const MIN_OVERALL_WEIGHT = 60;
+
+/**
+ * "Excellent" is a claim about the whole website, including how it looks.
+ * It is only awarded when a visual assessment ran and most criteria were
+ * tested; otherwise the level stops at "Professional" and the report says why.
+ */
+export const EXCELLENT_REQUIRES = { visualAssessment: true, criteriaCoverage: 0.85 };
+
+/** Confidence in the overall score, from the share of applicable criteria (by weight) that were tested. */
+export const CONFIDENCE_BANDS = { high: 0.85, medium: 0.65 };
 
 export const levelFor = (score: number): QualityLevel => QUALITY_LEVELS.find((l) => score >= l.min)!.level;

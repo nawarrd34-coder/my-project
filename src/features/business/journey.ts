@@ -41,7 +41,7 @@ export function analyzeJourney(pages: Doc[]): JourneyAnalysis {
       vatNumber: /\bVAT\b|الرقم الضريبي|ضريبة القيمة المضافة/i.test(hay),
       businessCenter: /business\.sa|eauthenticate|المركز السعودي للأعمال|منصة الأعمال|توثيق/i.test(hay),
     },
-    reviews: /aggregateRating|reviews?\b|تقييم|تقييمات|آراء العملاء|مراجعات/i.test(hay),
+    reviews: /aggregateRating|reviews?\b|testimonials?|تقييم|تقييمات|آراء العملاء|آراء عملائنا|قالوا عنا|مراجعات/i.test(hay),
     navLinks,
   };
 }

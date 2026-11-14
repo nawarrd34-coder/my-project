@@ -1,7 +1,7 @@
 import type { AuditReport, Severity } from '@/types/audit';
 import type { SiteCategory } from '@/types/business';
-import type { CriterionResult, PillarId, PillarResult, ProfessionalScore } from '@/types/professional';
-import { CATEGORY_PROFILE, levelFor, MIN_OVERALL_WEIGHT, MIN_PILLAR_COVERAGE, PROFILE_WEIGHTS } from './config';
+import type { CriterionResult, EvidenceBasis, PillarId, PillarResult, ProfessionalScore, QualityLevel } from '@/types/professional';
+import { CATEGORY_PROFILE, CONFIDENCE_BANDS, EXCELLENT_REQUIRES, levelFor, MIN_OVERALL_WEIGHT, MIN_PILLAR_COVERAGE, PROFILE_WEIGHTS } from './config';
 import { CRITERIA, type Ctx } from './criteria';
 
 /**
@@ -64,12 +64,40 @@ export function scoreProfessional(report: AuditReport, categoryOverride?: SiteCa
   const coveredWeight = scoredPillars.reduce((n, p) => n + p.weight, 0);
   const overallScore = coveredWeight >= MIN_OVERALL_WEIGHT ? Math.round(scoredPillars.reduce((n, p) => n + p.score! * p.weight, 0) / coveredWeight) : null;
 
+  // Share of all applicable criteria (weighted by pillar and by share in the pillar) that were tested.
+  const criteriaCoverage =
+    Math.round(
+      (pillars.reduce((n, p) => {
+        const own = criteria.filter((c) => c.pillar === p.id && c.status !== 'na');
+        const total = own.reduce((m, c) => m + c.weight, 0);
+        return n + (total ? p.weight * p.coverage : 0);
+      }, 0) /
+        Math.max(1, pillars.reduce((n, p) => n + (criteria.some((c) => c.pillar === p.id && c.status !== 'na') ? p.weight : 0), 0))) *
+        100,
+    ) / 100;
+  const confidence = criteriaCoverage >= CONFIDENCE_BANDS.high ? 'high' : criteriaCoverage >= CONFIDENCE_BANDS.medium ? 'medium' : 'low';
+  // No criterion uses a screenshot-based model assessment yet (planned for Phase 2).
+  const visualAssessment = criteria.some((c) => c.basis === 'ai' && c.pillar === 'visual' && c.status === 'scored');
+
+  let level: QualityLevel | null = overallScore === null ? null : levelFor(overallScore);
+  let levelCap: ProfessionalScore['overall']['levelCap'] = null;
+  if (level === 'excellent') {
+    if (EXCELLENT_REQUIRES.visualAssessment && !visualAssessment) levelCap = 'needs_visual_assessment';
+    else if (criteriaCoverage < EXCELLENT_REQUIRES.criteriaCoverage) levelCap = 'low_coverage';
+    if (levelCap) level = 'professional';
+  }
+
+  const basisCounts = { measured: 0, detected: 0, ai: 0, unverified: 0, na: 0 } as Record<EvidenceBasis, number>;
+  for (const c of criteria) basisCounts[c.basis] += 1;
+
   return {
     version: 1,
     profile,
     category,
     categorySource: categoryOverride ? 'user' : 'detected',
-    overall: { score: overallScore, level: overallScore === null ? null : levelFor(overallScore), coveredWeight },
+    overall: { score: overallScore, level, coveredWeight, criteriaCoverage, confidence, levelCap },
+    visualAssessment,
+    basisCounts,
     pillars,
     criteria,
   };

@@ -178,4 +178,91 @@ write(os.path.join(S, 'features', 'index.html'), saas('Features | ExampleBooks',
 write(os.path.join(S, 'privacy', 'index.html'), saas('Privacy | ExampleBooks', '<h1>Privacy</h1>'))
 flat_png(os.path.join(S, 'logo.png'), 200, 70, (59, 91, 219))
 
+# ── Shared helper for the extra sites ────────────────────────────────────────
+def site(root, lang, head, nav, footer):
+    d = 'rtl' if lang == 'ar' else 'ltr'
+    def page(title, body, desc=''):
+        return (f'<!doctype html><html lang="{lang}" dir="{d}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+                f'<title>{title}</title>{head}' + (f'<meta name="description" content="{desc}">' if desc else '') +
+                '<style>body{font-family:Arial;margin:0;line-height:1.6} header,section,footer{padding:24px} .cta{background:#0d3b66;color:#fff;padding:14px 22px;display:inline-block;border-radius:8px} img{max-width:100%;height:auto}</style></head>'
+                f'<body><header><img src="/logo.png" alt="logo" width="160" height="50"><nav>{nav}</nav></header>{body}<footer>{footer}</footer></body></html>')
+    return page
+
+def imgs(root, names, size=(800, 500), color=(90, 120, 150)):
+    for n in names:
+        flat_png(os.path.join(root, n), size[0], size[1], color)
+
+# ── Tourism company: trip packages, online booking requests ──────────────────
+T = os.path.join(ROOT, 'tourism')
+tp = site(T, 'ar', '<script type="application/ld+json">{"@type":"TravelAgency","name":"رحلات المثال","address":{"@type":"PostalAddress","addressLocality":"الرياض","addressCountry":"SA"}}</script>',
+          '<a href="/">الرئيسية</a><a href="/trips/">الرحلات</a><a href="/book/">احجز رحلتك</a><a href="/about/">من نحن</a><a href="/contact/">تواصل معنا</a>',
+          '<a href="https://wa.me/966511111111">واتساب</a><a href="/privacy/">سياسة الخصوصية</a><a href="https://instagram.com/x">Instagram</a>')
+write(os.path.join(T, 'index.html'), tp('رحلات المثال | شركة سياحة وسفر في الرياض', '<section><h1>رحلات سياحية إلى جورجيا وتركيا وأذربيجان</h1><p>باقات سفر عائلية تشمل الطيران والفندق والتنقلات مع مرشد يتحدث العربية.</p><a class="cta" href="/book/">احجز رحلتك</a></section><section><h2>أشهر الباقات</h2><div><img src="/t1.png" alt="جورجيا"><h3>جورجيا 7 أيام</h3><p>تبدأ من 4,500 ريال للشخص</p></div><div><img src="/t2.png" alt="تركيا"><h3>طرابزون 6 أيام</h3><p>تبدأ من 3,900 ريال</p></div><div><img src="/t3.png" alt="أذربيجان"><h3>باكو 5 أيام</h3><p>تبدأ من 3,200 ريال</p></div></section><section><h2>لماذا نحن</h2><p>أكثر من 3000 مسافر منذ 2015.</p></section>', 'شركة سياحة وسفر في الرياض: باقات رحلات عائلية إلى جورجيا وتركيا وأذربيجان مع الطيران والفندق.'))
+write(os.path.join(T, 'book', 'index.html'), tp('احجز رحلتك | رحلات المثال', '<h1>احجز رحلتك</h1><form><input type="text" name="name"><input type="tel" name="phone"><input type="date" name="date"><select name="trip"><option>جورجيا</option></select><button>تحقق من التوفر</button></form>'))
+write(os.path.join(T, 'about', 'index.html'), tp('من نحن | رحلات المثال', '<h1>من نحن</h1><p>شركة سياحة مرخصة.</p>'))
+write(os.path.join(T, 'contact', 'index.html'), tp('تواصل معنا | رحلات المثال', '<h1>تواصل معنا</h1><form><input type="email"><textarea></textarea><button>إرسال</button></form>'))
+write(os.path.join(T, 'privacy', 'index.html'), tp('الخصوصية', '<h1>سياسة الخصوصية</h1>'))
+imgs(T, ['t1.png', 't2.png', 't3.png']); flat_png(os.path.join(T, 'logo.png'), 160, 50, (13, 59, 102))
+
+# ── Real estate: listings and viewing appointments ───────────────────────────
+E = os.path.join(ROOT, 'realestate')
+ep = site(E, 'ar', '<script type="application/ld+json">{"@type":"RealEstateAgent","name":"عقارات المثال"}</script>',
+          '<a href="/">الرئيسية</a><a href="/properties/">العقارات</a><a href="/contact/">تواصل معنا</a>',
+          '<a href="tel:+966122222222">اتصل بنا</a><a href="https://wa.me/966522222222">واتساب</a>')
+write(os.path.join(E, 'index.html'), ep('عقارات المثال | شقق وفلل للبيع والإيجار في جدة', '<section><h1>شقق وفلل للبيع والإيجار في جدة</h1><p>عقارات سكنية مختارة في أحياء شمال جدة.</p><a class="cta" href="/contact/">احجز موعد معاينة</a></section><section><h2>عقارات مميزة</h2><div><img src="/p1.png" alt="شقة"><h3>شقة 3 غرف للبيع - حي الروضة</h3><p>850,000 ريال</p></div><div><img src="/p2.png" alt="فيلا"><h3>فيلا دورين للإيجار - حي الشاطئ</h3><p>120,000 ريال سنوياً</p></div></section>', 'عقارات للبيع والإيجار في جدة: شقق وفلل مع معاينة بموعد.'))
+write(os.path.join(E, 'contact', 'index.html'), ep('تواصل | عقارات المثال', '<h1>احجز موعد معاينة</h1><form><input type="tel"><input type="date"><textarea></textarea><button>إرسال</button></form>'))
+imgs(E, ['p1.png', 'p2.png']); flat_png(os.path.join(E, 'logo.png'), 160, 50, (120, 80, 40))
+
+# ── Medical clinic: specialties, doctors, appointment booking ────────────────
+M = os.path.join(ROOT, 'clinic')
+mp = site(M, 'ar', '<script type="application/ld+json">{"@type":"MedicalClinic","name":"عيادات المثال","openingHours":"Sa-Th 09:00-22:00","address":{"@type":"PostalAddress","addressLocality":"الدمام","addressCountry":"SA"}}</script>',
+          '<a href="/">الرئيسية</a><a href="/services/">العيادات</a><a href="/booking/">حجز موعد</a><a href="/contact/">تواصل معنا</a>',
+          '<a href="tel:+966133333333">اتصل بنا</a><a href="/privacy/">سياسة الخصوصية</a>')
+write(os.path.join(M, 'index.html'), mp('عيادات المثال | طب الأسنان والجلدية في الدمام', '<section><h1>عيادات طب الأسنان والجلدية في الدمام</h1><p>أطباء استشاريون ومواعيد مسائية.</p><a class="cta" href="/booking/">احجز موعدك</a></section><section><h2>العيادات</h2><div><h3>طب الأسنان</h3></div><div><h3>الجلدية والتجميل</h3></div><div><h3>طب الأطفال</h3></div></section><section><h2>ساعات العمل</h2><p>من السبت إلى الخميس 9 صباحاً - 10 مساءً</p><iframe src="https://www.google.com/maps/embed?pb=x"></iframe></section>', 'عيادات طب الأسنان والجلدية والأطفال في الدمام مع حجز موعد إلكتروني.'))
+write(os.path.join(M, 'booking', 'index.html'), mp('حجز موعد | عيادات المثال', '<h1>حجز موعد</h1><form><select name="clinic"><option>الأسنان</option></select><input type="date"><input type="time"><input type="tel"><button>احجز</button></form>'))
+write(os.path.join(M, 'privacy', 'index.html'), mp('الخصوصية', '<h1>سياسة الخصوصية</h1>'))
+flat_png(os.path.join(M, 'logo.png'), 160, 50, (20, 140, 140))
+
+# ── Custom-built store (no known platform signature) ─────────────────────────
+K = os.path.join(ROOT, 'customstore')
+kp = site(K, 'ar', '', '<a href="/">الرئيسية</a><a href="/category/dates/">التمور</a><a href="/category/coffee/">القهوة</a><a href="/cart">السلة</a>',
+          '<p>نقبل: مدى، Apple Pay، Visa</p><a href="/policy/returns">سياسة الاسترجاع</a><a href="/policy/shipping">الشحن والتوصيل</a>')
+def prod(slug, name, price):
+    return f'<div class="product-card"><a href="/product/{slug}"><img src="/{slug}.png" alt="{name}"><h3>{name}</h3></a><span>{price} ر.س</span><button>أضف إلى السلة</button></div>'
+items = [('sukkari', 'تمر سكري فاخر 1 كجم', 45), ('ajwa', 'عجوة المدينة 1 كجم', 90), ('khawlani', 'قهوة خولانية 500 جم', 65), ('saffron', 'زعفران 10 جم', 55)]
+write(os.path.join(K, 'index.html'), kp('متجر المثال للتمور والقهوة', '<section><h1>تمور وقهوة سعودية فاخرة</h1><a class="cta" href="/category/dates/">تسوق الآن</a></section><section><h2>الأكثر مبيعاً</h2>' + ''.join(prod(*i) for i in items) + '</section>', 'متجر تمور وقهوة سعودية فاخرة مع توصيل لجميع مدن المملكة.'))
+for slug, name, price in items:
+    write(os.path.join(K, 'product', slug, 'index.html'), kp(f'{name} | متجر المثال', f'<main><h1>{name}</h1><img src="/{slug}.png" alt="{name}"><img src="/{slug}.png" alt="{name}"><p class="price">{price} ر.س</p><p>متوفر</p><p>منتج سعودي طبيعي 100٪ معبأ بعناية ويُحفظ في مكان بارد وجاف. مناسب للضيافة والهدايا.</p><button>أضف إلى السلة</button></main><script type="application/ld+json">{{"@type":"Product","name":"{name}","offers":{{"@type":"Offer","price":"{price}","priceCurrency":"SAR","availability":"https://schema.org/InStock"}}}}</script>'))
+    flat_png(os.path.join(K, f'{slug}.png'), 600, 600, (150, 110, 60))
+for c in ['dates', 'coffee']:
+    write(os.path.join(K, 'category', c, 'index.html'), kp(c, '<main>' + ''.join(prod(*i) for i in items) + '</main>'))
+write(os.path.join(K, 'policy', 'returns', 'index.html'), kp('الاسترجاع', '<h1>سياسة الاسترجاع</h1>'))
+write(os.path.join(K, 'policy', 'shipping', 'index.html'), kp('الشحن', '<h1>الشحن والتوصيل</h1><p>التوصيل خلال 2-4 أيام.</p>'))
+flat_png(os.path.join(K, 'logo.png'), 160, 50, (110, 70, 30))
+
+# ── Law firm, complete and well-structured (to compare with the thin one) ────
+W = os.path.join(ROOT, 'lawrich')
+wp = site(W, 'ar', '<meta property="og:title" content="المثال للمحاماة"><meta property="og:image" content="http://127.0.0.1:4821/logo.png"><script type="application/ld+json">{"@type":"LegalService","name":"شركة المثال للمحاماة","address":{"@type":"PostalAddress","addressLocality":"الرياض","addressCountry":"SA"}}</script>',
+          '<a href="/">الرئيسية</a><a href="/services/">خدماتنا</a><a href="/team/">فريقنا</a><a href="/about/">من نحن</a><a href="/book/">احجز استشارة</a><a href="/contact/">تواصل معنا</a>',
+          '<a href="https://wa.me/966544444444">واتساب</a><a href="tel:+966114444444">اتصل بنا</a><a href="mailto:info@example.invalid">البريد</a><a href="/privacy/">سياسة الخصوصية</a><a href="https://www.linkedin.com/company/x">LinkedIn</a><p>ترخيص وزارة العدل رقم 123 · السجل التجاري 1010000000</p><address>الرياض، طريق الملك فهد</address>')
+body = ('<section><h1>شركة محاماة متخصصة في قضايا الشركات والعمل في الرياض</h1><p>نمثّل الشركات الناشئة والمتوسطة أمام المحاكم التجارية والعمالية، ونصيغ عقودها ونراجع امتثالها للأنظمة السعودية منذ 2008.</p><a class="cta" href="/book/">احجز استشارة أولية</a><img src="/office.png" alt="مكتب الشركة"></section>'
+        '<section><h2>خدماتنا</h2><div><img src="/s1.png" alt=""><h3>القضايا التجارية</h3><p>تمثيل في نزاعات الشركاء والعقود والتحصيل أمام المحاكم التجارية ومراكز التحكيم.</p></div><div><img src="/s2.png" alt=""><h3>قضايا العمل</h3><p>تمثيل أصحاب العمل في الدعاوى العمالية وصياغة اللوائح الداخلية وعقود الموظفين.</p></div><div><img src="/s3.png" alt=""><h3>تأسيس الشركات</h3><p>تأسيس الكيانات واتفاقيات الشركاء ونقل الملكية والتراخيص.</p></div><div><h3>صياغة العقود</h3><p>عقود التوريد والتوزيع والامتياز وعقود التقنية.</p></div></section>'
+        '<section><h2>أرقامنا</h2><p>أكثر من 900 قضية منذ 2008 · 120 شركة عميلة · 15 محامياً مرخصاً</p></section>'
+        '<section><h2>فريق المحامين</h2><div><img src="/l1.png" alt="المحامي أحمد"><h3>أحمد العتيبي</h3><p>شريك مؤسس، محامٍ مرخص منذ 2008</p></div><div><img src="/l2.png" alt="المحامية سارة"><h3>سارة القحطاني</h3><p>رئيسة قسم قضايا العمل</p></div></section>'
+        '<section><h2>آراء عملائنا</h2><blockquote>"حسموا نزاع الشراكة خلال أربعة أشهر." — مدير شركة تقنية</blockquote><blockquote>"عقود واضحة وفريق متجاوب." — مؤسسة تجارية</blockquote></section>'
+        '<section><h2>كيف نعمل</h2><p>استشارة أولية، ثم دراسة المستندات، ثم خطة عمل مكتوبة بالأتعاب والجدول الزمني.</p></section>'
+        '<section><h2>الأسئلة الشائعة</h2><h3>كم تكلفة الاستشارة الأولية؟</h3><p>تُحدد حسب نوع القضية ونبلغك بها قبل الموعد.</p></section>')
+write(os.path.join(W, 'index.html'), wp('شركة المثال للمحاماة | قضايا الشركات والعمل في الرياض', body, 'شركة محاماة في الرياض متخصصة في القضايا التجارية والعمالية وتأسيس الشركات وصياغة العقود منذ 2008.'))
+write(os.path.join(W, 'services', 'index.html'), wp('خدماتنا', '<main><h1>خدماتنا</h1><h2>القضايا التجارية</h2><h2>قضايا العمل</h2><h2>تأسيس الشركات</h2><h2>صياغة العقود</h2></main>'))
+write(os.path.join(W, 'about', 'index.html'), wp('من نحن', '<h1>من نحن</h1><p>تأسست الشركة في 2008.</p>'))
+write(os.path.join(W, 'book', 'index.html'), wp('احجز استشارة', '<h1>احجز موعد استشارة</h1><iframe src="https://calendly.com/x/consultation"></iframe>'))
+write(os.path.join(W, 'contact', 'index.html'), wp('تواصل معنا', '<h1>تواصل معنا</h1><form><input type="text"><input type="tel"><input type="email"><textarea></textarea><button>إرسال</button></form>'))
+write(os.path.join(W, 'privacy', 'index.html'), wp('الخصوصية', '<h1>سياسة الخصوصية</h1>'))
+write(os.path.join(W, 'sitemap.xml'), '<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://127.0.0.1:4821/</loc></url><url><loc>http://127.0.0.1:4821/services/</loc></url></urlset>')
+imgs(W, ['office.png', 's1.png', 's2.png', 's3.png', 'l1.png', 'l2.png']); flat_png(os.path.join(W, 'logo.png'), 160, 50, (29, 43, 79))
+
+# ── A very thin generic company site (weak signals) ──────────────────────────
+G = os.path.join(ROOT, 'thin')
+write(os.path.join(G, 'index.html'), '<!doctype html><html><head><title>Welcome</title></head><body><h1>Welcome to our company</h1><p>We provide the best services and innovative solutions.</p><a href="mailto:info@example.invalid">Contact</a></body></html>')
+
 print('built', ROOT)

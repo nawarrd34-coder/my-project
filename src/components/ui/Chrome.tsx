@@ -152,7 +152,7 @@ export function SiteFooter() {
   const mark = <YouthStudioMark width={200} />;
   return (
     <footer className="relative mt-10 border-t border-line">
-      <div className="container-page flex flex-col items-center gap-6 py-16 text-center">
+      <div className="container-page flex flex-col items-center gap-6 pb-28 pt-16 text-center md:pb-16">
         {studio.website ? (
           <a href={studio.website} target="_blank" rel="noopener noreferrer" aria-label="Youth Studio">
             {mark}

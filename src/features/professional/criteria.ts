@@ -1,6 +1,7 @@
 import type { AuditReport, Params } from '@/types/audit';
 import type { BusinessAnalysis, Confidence, Evidence, SiteClassification } from '@/types/business';
 import type { CriterionResult, EvidenceBasis, PillarId, ProfileId } from '@/types/professional';
+import { WEAK_HEADLINE } from '@/features/business/headline';
 
 /**
  * Professionalism criteria. Each one has a rule (documented in its copy and
@@ -59,7 +60,7 @@ const needsRender = (c: Ctx) => (c.rendered ? null : untested('not_rendered'));
 const ctaContrast: CriterionDef = {
   id: 'cta_contrast',
   importance: 'medium',
-  in: { ecommerce: { pillar: 'visual', weight: 25 }, general: { pillar: 'visual', weight: 25 } },
+  in: { ecommerce: { pillar: 'visual', weight: 25 }, general: { pillar: 'visual', weight: 20 } },
   related: ['design_cta_low_contrast'],
   run: (c) => {
     const skip = needsRender(c);
@@ -242,7 +243,7 @@ const seoScore: CriterionDef = {
 const privacy: CriterionDef = {
   id: 'privacy',
   importance: 'medium',
-  in: { ecommerce: { pillar: 'seo_trust', weight: 15 }, general: { pillar: 'trust', weight: 25 } },
+  in: { ecommerce: { pillar: 'seo_trust', weight: 15 }, general: { pillar: 'trust', weight: 15 } },
   related: [],
   run: (c) => {
     const found = c.b.journey.privacyPolicy;
@@ -270,7 +271,7 @@ const contactChannels: CriterionDef = {
 const registration: CriterionDef = {
   id: 'registration',
   importance: 'medium',
-  in: { ecommerce: { pillar: 'seo_trust', weight: 20 }, general: { pillar: 'trust', weight: 20 } },
+  in: { ecommerce: { pillar: 'seo_trust', weight: 20 }, general: { pillar: 'trust', weight: 10 } },
   related: ['journey_no_trust_details'],
   run: (c) => {
     if (!c.saudi) return na('not_saudi');
@@ -506,7 +507,7 @@ const brokenPages: CriterionDef = {
 const homeImagery: CriterionDef = {
   id: 'home_imagery',
   importance: 'medium',
-  in: { general: { pillar: 'visual', weight: 20 } },
+  in: { general: { pillar: 'visual', weight: 25 } },
   related: [],
   run: (c) => {
     const op = c.report.site.onPage;
@@ -518,7 +519,7 @@ const homeImagery: CriterionDef = {
 const pageSections: CriterionDef = {
   id: 'page_sections',
   importance: 'low',
-  in: { general: { pillar: 'content', weight: 15 } },
+  in: { general: { pillar: 'content', weight: 10 } },
   related: ['seo_heading_order'],
   run: (c) => {
     const op = c.report.site.onPage;
@@ -527,48 +528,42 @@ const pageSections: CriterionDef = {
   },
 };
 
-const titleQuality: CriterionDef = {
-  id: 'title',
+const valueProposition: CriterionDef = {
+  id: 'value_proposition',
+  importance: 'high',
+  in: { general: { pillar: 'content', weight: 20 } },
+  related: [],
+  run: (c) => {
+    const hero = c.cl?.signals.hero;
+    const op = c.report.site.onPage;
+    if (!hero || !op) return untested('no_classification');
+    if (op.likelyClientRendered) return untested('client_rendered');
+    const h = hero.headline;
+    if (!h) return scored(20, 'detected', [homeEv(c, 'homepage <h1>', 'no main headline')], { headline: null });
+    const words = h.split(/\s+/).filter(Boolean).length;
+    const weak = WEAK_HEADLINE.test(h) || words < 3 || (c.cl?.signals.genericPhrases ?? []).some((g) => h.includes(g));
+    const score = weak ? 30 : hero.support ? 100 : 65;
+    return scored(score, 'detected', [homeEv(c, 'homepage <h1> and the text under it', `«${h}»${hero.support ? ' + supporting sentence' : ''}`)], { headline: h, support: hero.support, weak }, 'medium');
+  },
+};
+
+const proofElements: CriterionDef = {
+  id: 'proof_elements',
   importance: 'medium',
-  in: { general: { pillar: 'content', weight: 10 } },
-  related: ['seo_title_missing', 'seo_title_length'],
+  in: { general: { pillar: 'trust', weight: 30 } },
+  related: [],
   run: (c) => {
-    const op = c.report.site.onPage;
-    if (!op) return untested('no_html');
-    const t = op.title ?? '';
-    return scored(!t ? 0 : t.length >= 15 && t.length <= 65 ? 100 : 70, 'measured', [homeEv(c, '<title>', t || 'missing')], { length: t.length });
-  },
-};
-
-const metaDescription: CriterionDef = {
-  id: 'meta_description',
-  importance: 'low',
-  in: { general: { pillar: 'content', weight: 10 } },
-  related: ['seo_description_missing', 'seo_description_length'],
-  run: (c) => {
-    const op = c.report.site.onPage;
-    if (!op) return untested('no_html');
-    const d = op.metaDescription ?? '';
-    return scored(!d ? 20 : d.length >= 70 && d.length <= 170 ? 100 : 75, 'measured', [homeEv(c, 'meta description', d || 'missing')], { length: d.length });
-  },
-};
-
-const singleH1: CriterionDef = {
-  id: 'single_h1',
-  importance: 'low',
-  in: { general: { pillar: 'content', weight: 5 } },
-  related: ['seo_h1_missing', 'seo_h1_multiple'],
-  run: (c) => {
-    const op = c.report.site.onPage;
-    if (!op || op.likelyClientRendered) return untested(op ? 'client_rendered' : 'no_html');
-    return scored(op.h1Count === 1 ? 100 : op.h1Count === 0 ? 30 : 70, 'measured', [homeEv(c, '<h1> headings', `${op.h1Count}`)], { count: op.h1Count });
+    const proof = c.cl?.signals.proof;
+    if (!proof) return untested('no_classification');
+    const kinds = [...new Set(proof.map((p) => p.kind))];
+    return scored(band(kinds.length, [[3, 100], [2, 80], [1, 55], [0, 30]]), 'detected', proof.length ? proof.map((p) => ({ url: p.url, where: `proof: ${p.kind}`, value: p.value })) : [homeEv(c, `${c.b.coverage.pagesAnalyzed} pages read`, 'no numbers, client list, case studies or team found')], { count: kinds.length, kinds: kinds.join(', ') }, 'medium');
   },
 };
 
 const homeWords: CriterionDef = {
   id: 'home_words',
   importance: 'medium',
-  in: { general: { pillar: 'content', weight: 25 } },
+  in: { general: { pillar: 'content', weight: 40 } },
   related: ['ux_thin_content'],
   run: (c) => {
     const op = c.report.site.onPage;
@@ -580,7 +575,7 @@ const homeWords: CriterionDef = {
 const genericPhrases: CriterionDef = {
   id: 'generic_phrases',
   importance: 'low',
-  in: { general: { pillar: 'content', weight: 15 } },
+  in: { general: { pillar: 'content', weight: 10 } },
   related: [],
   run: (c) => {
     if (!c.cl) return untested('no_classification');
@@ -679,7 +674,7 @@ const sitemap: CriterionDef = {
 const businessAddress: CriterionDef = {
   id: 'business_address',
   importance: 'low',
-  in: { general: { pillar: 'trust', weight: 20 } },
+  in: { general: { pillar: 'trust', weight: 10 } },
   related: [],
   run: (c) => {
     if (!c.cl) return untested('no_classification');
@@ -692,7 +687,7 @@ const businessAddress: CriterionDef = {
 const socialLinks: CriterionDef = {
   id: 'social_links',
   importance: 'low',
-  in: { general: { pillar: 'trust', weight: 15 } },
+  in: { general: { pillar: 'trust', weight: 10 } },
   related: [],
   run: (c) => {
     const s = c.b.identity.contact.social;
@@ -703,7 +698,7 @@ const socialLinks: CriterionDef = {
 const testimonials: CriterionDef = {
   id: 'testimonials',
   importance: 'low',
-  in: { general: { pillar: 'trust', weight: 20 } },
+  in: { general: { pillar: 'trust', weight: 25 } },
   related: ['journey_no_reviews'],
   run: (c) => scored(c.b.journey.reviews ? 100 : 45, 'detected', [homeEv(c, `${c.b.coverage.pagesAnalyzed} pages read`, c.b.journey.reviews ? 'reviews / testimonials found' : 'none found')], {}, 'medium'),
 };
@@ -739,10 +734,8 @@ export const CRITERIA: CriterionDef[] = [
   pagePresence('contact_page', 'contact', 'structure', 25),
   brokenPages,
   // content
-  titleQuality,
   pageSections,
-  metaDescription,
-  singleH1,
+  valueProposition,
   homeWords,
   genericPhrases,
   servicesDescribed,
@@ -775,4 +768,5 @@ export const CRITERIA: CriterionDef[] = [
   businessAddress,
   socialLinks,
   testimonials,
+  proofElements,
 ];

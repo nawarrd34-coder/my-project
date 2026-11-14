@@ -359,6 +359,9 @@ function PillarCard({ p, pro, business, covered }: { p: PillarResult; pro: Profe
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden border-t border-line">
             <p className="px-5 pt-3 text-xs text-faint">{d.pillars[p.id].desc}</p>
+            <p className="px-5 pt-1 text-[11px] text-faint" data-testid="pillar-math">
+              {d.section.pillarMath(items.filter((c) => c.status === 'scored').length, items.filter((c) => c.status !== 'na').length, Math.round(p.coverage * 100))}
+            </p>
             <ul className="mt-1">
               {items.map((c) => (
                 <CriterionRow key={c.id} c={c} business={business} covered={covered} />
@@ -399,7 +402,15 @@ export function ProfessionalSection({ pro, business, covered }: { pro: Professio
             <p className="text-muted">
               {d.section.profile}: <span className="text-ink">{d.profiles[pro.profile]}</span> · <span className="text-ink">{d.categories[pro.category]}</span>
             </p>
-            <p className="text-xs text-faint">{d.section.coverage(o.coveredWeight)}</p>
+            <p className="flex flex-wrap items-center gap-2 text-xs text-faint" data-testid="professional-coverage" data-confidence={o.confidence}>
+              <ConfidenceBadge value={o.confidence} />
+              {d.section.coverageLine(Math.round(o.criteriaCoverage * 100))} · {d.section.coverage(o.coveredWeight)}
+            </p>
+            {o.levelCap && (
+              <p className="rounded-lg border border-warn/25 bg-warn/[0.06] px-3 py-2 text-xs leading-relaxed text-ink/85" data-testid="level-cap" data-cap={o.levelCap}>
+                {d.section.levelCap[o.levelCap]}
+              </p>
+            )}
             {strongest.length > 0 && (
               <p className="text-xs text-muted">
                 <span className="text-good">{d.section.strongest}:</span> {strongest.map((p) => `${d.pillars[p.id].name} (${p.score})`).join(' · ')}
@@ -412,6 +423,38 @@ export function ProfessionalSection({ pro, business, covered }: { pro: Professio
             )}
             <p className="text-[11px] leading-relaxed text-faint">{d.section.levelsNote}</p>
           </div>
+        </div>
+      </div>
+      <div className="grid gap-3 lg:grid-cols-2">
+        <div className="panel p-5" data-testid="basis-legend">
+          <p className="text-xs font-medium text-muted">{d.section.basisTitle}</p>
+          <ul className="mt-3 space-y-2">
+            {(['measured', 'detected', 'ai', 'unverified', 'na'] as EvidenceBasis[]).map((k) => (
+              <li key={k} className="flex items-start gap-3 text-xs" data-basis-count={k} data-count={pro.basisCounts[k]}>
+                <span className="w-24 shrink-0">
+                  <BasisTag basis={k} />
+                </span>
+                <span className="num w-6 shrink-0 text-ink">{pro.basisCounts[k]}</span>
+                <span className="text-faint">{d.basis[k].hint}</span>
+              </li>
+            ))}
+          </ul>
+          {pro.basisCounts.ai === 0 && <p className="mt-3 text-[11px] leading-relaxed text-faint">{d.section.noAi}</p>}
+        </div>
+        <div className="panel p-5" data-testid="score-math">
+          <p className="text-xs font-medium text-muted">{d.section.howTitle}</p>
+          <p className="mt-3 text-xs leading-relaxed text-faint">{d.section.howPillar}</p>
+          <p className="mt-3 text-xs text-muted">{d.section.overallLabel}</p>
+          <p className="mt-1 rounded-lg border border-line bg-black/30 px-3 py-2 text-start font-mono text-[11px] leading-relaxed text-ink/85" dir={o.score === null ? undefined : 'ltr'} data-testid="score-formula">
+            {d.section.howOverall(
+              pro.pillars
+                .filter((p) => p.score !== null)
+                .map((p) => `${p.score}×${p.weight}`)
+                .join(' + '),
+              o.coveredWeight,
+              o.score,
+            )}
+          </p>
         </div>
       </div>
       <div className="grid items-start gap-3 md:grid-cols-2">

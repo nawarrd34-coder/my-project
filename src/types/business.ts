@@ -315,6 +315,10 @@ export interface SiteClassification {
     dateInputs: boolean;
     genericPhrases: string[];
     homepageProducts: number;
+    /** Main homepage headline and whether a supporting sentence follows it (absent in older reports). */
+    hero?: { headline: string | null; support: boolean };
+    /** Kinds of proof found (numbers, clients, case studies, team), with what was seen. */
+    proof?: { kind: 'numbers' | 'clients' | 'cases' | 'team'; value: string; url: string }[];
   };
 }
 

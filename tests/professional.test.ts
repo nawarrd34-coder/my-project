@@ -68,6 +68,59 @@ test('generic marketing phrases are detected on the homepage', () => {
   assert.ok(c.signals.genericPhrases.length >= 2);
 });
 
+test('tourism company with trip booking → tourism / online booking', () => {
+  const c = classify([
+    { url: 'https://trips.example/', kind: 'home', html: '<html lang="ar"><head><title>شركة سياحة وسفر</title><script type="application/ld+json">{"@type":"TravelAgency","name":"رحلات"}</script></head><body><h1>رحلات سياحية إلى جورجيا وتركيا</h1><p>باقات سفر عائلية تشمل الطيران والفندق</p><a href="/book">احجز رحلتك</a><h2>أشهر الباقات</h2><h3>جورجيا 7 أيام</h3><h3>طرابزون 6 أيام</h3></body></html>' },
+    { url: 'https://trips.example/book', kind: 'booking', html: '<body><form><input type="date"><input type="tel"><button>تحقق من التوفر</button></form></body>' },
+  ]);
+  assert.equal(c.category.value, 'tourism');
+  assert.equal(c.model.primary, 'online_booking');
+  assert.ok(c.services.length >= 2, 'packages listed as offerings');
+});
+
+test('real estate agency with viewing appointments → real estate / appointments', () => {
+  const c = classify([
+    { url: 'https://homes.example/', kind: 'home', html: '<html lang="ar"><head><title>عقارات للبيع والإيجار في جدة</title></head><body><h1>شقق وفلل للبيع والإيجار</h1><a href="/contact">احجز موعد معاينة</a><h3>شقة 3 غرف للبيع</h3><h3>فيلا للإيجار</h3></body></html>' },
+  ]);
+  assert.equal(c.category.value, 'real_estate');
+  assert.equal(c.model.primary, 'appointments');
+});
+
+test('medical clinic with appointment booking → medical / appointments, specialties as services', () => {
+  const c = classify([
+    { url: 'https://clinic.example/', kind: 'home', html: '<html lang="ar"><head><title>عيادات طب الأسنان والجلدية</title><script type="application/ld+json">{"@type":"MedicalClinic","name":"عيادات","openingHours":"Sa-Th 09:00-22:00"}</script></head><body><h1>عيادات طب الأسنان والجلدية</h1><a href="/booking">احجز موعدك</a><section><h2>العيادات</h2><h3>طب الأسنان</h3><h3>الجلدية والتجميل</h3><h3>طب الأطفال</h3></section></body></html>' },
+  ]);
+  assert.equal(c.category.value, 'medical');
+  assert.equal(c.model.primary, 'appointments');
+  assert.deepEqual(c.services.map((s) => s.name), ['طب الأسنان', 'الجلدية والتجميل', 'طب الأطفال']);
+});
+
+test('custom-built store without a platform signature → online store from its own cart', () => {
+  const c = classify([
+    { url: 'https://dates.example/', kind: 'home', html: '<html lang="ar"><head><title>متجر تمور وقهوة</title></head><body><a href="/cart">السلة</a><h1>تمور فاخرة</h1><div class="product-card"><h3>تمر سكري</h3><span>45 ر.س</span><button>أضف إلى السلة</button></div><div><h3>عجوة</h3><span>90 ر.س</span><button>أضف إلى السلة</button></div></body></html>' },
+  ]);
+  assert.equal(c.category.value, 'ecommerce');
+  assert.equal(c.model.primary, 'direct_sales');
+});
+
+test('construction company asking for quotations → construction / quotation', () => {
+  const c = classify([
+    { url: 'https://build.example/', kind: 'home', html: '<html lang="ar"><head><title>شركة مقاولات وإنشاءات</title><meta name="description" content="مقاولات عامة وإنشاءات وصيانة"></head><body><h1>مقاولات وإنشاءات هندسية</h1><a href="/contact">اطلب عرض سعر</a><h2>خدماتنا</h2><ul><li>البناء</li><li>الترميم</li><li>الصيانة</li></ul></body></html>' },
+  ]);
+  assert.equal(c.category.value, 'construction');
+  assert.equal(c.model.primary, 'quotation');
+  assert.equal(c.services.length, 3);
+});
+
+test('proof of experience and the main headline are read from the pages', () => {
+  const c = classify([
+    { url: 'https://firm.example/', kind: 'home', html: '<body><section><h1>محامون للشركات في الرياض</h1><p>نمثل الشركات الناشئة أمام المحاكم التجارية والعمالية منذ 2008 ونصيغ عقودها.</p></section><h2>فريق المحامين</h2><p>أكثر من 900 قضية</p><h2>عملاؤنا</h2></body>' },
+  ]);
+  assert.equal(c.signals.hero?.headline, 'محامون للشركات في الرياض');
+  assert.equal(c.signals.hero?.support, true);
+  assert.deepEqual([...new Set(c.signals.proof?.map((p) => p.kind))].sort(), ['clients', 'numbers', 'team']);
+});
+
 // ─── Score engine ───────────────────────────────────────────────────────────
 
 const sample = JSON.parse(fs.readFileSync(new URL('./fixtures/report-business.json', import.meta.url), 'utf8')) as AuditReport;
@@ -128,8 +181,41 @@ test('low scores carry a severity; high scores do not', () => {
   }
 });
 
+test('"Excellent" is not awarded without a visual assessment; the report says why', () => {
+  const r = structuredClone(sample);
+  // Make every measurable criterion pass to reach 90+.
+  r.overall.score = 100;
+  r.categories = r.categories.map((c) => ({ ...c, score: 100 }));
+  const p = scoreProfessional(r, 'corporate')!;
+  if (p.overall.score !== null && p.overall.score >= 90) {
+    assert.equal(p.overall.level, 'professional');
+    assert.equal(p.overall.levelCap, 'needs_visual_assessment');
+  }
+  assert.equal(p.visualAssessment, false);
+  assert.equal(p.basisCounts.ai, 0, 'no AI judgement in Phase 1');
+});
+
+test('basis counts add up and confidence follows coverage', () => {
+  const p = scoreProfessional(sample)!;
+  const total = Object.values(p.basisCounts).reduce((n, v) => n + v, 0);
+  assert.equal(total, p.criteria.length);
+  assert.ok(p.overall.criteriaCoverage > 0 && p.overall.criteriaCoverage <= 1);
+  const r = structuredClone(sample);
+  r.business!.design = NO_RENDER;
+  assert.notEqual(scoreProfessional(r)!.overall.confidence, 'high');
+});
+
 test('reports made before business analysis get no professionalism score', () => {
   const r = structuredClone(sample);
   delete r.business;
   assert.equal(scoreProfessional(r), null);
+});
+
+test('observation text is translated, not internal keys', () => {
+  const reg = proAr.criteria.registration.observed({ found: 'commercialRegistration, vatNumber' }, 100);
+  assert.ok(reg.includes('السجل التجاري') && reg.includes('الرقم الضريبي') && !/[a-z][A-Z]/.test(reg), reg);
+  const proof = proEn.criteria.proof_elements.observed({ count: 2, kinds: 'cases, team' }, 80);
+  assert.ok(proof.includes('case studies'), proof);
+  const ch = proAr.criteria.contact_channels.observed({ count: 2, channels: 'whatsapp, contactPage' }, 75);
+  assert.ok(ch.includes('واتساب') && ch.includes('صفحة تواصل'), ch);
 });

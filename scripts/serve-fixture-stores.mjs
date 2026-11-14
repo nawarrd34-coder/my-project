@@ -3,13 +3,14 @@
  * Serves the SYNTHETIC fixture websites from tests/fixtures/stores for local
  * end-to-end runs: 4811 = Salla-style store, 4812 = Shopify-style store,
  * 4813 = corporate site, 4814 = law firm, 4815 = menu-only restaurant,
- * 4816 = SaaS product. Supports Range requests and a server-rendered search.
+ * 4816 = SaaS product, 4817 = tourism, 4818 = real estate, 4819 = clinic,
+ * 4820 = custom-built store, 4821 = complete law firm, 4822 = thin generic site. Supports Range requests and a server-rendered search.
  */
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 
-const SITES = { 4811: 'salla', 4812: 'shopify', 4813: 'corporate', 4814: 'law', 4815: 'restaurant', 4816: 'saas' };
+const SITES = { 4811: 'salla', 4812: 'shopify', 4813: 'corporate', 4814: 'law', 4815: 'restaurant', 4816: 'saas', 4817: 'tourism', 4818: 'realestate', 4819: 'clinic', 4820: 'customstore', 4821: 'lawrich', 4822: 'thin' };
 const ROOT = path.resolve('tests/fixtures/stores');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.xml': 'application/xml', '.json': 'application/json', '.txt': 'text/plain', '.png': 'image/png', '.jpg': 'image/jpeg', '.css': 'text/css' };
 const norm = (s) => s.toLowerCase().replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');

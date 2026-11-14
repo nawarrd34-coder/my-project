@@ -181,7 +181,7 @@ export const ar: Dict = {
     pdfFailed: 'تعذّر إنشاء ملف PDF. يرجى إعادة المحاولة.',
     newScan: 'فحص جديد',
     summaryTitle: 'الخلاصة',
-    aiLabel: 'خلاصة كتبها الذكاء الاصطناعي اعتماداً على الملاحظات الموثّقة أدناه',
+    aiLabel: 'خلاصة كتبها الذكاء الاصطناعي من الملاحظات أدناه — تفسير وليست قياساً',
     counts: (c: number, h: number, total: number) =>
       total === 0
         ? 'لم تُرصد أي ملاحظات في الفحوص التي أُجريت.'
@@ -279,7 +279,7 @@ export const ar: Dict = {
     ux: { name: 'تجربة المستخدم', desc: 'التنقل ووسائل التواصل وأزرار الإجراء.' },
   },
   severity: { critical: 'حرجة', high: 'عالية', medium: 'متوسطة', low: 'منخفضة', info: 'للعلم' },
-  basis: { verified: 'موثّق', inferred: 'مستنتج', verifiedHint: 'تم قياسه مباشرة', inferredHint: 'تقدير من شيفرة HTML' },
+  basis: { verified: 'مقاس', inferred: 'مستنتج من كود الصفحة', verifiedHint: 'قيس مباشرة (Lighthouse أو ترويسات الخادم أو الصفحة المعروضة)', inferredHint: 'قُرئ من كود الصفحة، وقد لا يطابق ما يراه الزائر' },
   grades: { excellent: 'ممتاز', good: 'جيد', needs_improvement: 'يحتاج إلى تحسين', weak: 'ضعيف', critical: 'حرج' },
   metrics: {
     fcp: { name: 'First Contentful Paint', desc: 'ظهور أول نص أو صورة' },

@@ -25,10 +25,12 @@ Other commands: `npm test` (unit tests), `npm run typecheck`, `npm run build`,
 `npx tsx scripts/audit-cli.mts https://example.com` (full audit from the terminal),
 `npx tsx scripts/business-cli.mts https://example.com out.json` (business analysis only).
 
-**Synthetic test stores.** `python3 scripts/build-fixture-stores.py` generates six
+**Synthetic test stores.** `python3 scripts/build-fixture-stores.py` generates twelve
 made-up sites (a Salla-style perfume store, a Shopify-style linen store, an
-Arabic corporate site, a law firm, a menu-only restaurant and a SaaS product) and
-`node scripts/serve-fixture-stores.mjs` serves them on ports 4811–4816. With `AUDIT_ALLOW_PRIVATE_HOSTS=1` you can scan them end to end.
+Arabic corporate site, a thin and a complete law firm, a menu-only restaurant, a SaaS product, a tourism company,
+a real estate agency, a clinic, a custom-built store and a very thin generic site) and
+`node scripts/serve-fixture-stores.mjs` serves them on ports 4811–4822. `npx tsx scripts/score-fixtures.mts <report.json…>` prints the
+professionalism score of saved full-audit reports (used for calibration). With `AUDIT_ALLOW_PRIVATE_HOSTS=1` you can scan them end to end.
 They exist for testing only and are not real businesses.
 
 **No PageSpeed quota?** `npm run psi:local` starts a PageSpeed-compatible
@@ -80,7 +82,7 @@ src/
 ### Phase 1: classification and professionalism score
 
 - **Website classification** (`src/features/business/classify.ts`): website type (16 categories, from online store to law firm, restaurant, SaaS), business model (direct sales, enquiries, online booking, appointments, quotations, subscriptions, visits in person, direct contact), main services, audience (from wording, marked low confidence), and the main action visitors are expected to take. Every conclusion lists its evidence (page, place, value). Weak signals are marked *uncertain* and the report asks the user to confirm the type; the user can change it and the score is recomputed (also in the PDF).
-- **Professionalism score** (`src/features/professional/`): separate from the technical score. Two profiles for now: online stores (Merchandising 20, Visual 15, Product pages 15, Navigation 10, Conversion 15, Mobile 10, Technical 5, SEO & trust 10) and business websites (Visual 15, Structure 15, Content 15, Conversion 20, Mobile 10, Technical 5, SEO 10, Trust 10). 56 criteria, each with a written rule, an observable indicator, evidence, a basis label (*measured*, *detected*, *AI-assessed*, *unverified*, *not applicable*), a severity and a fix. Untested criteria are left out, never scored as zero; a pillar needs 40% coverage and the total needs pillars worth 60 points. Levels (configurable in `config.ts`): 90+ Excellent, 80–89 Professional, 70–79 Good, 50–69 Needs improvement, under 50 Significant issues.
+- **Professionalism score** (`src/features/professional/`): separate from the technical score. Two profiles for now: online stores (Merchandising 20, Visual 15, Product pages 15, Navigation 10, Conversion 15, Mobile 10, Technical 5, SEO & trust 10) and business websites (Content 30, Conversion 15, Trust 15, Visual 10, Structure 10, Mobile 10, Technical 5, SEO 5 — substance weighs more than presence checks, and title/description/heading checks are not counted twice because they are already in the technical SEO score). 56 criteria (37 for stores, 35 for business websites; some are shared), each with a written rule, an observable indicator, evidence, a basis label (*measured*, *detected*, *AI-assessed*, *unverified*, *not applicable*), a severity and a fix. Untested criteria are left out, never scored as zero; a pillar needs 40% coverage and the total needs pillars worth 60 points. The report shows the counts per basis, the share of criteria tested, a confidence level and the exact formula. Levels (configurable in `config.ts`): 90+ Excellent, 80–89 Professional, 70–79 Good, 50–69 Needs improvement, under 50 Significant issues. "Excellent" also requires a screenshot-based visual assessment (Phase 2) and 85% of criteria tested; until then a 90+ score is shown as "Professional" with the reason.
 - **No duplicates:** a low-scoring criterion already covered by an existing rule or finding links to it; otherwise it is added to the recommendations once.
 - **Competitor comparison** (`/compare`, linked under the main button): two independent analyses with the same method, compared side by side (green = my site ahead, red = competitor ahead, yellow = within 3 points, grey = not tested). If only one address is entered, the single-site report opens.
 - **Limitation:** visual quality is judged only from measurable signals (contrast, fonts, sizes, imagery, layout). A screenshot-based visual assessment is planned for Phase 2.
