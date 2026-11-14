@@ -1,7 +1,7 @@
 // Run with the dev server on :3000: node scripts/e2e/whatsapp-overlap.cjs [site-url-for-report-page]
 // Floating WhatsApp button: at every scroll position, it is either hidden or covers no control / fixed element.
 const { chromium, devices } = require('playwright');
-const DEVICES = ['iPhone SE', 'iPhone 13', 'Pixel 7', 'Galaxy S9+', 'iPhone 14 Pro Max'];
+const DEVICES = process.env.DEVICES ? process.env.DEVICES.split(',') : ['iPhone SE', 'iPhone 13', 'Pixel 7', 'Galaxy S9+', 'iPhone 14 Pro Max'];
 const PAGES = [
   ['landing-ar', '/', 'ar'],
   ['landing-en', '/', 'en'],
