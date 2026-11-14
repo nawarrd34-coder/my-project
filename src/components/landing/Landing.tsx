@@ -2,6 +2,7 @@
 
 import { motion, useInView, useMotionValueEvent, useReducedMotion, useScroll } from 'motion/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Link from 'next/link';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { GlassOrb, StaticOrb } from '@/components/brand/GlassOrb';
 import AnimatedContent from '@/components/reactbits/AnimatedContent';
@@ -115,7 +116,16 @@ function Hero() {
 
         <motion.div {...rise(0.95)} className="mt-9 w-full max-w-[760px]">
           <UrlForm id="analyze" />
-          <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-faint">
+          <div className="mt-4 flex justify-center">
+            <Link
+              href="/compare"
+              className="inline-flex max-w-full items-center rounded-md px-2 py-1 text-center text-[13px] font-medium text-[#EF4444] transition-colors duration-200 hover:text-[#f87171] hover:underline hover:underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#EF4444]/60 md:text-sm"
+              data-testid="compare-link"
+            >
+              {t.hero.compare}
+            </Link>
+          </div>
+          <ul className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-faint">
             {t.hero.notes.map((note) => (
               <li key={note} className="flex items-center gap-2">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6f8dff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

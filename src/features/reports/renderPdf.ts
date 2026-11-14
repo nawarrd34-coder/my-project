@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { launchBrowser } from '@/lib/browser';
 import type { AuditReport, Locale } from '@/types/audit';
+import type { SiteCategory } from '@/types/business';
 import { buildReportHtml, type ReportAssets } from './template';
 
 const FONT_FILES = [
@@ -48,12 +49,12 @@ const FOOTER = `<div style="width:100%;padding:0 15mm;font-family:Arial,Helvetic
  * and every network request blocked: it can only show what we put in it.
  */
 /** The same document as HTML, used for the browser-print fallback. */
-export function renderReportHtml(report: AuditReport, locale: Locale): string {
-  return buildReportHtml(report, locale, loadAssets());
+export function renderReportHtml(report: AuditReport, locale: Locale, categoryOverride?: SiteCategory | null): string {
+  return buildReportHtml(report, locale, loadAssets(), categoryOverride);
 }
 
-export async function renderReportPdf(report: AuditReport, locale: Locale): Promise<Uint8Array> {
-  const html = buildReportHtml(report, locale, loadAssets());
+export async function renderReportPdf(report: AuditReport, locale: Locale, categoryOverride?: SiteCategory | null): Promise<Uint8Array> {
+  const html = buildReportHtml(report, locale, loadAssets(), categoryOverride);
   const browser = await launchBrowser();
   try {
     const page = await browser.newPage();

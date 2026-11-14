@@ -25,10 +25,10 @@ Other commands: `npm test` (unit tests), `npm run typecheck`, `npm run build`,
 `npx tsx scripts/audit-cli.mts https://example.com` (full audit from the terminal),
 `npx tsx scripts/business-cli.mts https://example.com out.json` (business analysis only).
 
-**Synthetic test stores.** `python3 scripts/build-fixture-stores.py` generates three
-made-up sites (a Salla-style perfume store, a Shopify-style linen store and an
-Arabic corporate site) and `node scripts/serve-fixture-stores.mjs` serves them on
-ports 4811–4813. With `AUDIT_ALLOW_PRIVATE_HOSTS=1` you can scan them end to end.
+**Synthetic test stores.** `python3 scripts/build-fixture-stores.py` generates six
+made-up sites (a Salla-style perfume store, a Shopify-style linen store, an
+Arabic corporate site, a law firm, a menu-only restaurant and a SaaS product) and
+`node scripts/serve-fixture-stores.mjs` serves them on ports 4811–4816. With `AUDIT_ALLOW_PRIVATE_HOSTS=1` you can scan them end to end.
 They exist for testing only and are not real businesses.
 
 **No PageSpeed quota?** `npm run psi:local` starts a PageSpeed-compatible
@@ -77,12 +77,20 @@ src/
   types/audit.ts, types/business.ts
 ```
 
+### Phase 1: classification and professionalism score
+
+- **Website classification** (`src/features/business/classify.ts`): website type (16 categories, from online store to law firm, restaurant, SaaS), business model (direct sales, enquiries, online booking, appointments, quotations, subscriptions, visits in person, direct contact), main services, audience (from wording, marked low confidence), and the main action visitors are expected to take. Every conclusion lists its evidence (page, place, value). Weak signals are marked *uncertain* and the report asks the user to confirm the type; the user can change it and the score is recomputed (also in the PDF).
+- **Professionalism score** (`src/features/professional/`): separate from the technical score. Two profiles for now: online stores (Merchandising 20, Visual 15, Product pages 15, Navigation 10, Conversion 15, Mobile 10, Technical 5, SEO & trust 10) and business websites (Visual 15, Structure 15, Content 15, Conversion 20, Mobile 10, Technical 5, SEO 10, Trust 10). 56 criteria, each with a written rule, an observable indicator, evidence, a basis label (*measured*, *detected*, *AI-assessed*, *unverified*, *not applicable*), a severity and a fix. Untested criteria are left out, never scored as zero; a pillar needs 40% coverage and the total needs pillars worth 60 points. Levels (configurable in `config.ts`): 90+ Excellent, 80–89 Professional, 70–79 Good, 50–69 Needs improvement, under 50 Significant issues.
+- **No duplicates:** a low-scoring criterion already covered by an existing rule or finding links to it; otherwise it is added to the recommendations once.
+- **Competitor comparison** (`/compare`, linked under the main button): two independent analyses with the same method, compared side by side (green = my site ahead, red = competitor ahead, yellow = within 3 points, grey = not tested). If only one address is entered, the single-site report opens.
+- **Limitation:** visual quality is judged only from measurable signals (contrast, fonts, sizes, imagery, layout). A screenshot-based visual assessment is planned for Phase 2.
+
 ### Report structure
 
-1 Business overview · 2 Brand & platform detection · 3 Website structure (coverage) ·
-4 Products & categories · 5 Banners & visual design · 6 Internal search · 7 Customer journey ·
-8 Performance & mobile · 9 SEO & accessibility · 10 Security · 11 Business improvement
-recommendations · 12 Digital Health Score (technical). Reports saved before this
+1 Business overview · 2 Website classification · 3 Professionalism score · 4 Brand & platform
+detection · 5 Website structure (coverage) · 6 Products & categories · 7 Banners & visual design ·
+8 Internal search · 9 Customer journey · 10 Performance & mobile · 11 SEO & accessibility ·
+12 Security · 13 Business improvement recommendations · 14 Digital Health Score (technical). Reports saved before this
 version (no business data) fall back to the technical layout.
 
 ### Business analysis rules

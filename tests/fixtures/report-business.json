@@ -1160,7 +1160,7 @@
     }
    ],
    "budgetReached": false,
-   "durationMs": 2815
+   "durationMs": 4100
   },
   "catalog": {
    "productUrlsDiscovered": 10,
@@ -1534,6 +1534,120 @@
     "params": {}
    }
   ],
-  "limits": []
+  "limits": [],
+  "classification": {
+   "category": {
+    "value": "ecommerce",
+    "confidence": "high",
+    "evidence": [
+     {
+      "url": "http://127.0.0.1:4811/",
+      "where": "platform signature",
+      "value": "salla"
+     },
+     {
+      "url": "http://127.0.0.1:4811/",
+      "where": "platform signature",
+      "value": "salla"
+     },
+     {
+      "url": "http://127.0.0.1:4811/",
+      "where": "product links",
+      "value": "10 product pages"
+     }
+    ],
+    "alternatives": []
+   },
+   "uncertain": false,
+   "model": {
+    "primary": "direct_sales",
+    "secondary": [
+     "lead_generation"
+    ],
+    "hybrid": false,
+    "confidence": "high",
+    "signals": [
+     {
+      "model": "direct_sales",
+      "strength": 8,
+      "evidence": [
+       {
+        "url": "http://127.0.0.1:4811/",
+        "where": "platform signature",
+        "value": "salla"
+       },
+       {
+        "url": "http://127.0.0.1:4811/",
+        "where": "product links",
+        "value": "10 product pages"
+       }
+      ]
+     },
+     {
+      "model": "lead_generation",
+      "strength": 4,
+      "evidence": [
+       {
+        "url": "http://127.0.0.1:4811/",
+        "where": "homepage link",
+        "value": "تواصل معنا"
+       },
+       {
+        "url": "http://127.0.0.1:4811/pages/contact",
+        "where": "contact page form",
+        "value": "1 enquiry form"
+       }
+      ]
+     },
+     {
+      "model": "direct_communication",
+      "strength": 2,
+      "evidence": [
+       {
+        "url": "http://127.0.0.1:4811/",
+        "where": "homepage links",
+        "value": "1 WhatsApp link"
+       }
+      ]
+     }
+    ]
+   },
+   "services": [],
+   "audience": {
+    "value": "consumers",
+    "confidence": "medium",
+    "evidence": [
+     {
+      "url": "http://127.0.0.1:4811/",
+      "where": "page wording",
+      "value": "\"تسوق الآن\""
+     }
+    ]
+   },
+   "conversion": {
+    "action": "direct_sales",
+    "label": null,
+    "evidence": [
+     {
+      "url": "http://127.0.0.1:4811/",
+      "where": "platform signature",
+      "value": "salla"
+     }
+    ]
+   },
+   "signals": {
+    "ldTypes": [
+     "product"
+    ],
+    "openGraph": false,
+    "mapEmbed": false,
+    "openingHours": false,
+    "address": false,
+    "forms": 1,
+    "dateInputs": false,
+    "genericPhrases": [],
+    "homepageProducts": 6
+   }
+  }
  }
 }

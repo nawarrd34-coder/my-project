@@ -4,6 +4,8 @@ import { formatDate, formatMetric, GRADE_COLOR, SEVERITY_COLOR, scoreColor } fro
 import { ar } from '@/lib/i18n/ar';
 import { en, type Dict } from '@/lib/i18n/en';
 import type { AuditReport, Locale, MetricId, StrategyData } from '@/types/audit';
+import type { SiteCategory } from '@/types/business';
+import { proDicts } from '@/features/professional/copy';
 import { BUSINESS_CSS, businessHtml, compactFindings } from './businessTemplate';
 
 export interface ReportAssets {
@@ -152,7 +154,7 @@ function lighthouseTable(t: Dict, mobile: StrategyData | null, desktop: Strategy
 }
 
 /** Build the printable report as a self-contained HTML document (no scripts, no external requests). */
-export function buildReportHtml(report: AuditReport, locale: Locale, assets: ReportAssets): string {
+export function buildReportHtml(report: AuditReport, locale: Locale, assets: ReportAssets, categoryOverride: SiteCategory | null = null): string {
   const t = locale === 'ar' ? ar : en;
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const mobile = report.psi.mobile.ok ? report.psi.mobile.data : null;
@@ -233,7 +235,7 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
 
   const hasBiz = !!report.business;
   const resolveShort = (f: Parameters<typeof resolveFinding>[0], l: Locale) => resolveFinding(f, l);
-  const biz = businessHtml(report, locale, t, hasBiz ? `<h3>${esc(t.categories.ux.name)}</h3>${compactFindings(report.findings, ['ux'], locale, t, resolveShort)}` : '');
+  const biz = businessHtml(report, locale, t, hasBiz ? `<h3>${esc(t.categories.ux.name)}</h3>${compactFindings(report.findings, ['ux'], locale, t, resolveShort)}` : '', categoryOverride);
   const S = biz.b.sections;
   const brandName = report.business?.identity.brandName?.value ?? null;
 
@@ -254,11 +256,11 @@ export function buildReportHtml(report: AuditReport, locale: Locale, assets: Rep
   const businessBody = `
 ${notices.length ? `<section>${notices.map((n) => `<div class="box notice">${esc(n)}</div>`).join('')}</section>` : ''}
 ${biz.front}
-${biz.section(8, S.performance, t.results.compareSubtitle, compare + `<h3>${esc(t.pdf.findings)}</h3>` + compactFindings(report.findings, ['performance', 'mobile'], locale, t, resolveShort))}
-${biz.section(9, S.seo, null, compactFindings(report.findings, ['seo', 'accessibility'], locale, t, resolveShort))}
-${biz.section(10, S.security, null, compactFindings(report.findings, ['security'], locale, t, resolveShort))}
-${biz.recommendations(11)}
-${scoreSection(12)}`;
+${biz.section(biz.next, S.performance, t.results.compareSubtitle, compare + `<h3>${esc(t.pdf.findings)}</h3>` + compactFindings(report.findings, ['performance', 'mobile'], locale, t, resolveShort))}
+${biz.section(biz.next + 1, S.seo, null, compactFindings(report.findings, ['seo', 'accessibility'], locale, t, resolveShort))}
+${biz.section(biz.next + 2, S.security, null, compactFindings(report.findings, ['security'], locale, t, resolveShort))}
+${biz.recommendations(biz.next + 3)}
+${scoreSection(biz.next + 4)}`;
 
   const legacyBody = `
 <section>
@@ -292,6 +294,7 @@ ${compare ? `<section><h2>${esc(t.results.compareTitle)}</h2>${compare}</section
     ${brandName ? `<div class="cover-host" style="color:#fff;font-family:'Display','Display Arabic',sans-serif;font-weight:800" dir="auto">${esc(brandName)}</div>` : ''}
     <div class="cover-host mono"${brandName ? ' style="margin-top:4px;font-size:11pt"' : ''}>${ltr(report.host)}</div>
     <div class="cover-meta">${esc(t.pdf.date)}: ${esc(formatDate(report.generatedAt, locale))}</div>
+    ${biz.pro && biz.pro.overall.score !== null ? `<div class="cover-meta" style="margin-top:16px;font-size:12.5pt;color:#f5f5f7">${esc(proDicts[locale].section.overall)}: <b class="mono">${biz.pro.overall.score}/100</b> · ${esc(biz.pro.overall.level ? proDicts[locale].levels[biz.pro.overall.level] : '')}</div>` : ''}
   </div>
   <div class="cover-score">
     <div dir="ltr">${gauge(overall.score, gradeColor)}</div>

@@ -85,6 +85,36 @@ const detected = z.object({ value: slug, confidence: conf, evidence });
 /** Only small raster images inlined by our own scanner are accepted. */
 const imageData = (max: number) => z.string().max(max).regex(/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/);
 
+const siteCategory = z.enum(['ecommerce', 'corporate', 'law', 'tourism', 'restaurant', 'real_estate', 'medical', 'agency', 'technology', 'saas', 'portfolio', 'consulting', 'education', 'construction', 'professional_services', 'other']);
+const businessModel = z.enum(['direct_sales', 'lead_generation', 'online_booking', 'appointments', 'quotation', 'subscription', 'physical_visit', 'direct_communication']);
+const evidenceItem = z.object({ url, where: text(200), value: text(400).optional(), screenshot: z.enum(['desktop', 'mobile']).optional() });
+const evidenceList = z.array(evidenceItem).max(8);
+const classification = z.object({
+  category: z.object({ value: siteCategory, confidence: conf, evidence: evidenceList, alternatives: z.array(siteCategory).max(5) }),
+  uncertain: z.boolean(),
+  model: z.object({
+    primary: businessModel.nullable(),
+    secondary: z.array(businessModel).max(5),
+    hybrid: z.boolean(),
+    confidence: conf.nullable(),
+    signals: z.array(z.object({ model: businessModel, strength: z.number(), evidence: evidenceList })).max(8),
+  }),
+  services: z.array(z.object({ name: text(80), source: text(80) })).max(10),
+  audience: z.object({ value: z.enum(['businesses', 'consumers', 'both']), confidence: conf, evidence: evidenceList }).nullable(),
+  conversion: z.object({ action: businessModel, label: text(120).nullable(), evidence: evidenceList }).nullable(),
+  signals: z.object({
+    ldTypes: z.array(text(60)).max(20),
+    openGraph: z.boolean(),
+    mapEmbed: z.boolean(),
+    openingHours: z.boolean(),
+    address: z.boolean(),
+    forms: z.number(),
+    dateInputs: z.boolean(),
+    genericPhrases: z.array(text(120)).max(8),
+    homepageProducts: z.number(),
+  }),
+});
+
 const business = z.object({
   version: z.literal(1),
   identity: z.object({
@@ -218,6 +248,7 @@ const business = z.object({
     )
     .max(60),
   limits: z.array(text(40)).max(20),
+  classification: classification.optional(),
 });
 
 export const reportSchema = z.object({
@@ -268,4 +299,4 @@ export const reportSchema = z.object({
   business: business.nullable().optional(),
 });
 
-export const pdfRequestSchema = z.object({ report: reportSchema, locale: z.enum(['ar', 'en']) });
+export const pdfRequestSchema = z.object({ report: reportSchema, locale: z.enum(['ar', 'en']), categoryOverride: siteCategory.optional() });

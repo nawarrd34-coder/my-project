@@ -15,6 +15,7 @@ import type {
 import { findBanners, toBannerImage } from './banners';
 import { collectLinks, listedProducts, parseProductPage, parseShopifyProducts } from './catalog';
 import { canonicalKey, load, normalizeText, sameSite, type Doc } from './html';
+import { classifySite, type ClassifyPage } from './classify';
 import { detectIdentity } from './identity';
 import { readImageMeta } from './imageMeta';
 import { analyzeJourney, NO_RESULTS, searchInterface } from './journey';
@@ -206,6 +207,8 @@ export async function analyzeBusiness(args: {
   const limits: string[] = [];
   const pages: CrawledPage[] = [{ url, kind: 'home', status: 200, ok: true }];
   const docs: Doc[] = [];
+  /** Every page read, with its address and kind, for classification. */
+  const readPages: ClassifyPage[] = [];
 
   // 1. Identity and platform from the homepage.
   emit('identity', 'start');
@@ -218,6 +221,8 @@ export async function analyzeBusiness(args: {
   let platform = detectPlatform([html], headers);
   const homeLinks = collectLinks($home, url, platform.id);
   const identity = detectIdentity({ $: $home, html, url, platform, internalLinks: homeLinks.internalCount });
+  readPages.push({ url, kind: 'home', $: $home });
+  const homepageProducts = new Set([...homeLinks.products.keys(), ...listedProducts($home, url).map((p) => p.url)].map(canonicalKey)).size;
   emit('identity', 'done');
 
   // 2. Crawl: sitemap, platform feed, then a prioritised set of pages.
@@ -263,7 +268,10 @@ export async function analyzeBusiness(args: {
 
   const pick = (kind: PageKind, n: number) => homeLinks.other.filter((l) => classifyUrl(l.url, platform.id, l.text) === kind).slice(0, n).map((l) => l.url);
   const categoryTargets = [...homeLinks.categories.keys()].slice(0, LIMITS.categoryPages);
-  const infoTargets = [...pick('about', 1), ...pick('contact', 1), ...pick('policy', 2)];
+  // Info pages first (policies feed the journey checks), then pages that show
+  // what the business offers and how it is bought or booked (classification).
+  // The page budget still applies, so stores keep their product pages.
+  const infoTargets = [...pick('about', 1), ...pick('contact', 1), ...pick('policy', 2), ...pick('services', 1), ...pick('pricing', 1), ...pick('booking', 1), ...pick('menu', 1)];
   const visited = new Set<string>([canonicalKey(url)]);
   const crawl = async (target: string, kind: PageKind): Promise<{ $: Doc; url: string } | null> => {
     const key = canonicalKey(target);
@@ -279,6 +287,7 @@ export async function analyzeBusiness(args: {
     if (!ok) return null;
     const $ = load(res.body);
     docs.push($);
+    readPages.push({ url: res.url, kind, $ });
     // Pages can confirm the platform (e.g. product templates).
     return { $, url: res.url };
   };
@@ -445,6 +454,7 @@ export async function analyzeBusiness(args: {
     recommendations: [],
     limits,
   };
+  analysis.classification = classifySite({ pages: readPages, identity, platform, catalog, design, homepageProducts });
   analysis.recommendations = businessRecommendations(analysis);
   return analysis;
 }

@@ -56,7 +56,20 @@ export type IndustryId =
   | 'finance'
   | 'logistics';
 
-export type PageKind = 'home' | 'product' | 'category' | 'about' | 'contact' | 'search' | 'policy' | 'blog' | 'other';
+export type PageKind =
+  | 'home'
+  | 'product'
+  | 'category'
+  | 'about'
+  | 'contact'
+  | 'search'
+  | 'policy'
+  | 'blog'
+  | 'services'
+  | 'pricing'
+  | 'booking'
+  | 'menu'
+  | 'other';
 
 export interface Detected<T> {
   value: T;
@@ -231,6 +244,80 @@ export interface BusinessRecommendation {
   params: Params;
 }
 
+// ─── Classification (Phase 1) ───────────────────────────────────────────────
+
+/** The kind of website, which decides how it is evaluated. */
+export type SiteCategory =
+  | 'ecommerce'
+  | 'corporate'
+  | 'law'
+  | 'tourism'
+  | 'restaurant'
+  | 'real_estate'
+  | 'medical'
+  | 'agency'
+  | 'technology'
+  | 'saas'
+  | 'portfolio'
+  | 'consulting'
+  | 'education'
+  | 'construction'
+  | 'professional_services'
+  | 'other';
+
+/** How the business turns visitors into customers. */
+export type BusinessModel =
+  | 'direct_sales'
+  | 'lead_generation'
+  | 'online_booking'
+  | 'appointments'
+  | 'quotation'
+  | 'subscription'
+  | 'physical_visit'
+  | 'direct_communication';
+
+/** One piece of evidence, tied to the page and place it was observed. */
+export interface Evidence {
+  url: string;
+  /** Where on the page: a section, element or source (e.g. "header links", "JSON-LD"). */
+  where: string;
+  /** What was observed (a value, quote or count). */
+  value?: string;
+  /** Which homepage screenshot shows it, when the observation comes from the rendered page. */
+  screenshot?: 'desktop' | 'mobile';
+}
+
+export interface ModelSignal {
+  model: BusinessModel;
+  /** Relative strength of the signals found (not a probability). */
+  strength: number;
+  evidence: Evidence[];
+}
+
+export interface SiteClassification {
+  category: { value: SiteCategory; confidence: Confidence; evidence: Evidence[]; alternatives: SiteCategory[] };
+  /** True when the category should be confirmed by the user before relying on it. */
+  uncertain: boolean;
+  model: { primary: BusinessModel | null; secondary: BusinessModel[]; hybrid: boolean; confidence: Confidence | null; signals: ModelSignal[] };
+  services: { name: string; source: string }[];
+  /** Inferred from wording only; null when there were no signals. */
+  audience: { value: 'businesses' | 'consumers' | 'both'; confidence: Confidence; evidence: Evidence[] } | null;
+  /** The main thing a visitor is expected to do, and the button text seen for it. */
+  conversion: { action: BusinessModel; label: string | null; evidence: Evidence[] } | null;
+  /** Page-level signals used by classification and scoring. */
+  signals: {
+    ldTypes: string[];
+    openGraph: boolean;
+    mapEmbed: boolean;
+    openingHours: boolean;
+    address: boolean;
+    forms: number;
+    dateInputs: boolean;
+    genericPhrases: string[];
+    homepageProducts: number;
+  };
+}
+
 export interface BusinessAnalysis {
   version: 1;
   identity: BusinessIdentity;
@@ -242,6 +329,8 @@ export interface BusinessAnalysis {
   journey: JourneyAnalysis;
   design: DesignAnalysis;
   recommendations: BusinessRecommendation[];
+  /** Website type and business model (absent in reports made before Phase 1). */
+  classification?: SiteClassification;
   /** Parts of the business analysis that could not run, with a reason code. */
   limits: string[];
 }

@@ -130,4 +130,52 @@ write(os.path.join(C, 'about', 'index.html'), corp('من نحن | شركة ال�
 write(os.path.join(C, 'services', 'index.html'), corp('خدماتنا | شركة المثال', '<h1>خدماتنا</h1><p>مقاولات وإنشاءات وصيانة.</p>'))
 write(os.path.join(C, 'contact', 'index.html'), corp('تواصل معنا | شركة المثال', '<h1>تواصل معنا</h1><form><input type="email" name="email"><textarea name="msg"></textarea><button>إرسال</button></form>'))
 flat_png(os.path.join(C, 'logo.png'), 200, 70, (12, 92, 117))
+
+# ── Law firm (consultations by appointment, WhatsApp, no prices) ─────────────
+L = os.path.join(ROOT, 'law')
+def law(title, body):
+    return f'''<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{title}</title>
+<meta name="description" content="شركة محاماة واستشارات قانونية في جدة: قضايا تجارية وعمالية وأحوال شخصية وصياغة العقود.">
+<meta property="og:title" content="مكتب المثال للمحاماة"><meta property="og:image" content="http://127.0.0.1:4814/logo.png">
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"LegalService","name":"مكتب المثال للمحاماة والاستشارات القانونية","address":{{"@type":"PostalAddress","addressLocality":"جدة","addressCountry":"SA"}}}}</script>
+<style>body{{font-family:Arial;margin:0}} .cta{{background:#1d2b4f;color:#fff;padding:14px 22px;display:inline-block}}</style></head>
+<body><header><img src="/logo.png" alt="مكتب المثال للمحاماة"><nav><a href="/">الرئيسية</a><a href="/practice-areas/">مجالات الممارسة</a><a href="/about/">من نحن</a><a href="/book/">احجز استشارة</a><a href="/contact/">تواصل معنا</a></nav></header>{body}
+<footer><a href="https://wa.me/966500000000">واتساب</a><a href="tel:+966126543210">اتصل بنا</a><a href="/privacy/">سياسة الخصوصية</a><p>السجل التجاري 4030000000</p></footer></body></html>'''
+write(os.path.join(L, 'index.html'), law('مكتب المثال للمحاماة | استشارات قانونية في جدة', '<h1>محامون ومستشارون قانونيون في جدة</h1><p>نمثّل الشركات والأفراد في القضايا التجارية والعمالية ونقدم أفضل الخدمات القانونية.</p><a class="cta" href="/book/">احجز استشارة</a><section><h2>مجالات الممارسة</h2><div><h3>القضايا التجارية</h3><p>نزاعات الشركات.</p></div><div><h3>القضايا العمالية</h3><p>للشركات والأفراد.</p></div><div><h3>الأحوال الشخصية</h3><p>قضايا الأسرة.</p></div><div><h3>صياغة العقود</h3><p>مراجعة وصياغة.</p></div></section>'))
+write(os.path.join(L, 'practice-areas', 'index.html'), law('مجالات الممارسة | مكتب المثال', '<main><h1>مجالات الممارسة</h1><h2>القضايا التجارية</h2><h2>القضايا العمالية</h2><h2>التحكيم</h2></main>'))
+write(os.path.join(L, 'about', 'index.html'), law('من نحن | مكتب المثال', '<h1>من نحن</h1><p>فريق من المحامين المرخصين.</p>'))
+write(os.path.join(L, 'book', 'index.html'), law('احجز استشارة | مكتب المثال', '<h1>احجز موعد استشارة</h1><p>اختر الوقت المناسب لك.</p><iframe src="https://calendly.com/example-law/consultation"></iframe>'))
+write(os.path.join(L, 'contact', 'index.html'), law('تواصل معنا | مكتب المثال', '<h1>تواصل معنا</h1><form><input type="text" name="name"><input type="tel" name="phone"><textarea name="msg"></textarea><button>إرسال</button></form><address>جدة، حي الروضة</address>'))
+write(os.path.join(L, 'privacy', 'index.html'), law('سياسة الخصوصية | مكتب المثال', '<h1>سياسة الخصوصية</h1><p>نحافظ على سرية بياناتك.</p>'))
+flat_png(os.path.join(L, 'logo.png'), 200, 70, (29, 43, 79))
+
+# ── Restaurant with a menu only (no online ordering or payment) ──────────────
+R = os.path.join(ROOT, 'restaurant')
+def rest(title, body):
+    return f'''<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{title}</title>
+<meta name="description" content="مطعم مشويات ومندي في الرياض. قائمة الطعام وأوقات العمل والموقع.">
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"Restaurant","name":"مطعم المثال للمشويات","servesCuisine":"مشويات","openingHours":"Mo-Su 12:00-00:00","address":{{"@type":"PostalAddress","addressLocality":"الرياض","addressCountry":"SA"}}}}</script>
+<style>body{{font-family:Arial;margin:0}} .cta{{background:#a33b1f;color:#fff;padding:14px 22px;display:inline-block}}</style></head>
+<body><header><img src="/logo.png" alt="مطعم المثال"><nav><a href="/">الرئيسية</a><a href="/menu/">المنيو</a><a href="/contact/">تواصل معنا</a></nav></header>{body}
+<footer><a href="tel:+966114445566">اتصل للحجز</a><a href="https://instagram.com/example">Instagram</a></footer></body></html>'''
+write(os.path.join(R, 'index.html'), rest('مطعم المثال للمشويات | الرياض', '<h1>مشويات على الفحم كل يوم</h1><p>مندي ومشويات وكبسة في قلب الرياض.</p><a class="cta" href="/menu/">قائمة الطعام</a><h2>ساعات العمل</h2><p>يومياً من 12 ظهراً حتى 12 منتصف الليل</p><iframe src="https://www.google.com/maps/embed?pb=example"></iframe>'))
+write(os.path.join(R, 'menu', 'index.html'), rest('المنيو | مطعم المثال', '<main><h1>المنيو</h1><h2>مشويات</h2><p>شيش طاووق 35 ريال</p><p>كباب 40 ريال</p><h2>مندي</h2><p>مندي لحم 65 ريال</p></main>'))
+write(os.path.join(R, 'contact', 'index.html'), rest('تواصل معنا | مطعم المثال', '<h1>تواصل معنا</h1><p>الرياض، طريق الملك فهد</p><a href="https://maps.google.com/?q=example">الموقع على الخريطة</a>'))
+flat_png(os.path.join(R, 'logo.png'), 200, 70, (163, 59, 31))
+
+# ── SaaS product (pricing plans, free trial, sign-up) ────────────────────────
+S = os.path.join(ROOT, 'saas')
+def saas(title, body):
+    return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{title}</title>
+<meta name="description" content="Invoicing software for small businesses in Saudi Arabia. Create ZATCA-ready invoices in seconds.">
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"SoftwareApplication","name":"ExampleBooks","applicationCategory":"BusinessApplication"}}</script>
+<style>body{{font-family:Arial;margin:0}} .cta{{background:#3b5bdb;color:#fff;padding:14px 22px;display:inline-block}}</style></head>
+<body><header><img src="/logo.png" alt="ExampleBooks"><nav><a href="/">Home</a><a href="/features/">Features</a><a href="/pricing/">Pricing</a><a href="/signup/">Sign up</a></nav></header>{body}
+<footer><a href="mailto:hello@example.invalid">Email</a><a href="/privacy/">Privacy</a></footer></body></html>'''
+write(os.path.join(S, 'index.html'), saas('ExampleBooks | Invoicing software for small businesses', '<h1>Invoicing software for small businesses</h1><p>Cloud software that creates e-invoices for businesses and their teams. Start your free trial today.</p><a class="cta" href="/signup/">Start free trial</a>'))
+write(os.path.join(S, 'pricing', 'index.html'), saas('Pricing | ExampleBooks', '<main><h1>Pricing</h1><div><h2>Starter</h2><p>49 SAR per month, billed monthly</p></div><div><h2>Business</h2><p>99 SAR per month</p></div><a href="/signup/">Start free trial</a></main>'))
+write(os.path.join(S, 'features', 'index.html'), saas('Features | ExampleBooks', '<main><h1>Features</h1><h2>E-invoices</h2><h2>Reports</h2></main>'))
+write(os.path.join(S, 'privacy', 'index.html'), saas('Privacy | ExampleBooks', '<h1>Privacy</h1>'))
+flat_png(os.path.join(S, 'logo.png'), 200, 70, (59, 91, 219))
+
 print('built', ROOT)

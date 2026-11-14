@@ -124,7 +124,7 @@ export const bizAr: BizDict = {
     budget: 'توقف الفحص عند حد الصفحات أو الوقت، فالمواقع الكبيرة مغطاة جزئياً.',
     duration: (s: number) => `استغرق تحليل النشاط ${s} ثانية`,
     pageList: 'الصفحات المقروءة',
-    kinds: { home: 'الرئيسية', product: 'منتج', category: 'تصنيف', about: 'من نحن', contact: 'تواصل', search: 'بحث', policy: 'سياسة', blog: 'مدونة', other: 'أخرى' },
+    kinds: { home: 'الرئيسية', product: 'منتج', category: 'تصنيف', about: 'من نحن', contact: 'تواصل', search: 'بحث', policy: 'سياسة', blog: 'مدونة', services: 'الخدمات', pricing: 'الأسعار', booking: 'الحجز', menu: 'المنيو', other: 'أخرى' },
   },
   products: {
     discovered: 'صفحات المنتجات المكتشفة',
@@ -218,6 +218,7 @@ export const bizAr: BizDict = {
     effort: 'الجهد',
     sourceBusiness: 'فحص النشاط',
     sourceTechnical: 'فحص تقني',
+    sourceProfessional: 'فحص الاحترافية',
     empty: 'لا شيء في هذه المجموعة.',
     count: (n: number) => `${n} توصية`,
   },

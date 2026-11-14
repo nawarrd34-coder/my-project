@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Report } from '@/components/results/Report';
 import { GlassOrb } from '@/components/brand/GlassOrb';
 import { SiteFooter, SiteHeader } from '@/components/ui/Chrome';
+import { readCachedReport, writeCachedReport } from '@/lib/auditClient';
 import { useI18n } from '@/lib/i18n';
 import type { AuditErrorCode, AuditEvent, AuditReport, AuditTaskId } from '@/types/audit';
 
@@ -71,20 +72,6 @@ const INITIAL: Record<AuditTaskId, TaskState> = {
   design: 'pending',
   scoring: 'pending',
 };
-
-const CACHE_TTL = 30 * 60 * 1000;
-const cacheKey = (url: string) => `bhc:report:${url.trim().toLowerCase()}`;
-
-function readCache(url: string): AuditReport | null {
-  try {
-    const raw = sessionStorage.getItem(cacheKey(url));
-    if (!raw) return null;
-    const report = JSON.parse(raw) as AuditReport;
-    return Date.now() - new Date(report.generatedAt).getTime() < CACHE_TTL ? report : null;
-  } catch {
-    return null;
-  }
-}
 
 function stageState(tasks: Record<AuditTaskId, TaskState>, ids: AuditTaskId[]): StageState {
   const states = ids.map((id) => tasks[id]);
@@ -175,7 +162,7 @@ export function ScanFlow() {
         return;
       }
       if (!fresh) {
-        const cached = readCache(url);
+        const cached = readCachedReport(url);
         if (cached) {
           setReport(cached);
           setPhase('done');
@@ -219,11 +206,7 @@ export function ScanFlow() {
             setTasks((prev) => ({ ...prev, [event.id]: next }));
           } else if (event.t === 'result') {
             finished = true;
-            try {
-              sessionStorage.setItem(cacheKey(url), JSON.stringify(event.report));
-            } catch {
-              /* storage unavailable: the report still shows */
-            }
+            writeCachedReport(url, event.report);
             setReport(event.report);
             setPhase('done');
           } else if (event.t === 'error') {

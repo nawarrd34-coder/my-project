@@ -5,17 +5,20 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { CountUp } from '@/components/ui/CountUp';
 import { Chevron } from '@/components/ui/icons';
-import { resolveRecommendations, REC_GROUPS } from '@/features/business/content';
+import { resolveRecommendations, REC_GROUPS, type ResolvedRec } from '@/features/business/content';
 import { SEVERITY_COLOR, scoreColor } from '@/lib/format';
 import { useI18n } from '@/lib/i18n';
 import { useBiz } from '@/lib/i18n/useBiz';
 import type { AuditReport, Finding } from '@/types/audit';
 import type { BusinessAnalysis, RecGroup } from '@/types/business';
+import type { ProfessionalScore } from '@/types/professional';
+import { proDicts } from '@/features/professional/copy';
 import { BasisBadge, ConfidenceBadge, Evidence, kb, Notice, Row, shortPath, Stat, Swatches, YesNo } from './parts';
 
 /* ───────────────────────────── 1. Business overview ───────────────────────────── */
 
-export function BusinessOverview({ business, report }: { business: BusinessAnalysis; report: AuditReport }) {
+export function BusinessOverview({ business, report, pro }: { business: BusinessAnalysis; report: AuditReport; pro?: ProfessionalScore | null }) {
+  const pd = proDicts[useI18n().locale];
   const b = useBiz();
   const { t, locale } = useI18n();
   const { identity: id, platform, catalog, coverage, banners, design } = business;
@@ -59,18 +62,32 @@ export function BusinessOverview({ business, report }: { business: BusinessAnaly
               {id.description && <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted" dir="auto">{id.description}</p>}
             </div>
           </div>
-          {report.overall.score !== null && (
-            <a href="#score" className="flex items-center gap-4 rounded-2xl border border-line bg-black/20 px-5 py-4 transition-colors hover:border-line-strong">
-              <span className="num-display text-5xl leading-none" style={{ color: scoreColor(report.overall.score) }}>
-                <CountUp to={report.overall.score} />
-              </span>
-              <span className="text-xs leading-snug text-muted">
-                {b.sections.score}
-                <br />
-                <span className="text-faint">/100</span>
-              </span>
-            </a>
-          )}
+          <div className="flex flex-col gap-3">
+            {pro && pro.overall.score !== null && (
+              <a href="#professional" className="flex items-center gap-4 rounded-2xl border border-line bg-black/20 px-5 py-4 transition-colors hover:border-line-strong" data-testid="overview-professional">
+                <span className="num-display text-5xl leading-none" style={{ color: scoreColor(pro.overall.score) }}>
+                  <CountUp to={pro.overall.score} />
+                </span>
+                <span className="text-xs leading-snug text-muted">
+                  {pd.section.overall}
+                  <br />
+                  <span className="text-faint">{pro.overall.level ? pd.levels[pro.overall.level] : '/100'}</span>
+                </span>
+              </a>
+            )}
+            {report.overall.score !== null && (
+              <a href="#score" className="flex items-center gap-4 rounded-2xl border border-line bg-black/20 px-5 py-3 transition-colors hover:border-line-strong">
+                <span className="num-display text-3xl leading-none" style={{ color: scoreColor(report.overall.score) }}>
+                  <CountUp to={report.overall.score} />
+                </span>
+                <span className="text-xs leading-snug text-muted">
+                  {b.sections.score}
+                  <br />
+                  <span className="text-faint">/100</span>
+                </span>
+              </a>
+            )}
+          </div>
         </div>
       </div>
 
@@ -547,12 +564,12 @@ export function JourneySection({ business }: { business: BusinessAnalysis }) {
 
 const GROUP_COLOR: Record<RecGroup, string> = { critical: '#ff5468', high: '#ff8f4a', design: '#b9a8ff', conversion: '#5fb8ff', seo: '#3ddc97', longterm: '#8d8d9c' };
 
-export function Recommendations({ business, findings }: { business: BusinessAnalysis | null; findings: Finding[] }) {
+export function Recommendations({ business, findings, extra = [] }: { business: BusinessAnalysis | null; findings: Finding[]; extra?: ResolvedRec[] }) {
   const b = useBiz();
   const { t, locale } = useI18n();
   const recs = useMemo(
-    () => resolveRecommendations(business?.recommendations ?? [], findings, locale, (c) => b.categoryWhere[c] ?? c),
-    [business, findings, locale, b],
+    () => resolveRecommendations(business?.recommendations ?? [], findings, locale, (c) => b.categoryWhere[c] ?? c, extra),
+    [business, findings, locale, b, extra],
   );
   const [open, setOpen] = useState<string | null>(null);
   const groups = REC_GROUPS.map((g) => ({ g, items: recs.filter((r) => r.group === g) })).filter((x) => x.items.length);
@@ -591,7 +608,7 @@ export function Recommendations({ business, findings }: { business: BusinessAnal
                           {t.severity[r.priority]}
                         </span>
                         <span className="text-faint">{b.recs.complexity[r.complexity]}</span>
-                        <span className="text-faint">{r.source === 'business' ? b.recs.sourceBusiness : b.recs.sourceTechnical}</span>
+                        <span className="text-faint">{r.source === 'business' ? b.recs.sourceBusiness : r.source === 'professional' ? b.recs.sourceProfessional : b.recs.sourceTechnical}</span>
                         <BasisBadge basis={r.basis} />
                       </span>
                     </span>

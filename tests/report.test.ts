@@ -18,6 +18,19 @@ test('PDF request keeps the business analysis', () => {
   const parsed = pdfRequestSchema.parse({ report: sample, locale: 'ar' });
   assert.ok(parsed.report.business, 'business must not be stripped');
   assert.equal(parsed.report.business?.platform.id, 'salla');
+  assert.equal(parsed.report.business?.classification?.category.value, 'ecommerce', 'classification must not be stripped');
+});
+
+test('PDF request accepts a known category override and rejects others', () => {
+  assert.equal(pdfRequestSchema.safeParse({ report: sample, locale: 'ar', categoryOverride: 'law' }).success, true);
+  assert.equal(pdfRequestSchema.safeParse({ report: sample, locale: 'ar', categoryOverride: 'casino' }).success, false);
+});
+
+test('printable report uses the override for the professionalism score', () => {
+  const report = pdfRequestSchema.parse({ report: sample, locale: 'en' }).report as AuditReport;
+  const html = buildReportHtml(report, 'en', assets, 'corporate');
+  assert.ok(html.includes('Chosen by you'));
+  assert.ok(html.includes('Business website criteria'));
 });
 
 test('PDF request rejects non-data or SVG screenshots', () => {
@@ -47,7 +60,7 @@ test('printable report has the 12 numbered sections, RTL for Arabic', () => {
   const report = pdfRequestSchema.parse({ report: sample, locale: 'ar' }).report as AuditReport;
   const ar = buildReportHtml(report, 'ar', assets);
   assert.match(ar, /<html lang="ar" dir="rtl">/);
-  for (let i = 1; i <= 12; i++) assert.ok(ar.includes(`>${String(i).padStart(2, '0')}</span>`), `section ${i}`);
+  for (let i = 1; i <= 14; i++) assert.ok(ar.includes(`>${String(i).padStart(2, '0')}</span>`), `section ${i}`);
   assert.ok(ar.includes('عطور المثال'));
   const en = buildReportHtml(report, 'en', assets);
   assert.match(en, /<html lang="en" dir="ltr">/);

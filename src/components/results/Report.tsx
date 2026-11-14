@@ -11,6 +11,10 @@ import { BAND_COLOR, formatDate, formatMetric, GRADE_COLOR, metricBand, metricGo
 import { useI18n } from '@/lib/i18n';
 import { useBiz } from '@/lib/i18n/useBiz';
 import type { AuditReport, CategoryId, CategoryResult, MetricId, StrategyData } from '@/types/audit';
+import { coveredIds, professionalRecs } from '@/features/professional/recs';
+import { scoreProfessional } from '@/features/professional/score';
+import type { SiteCategory } from '@/types/business';
+import { ClassificationCard, ProfessionalSection, usePro } from './professional/ProfessionalSections';
 import {
   BusinessOverview,
   JourneySection,
@@ -114,13 +118,13 @@ async function pdfError(res: Response): Promise<string> {
   return res.status === 429 ? 'rate_limited' : res.status === 413 ? 'too_large' : 'render_failed';
 }
 
-function usePdfDownload(report: AuditReport, locale: string) {
+function usePdfDownload(report: AuditReport, locale: string, categoryOverride: SiteCategory | null) {
   const [state, setState] = useState<PdfState>({ kind: 'idle' });
   useEffect(() => () => {
     if (state.kind === 'done') URL.revokeObjectURL(state.href);
   }, [state]);
 
-  const body = () => JSON.stringify({ report, locale });
+  const body = () => JSON.stringify({ report, locale, ...(categoryOverride ? { categoryOverride } : {}) });
 
   const download = async () => {
     setState({ kind: 'busy' });
@@ -392,8 +396,14 @@ const SEC: CategoryId[] = ['security'];
 export function Report({ report, onRescan, onNew }: { report: AuditReport; onRescan: () => void; onNew: () => void }) {
   const { t, locale } = useI18n();
   const b = useBiz();
-  const pdf = usePdfDownload(report, locale);
   const business = report.business ?? null;
+  const pd = usePro();
+  // The user can correct the detected website type; the score is recomputed from the same evidence.
+  const [categoryOverride, setCategoryOverride] = useState<SiteCategory | null>(null);
+  const pdf = usePdfDownload(report, locale, categoryOverride);
+  const pro = useMemo(() => scoreProfessional(report, categoryOverride), [report, categoryOverride]);
+  const covered = useMemo(() => coveredIds(business?.recommendations ?? [], report.findings), [business, report.findings]);
+  const proRecs = useMemo(() => professionalRecs(pro, covered, locale), [pro, covered, locale]);
 
   const mobile = report.psi.mobile.ok ? report.psi.mobile.data : null;
   const desktop = report.psi.desktop.ok ? report.psi.desktop.data : null;
@@ -414,6 +424,8 @@ export function Report({ report, onRescan, onNew }: { report: AuditReport; onRes
   const nav: { id: string; label: string }[] = business
     ? [
         { id: 'overview', label: s.overview },
+        ...(business.classification ? [{ id: 'classification', label: pd.section.classification }] : []),
+        ...(pro ? [{ id: 'professional', label: pd.section.title }] : []),
         { id: 'platform', label: s.platform },
         { id: 'structure', label: s.structure },
         { id: 'products', label: s.products },
@@ -454,7 +466,7 @@ export function Report({ report, onRescan, onNew }: { report: AuditReport; onRes
 
   const recommendations = (
     <Section id="recommendations" index={n('recommendations')} title={s.recs} subtitle={s.recsSub}>
-      <Recommendations business={business} findings={report.findings} />
+      <Recommendations business={business} findings={report.findings} extra={proRecs} />
       {hasPlan && (
         <div className="mt-14">
           <h3 className="heading text-2xl text-ink">{t.results.planTitle}</h3>
@@ -539,25 +551,35 @@ export function Report({ report, onRescan, onNew }: { report: AuditReport; onRes
 
       {business ? (
         <>
-          <Section id="overview" index={1} title={s.overview} subtitle={s.overviewSub}>
-            <BusinessOverview business={business} report={report} />
+          <Section id="overview" index={n('overview')} title={s.overview} subtitle={s.overviewSub}>
+            <BusinessOverview business={business} report={report} pro={pro} />
           </Section>
-          <Section id="platform" index={2} title={s.platform} subtitle={s.platformSub}>
+          {business.classification && (
+            <Section id="classification" index={n('classification')} title={pd.section.classification} subtitle={pd.section.classificationSub}>
+              <ClassificationCard business={business} pro={pro} override={categoryOverride} onOverride={setCategoryOverride} />
+            </Section>
+          )}
+          {pro && (
+            <Section id="professional" index={n('professional')} title={pd.section.title} subtitle={pd.section.sub}>
+              <ProfessionalSection pro={pro} business={business} covered={covered} />
+            </Section>
+          )}
+          <Section id="platform" index={n('platform')} title={s.platform} subtitle={s.platformSub}>
             <PlatformSection business={business} />
           </Section>
-          <Section id="structure" index={3} title={s.structure} subtitle={s.structureSub}>
+          <Section id="structure" index={n('structure')} title={s.structure} subtitle={s.structureSub}>
             <StructureSection business={business} />
           </Section>
-          <Section id="products" index={4} title={s.products} subtitle={s.productsSub}>
+          <Section id="products" index={n('products')} title={s.products} subtitle={s.productsSub}>
             <ProductsSection business={business} />
           </Section>
-          <Section id="visual" index={5} title={s.banners} subtitle={s.bannersSub}>
+          <Section id="visual" index={n('visual')} title={s.banners} subtitle={s.bannersSub}>
             <VisualSection business={business} />
           </Section>
-          <Section id="search" index={6} title={s.search} subtitle={s.searchSub}>
+          <Section id="search" index={n('search')} title={s.search} subtitle={s.searchSub}>
             <SearchSection business={business} />
           </Section>
-          <Section id="journey" index={7} title={s.journey} subtitle={s.journeySub}>
+          <Section id="journey" index={n('journey')} title={s.journey} subtitle={s.journeySub}>
             <JourneySection business={business} />
             <div className="mt-8">
               <IssueList findings={report.findings} categories={['ux']} emptyText={b.none} />

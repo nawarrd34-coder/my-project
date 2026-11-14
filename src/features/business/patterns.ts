@@ -42,6 +42,10 @@ export function classifyUrl(url: string, platform: PlatformId, linkText = ''): P
   if (/about|who-we-are|our-story|من-نحن|عن-|من نحن|عن الشركة|قصتنا/.test(hay)) return 'about';
   if (/contact|اتصل|تواصل/.test(hay)) return 'contact';
   if (/privacy|terms|return|refund|shipping-policy|policy|policies|الخصوصية|الشروط|الاسترجاع|الاستبدال|سياسة/.test(hay)) return 'policy';
+  if (/pricing|\/plans\b|price-list|الأسعار|الباقات|باقات|خطط الاشتراك/.test(hay)) return 'pricing';
+  if (/\b(book|booking|appointments?|reserv\w*)\b|احجز|حجز|المواعيد|موعد/.test(hay)) return 'booking';
+  if (/\bmenu\b|المنيو|منيو|قائمة الطعام/.test(hay)) return 'menu';
+  if (/services|practice-areas|what-we-do|خدماتنا|الخدمات|خدمات|مجالات العمل/.test(hay)) return 'services';
   if (/\/(blog|blogs|news|articles|مدونة)\b/.test(hay)) return 'blog';
   return 'other';
 }

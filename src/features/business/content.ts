@@ -18,7 +18,7 @@ export interface ResolvedRec {
   evidence: string;
   why: string;
   fix: string;
-  source: 'business' | 'technical';
+  source: 'business' | 'technical' | 'professional';
 }
 
 const val = (v: RecCopy['title'], p: BusinessRecommendation['params']) => (typeof v === 'function' ? v(p) : v);
@@ -32,8 +32,10 @@ export function resolveRecommendations(
   findings: Finding[],
   locale: Locale,
   whereForCategory: (c: Finding['category']) => string,
+  /** Extra items (e.g. professionalism criteria not covered by any rule above). */
+  extra: ResolvedRec[] = [],
 ): ResolvedRec[] {
-  const out: ResolvedRec[] = [];
+  const out: ResolvedRec[] = [...extra];
   business.forEach((r, i) => {
     const c = COPY[locale][r.id];
     if (!c) return;

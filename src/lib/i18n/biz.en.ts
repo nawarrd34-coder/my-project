@@ -124,7 +124,7 @@ export const bizEn = {
     budget: 'The scan stopped at its page or time limit; larger sites are only partly covered.',
     duration: (s: number) => `Business analysis took ${s}s`,
     pageList: 'Pages read',
-    kinds: { home: 'Home', product: 'Product', category: 'Category', about: 'About', contact: 'Contact', search: 'Search', policy: 'Policy', blog: 'Blog', other: 'Other' } as Record<string, string>,
+    kinds: { home: 'Home', product: 'Product', category: 'Category', about: 'About', contact: 'Contact', search: 'Search', policy: 'Policy', blog: 'Blog', services: 'Services', pricing: 'Pricing', booking: 'Booking', menu: 'Menu', other: 'Other' } as Record<string, string>,
   },
   products: {
     discovered: 'Product pages discovered',
@@ -218,6 +218,7 @@ export const bizEn = {
     effort: 'Effort',
     sourceBusiness: 'Business check',
     sourceTechnical: 'Technical check',
+    sourceProfessional: 'Professionalism check',
     empty: 'Nothing in this group.',
     count: (n: number) => `${n} recommendation${n === 1 ? '' : 's'}`,
   },

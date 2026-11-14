@@ -29,11 +29,11 @@ export async function POST(request: Request) {
   const parsed = pdfRequestSchema.safeParse(body);
   if (!parsed.success) return fail(400, 'invalid_report');
 
-  const { report, locale } = parsed.data;
+  const { report, locale, categoryOverride } = parsed.data;
 
   // Printable fallback: the same document as HTML, for the browser's own "Save as PDF".
   if (new URL(request.url).searchParams.get('format') === 'html') {
-    return new Response(renderReportHtml(report as AuditReport, locale), {
+    return new Response(renderReportHtml(report as AuditReport, locale, categoryOverride), {
       headers: {
         'content-type': 'text/html; charset=utf-8',
         'cache-control': 'no-store',
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const pdf = await renderReportPdf(report as AuditReport, locale);
+    const pdf = await renderReportPdf(report as AuditReport, locale, categoryOverride);
     const host = report.host.replace(/[^a-z0-9.-]/gi, '_').slice(0, 80);
     return new Response(Buffer.from(pdf), {
       headers: {

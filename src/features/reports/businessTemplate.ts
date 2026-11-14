@@ -1,10 +1,15 @@
-import { resolveRecommendations, REC_GROUPS } from '@/features/business/content';
+import { resolveRecommendations, REC_GROUPS, type ResolvedRec } from '@/features/business/content';
+import { criterionCopy, proDicts } from '@/features/professional/copy';
+import { coveredIds, isCovered, professionalRecs } from '@/features/professional/recs';
+import { scoreProfessional } from '@/features/professional/score';
+import { scoreColor } from '@/lib/format';
 import { SEVERITY_COLOR } from '@/lib/format';
 import type { Dict } from '@/lib/i18n/en';
 import { bizDicts } from '@/lib/i18n/biz';
 import type { BizDict } from '@/lib/i18n/biz.en';
 import type { AuditReport, CategoryId, Finding, Locale } from '@/types/audit';
-import type { BusinessAnalysis, Confidence, RecGroup } from '@/types/business';
+import type { BusinessAnalysis, Confidence, Evidence, RecGroup, SiteCategory } from '@/types/business';
+import type { ProfessionalScore } from '@/types/professional';
 
 /**
  * Business sections of the printable report. Every value is escaped; only
@@ -296,8 +301,8 @@ export function compactFindings(findings: Finding[], cats: CategoryId[], locale:
     .join('');
 }
 
-function recommendations(b: BizDict, biz: BusinessAnalysis | null, findings: Finding[], locale: Locale, t: Dict) {
-  const recs = resolveRecommendations(biz?.recommendations ?? [], findings, locale, (c) => b.categoryWhere[c] ?? c);
+function recommendations(b: BizDict, biz: BusinessAnalysis | null, findings: Finding[], locale: Locale, t: Dict, extra: ResolvedRec[]) {
+  const recs = resolveRecommendations(biz?.recommendations ?? [], findings, locale, (c) => b.categoryWhere[c] ?? c, extra);
   if (!recs.length) return `<p class="muted">${esc(t.results.counts(0, 0, 0))}</p>`;
   return REC_GROUPS.map((g) => {
     const items = recs.filter((r) => r.group === g);
@@ -308,7 +313,7 @@ function recommendations(b: BizDict, biz: BusinessAnalysis | null, findings: Fin
         const color = SEVERITY_COLOR[r.priority];
         return `<div class="finding" style="border-inline-start-color:${color}">
         <h4>${esc(r.title)}</h4>
-        <div class="tags"><span><b style="color:${color}">${esc(b.recs.priority)}: ${esc(t.severity[r.priority])}</b></span><span>${esc(b.recs.effort)}: ${esc(b.recs.complexity[r.complexity])}</span><span>${esc(r.source === 'business' ? b.recs.sourceBusiness : b.recs.sourceTechnical)}</span><span>${esc(t.basis[r.basis])}</span></div>
+        <div class="tags"><span><b style="color:${color}">${esc(b.recs.priority)}: ${esc(t.severity[r.priority])}</b></span><span>${esc(b.recs.effort)}: ${esc(b.recs.complexity[r.complexity])}</span><span>${esc(r.source === 'business' ? b.recs.sourceBusiness : r.source === 'professional' ? b.recs.sourceProfessional : b.recs.sourceTechnical)}</span><span>${esc(t.basis[r.basis])}</span></div>
         <div class="grid">
           <div><div class="k">${esc(b.recs.where)}</div><div class="v" dir="auto">${esc(r.where)}</div></div>
           <div><div class="k">${esc(b.recs.evidence)}</div><div class="ev mono" dir="auto">${esc(r.evidence)}</div></div>
@@ -320,28 +325,126 @@ function recommendations(b: BizDict, biz: BusinessAnalysis | null, findings: Fin
   }).join('');
 }
 
+
+const evRows = (items: Evidence[]) =>
+  items.length
+    ? `<ul class="evl">${items
+        .slice(0, 4)
+        .map((e) => `<li class="mono" dir="auto">${esc(e.where)}${e.value ? ` — ${esc(e.value)}` : ''} <span class="muted">${ltr(pathOf(e.url))}</span></li>`)
+        .join('')}</ul>`
+    : '';
+
+function classificationHtml(biz: BusinessAnalysis, pro: ProfessionalScore | null, locale: Locale, override: SiteCategory | null) {
+  const cl = biz.classification!;
+  const d = proDicts[locale];
+  const c = d.classification;
+  const b = bizDicts[locale];
+  const current = override ?? cl.category.value;
+  const m = cl.model;
+  const primary = m.signals.find((x) => x.model === m.primary);
+  return `
+  ${cl.uncertain && !override ? `<div class="box notice">${esc(c.uncertain)}</div>` : ''}
+  <div class="grid" style="margin-top:3mm">
+    <div class="box" style="break-inside:avoid">
+      <div class="k">${esc(c.category)}</div>
+      <p style="font-size:13pt;font-weight:600;margin:0">${esc(d.categories[current])}${override ? ` <span class="chip accent">${esc(c.chosen)}</span>` : conf(b, cl.category.confidence)}</p>
+      ${override ? `<p class="small muted" style="margin-top:1.5mm">${esc(c.detected)}: ${esc(d.categories[cl.category.value])}</p>` : ''}
+      ${evRows(cl.category.evidence)}
+      ${pro ? `<p class="small muted" style="margin-top:2mm">${esc(c.criteria)}: ${esc(d.profiles[pro.profile])}</p>` : ''}
+    </div>
+    <div class="box" style="break-inside:avoid">
+      <div class="k">${esc(c.model)}</div>
+      ${
+        m.primary
+          ? `<p style="font-size:13pt;font-weight:600;margin:0">${esc(d.models[m.primary])}${conf(b, m.confidence)}${m.hybrid ? ` <span class="chip">${esc(c.hybrid)}</span>` : ''}</p>
+      ${m.secondary.length ? `<p class="small muted" style="margin-top:1.5mm">${esc(c.secondary)}: ${esc(m.secondary.map((x) => d.models[x]).join(' · '))}</p>` : ''}
+      ${primary ? evRows(primary.evidence) : ''}`
+          : `<p class="muted">${esc(c.noModel)}</p>`
+      }
+    </div>
+  </div>
+  <table class="kv" style="margin-top:3mm"><tbody>
+    ${row(c.conversion, cl.conversion ? `${esc(d.models[cl.conversion.action])}${cl.conversion.label ? ` — «${esc(cl.conversion.label)}»` : ` <span class="small muted">(${esc(c.noButton)})</span>`}` : '—')}
+    ${row(c.services, cl.services.length ? esc(cl.services.map((x) => x.name).join(' · ')) : `<span class="na">${esc(current === 'ecommerce' ? '—' : c.noServices)}</span>`)}
+    ${row(c.audience, cl.audience ? esc(d.audience[cl.audience.value]) + conf(b, cl.audience.confidence) : '—')}
+  </tbody></table>`;
+}
+
+function professionalHtml(pro: ProfessionalScore, locale: Locale, covered: Set<string>) {
+  const d = proDicts[locale];
+  const o = pro.overall;
+  const pillarRows = pro.pillars
+    .map(
+      (p) => `<tr><td>${esc(d.pillars[p.id].name)}${p.status === 'partial' ? ` <span class="small muted">· ${esc(d.section.partial)}</span>` : ''}</td>
+      <td class="n small muted">${esc(d.section.weight(p.weight))}</td>
+      <td style="width:38mm"><div class="bar">${p.score === null ? '' : `<i style="width:${p.score}%;background:${scoreColor(p.score)}"></i>`}</div></td>
+      <td class="n score mono" style="color:${p.score === null ? '#8d8d9c' : scoreColor(p.score)}">${p.score ?? `<span class="small" style="font-weight:400">${esc(d.section.untested)}</span>`}</td></tr>`,
+    )
+    .join('');
+  const detail = pro.pillars
+    .map((p) => {
+      const items = pro.criteria.filter((c) => c.pillar === p.id);
+      return `<h3>${esc(d.pillars[p.id].name)} <span class="small muted" style="font-weight:400">${p.score === null ? esc(d.section.untested) : `${p.score}/100`}</span></h3>
+      <table><tbody>${items
+        .map((c) => {
+          const copy = criterionCopy(locale, c.id)!;
+          const observed = c.status === 'scored' ? copy.observed(c.params, c.score) : (c.reason && d.reasons[c.reason]) || '';
+          const fixNote = c.status === 'scored' && c.score !== null && c.score < 70 ? (isCovered(c, covered) ? d.section.seeRec : copy.fix) : '';
+          return `<tr><td style="width:46%"><b style="font-weight:600">${esc(copy.name)}</b><div class="small muted">${esc(observed)}</div>${fixNote ? `<div class="small" style="margin-top:0.8mm">→ ${esc(fixNote)}</div>` : ''}</td>
+          <td class="small muted">${esc(copy.rule)}</td>
+          <td class="n small">${esc(d.basis[c.basis].label)}</td>
+          <td class="n mono score" style="color:${c.score === null ? '#8d8d9c' : scoreColor(c.score)}">${c.score ?? `<span class="small" style="font-weight:400">${esc(c.status === 'na' ? d.section.na : d.section.untested)}</span>`}</td></tr>`;
+        })
+        .join('')}</tbody></table>`;
+    })
+    .join('');
+  return `
+  <div class="box" style="break-inside:avoid;display:flex;gap:8mm;align-items:center">
+    <div style="text-align:center;min-width:40mm"><div class="display" style="font-size:40pt;line-height:1">${o.score ?? '—'}${o.score !== null ? '<span class="small muted">/100</span>' : ''}</div>
+    ${o.level ? `<div style="margin-top:2mm;font-weight:600">${esc(d.levels[o.level])}</div>` : `<div class="small muted">${esc(d.section.noOverall)}</div>`}</div>
+    <div class="small">
+      <p>${esc(d.section.profile)}: <b>${esc(d.profiles[pro.profile])}</b> · ${esc(d.categories[pro.category])}</p>
+      <p class="muted">${esc(d.section.coverage(o.coveredWeight))}</p>
+      <p class="muted">${esc(d.section.levelsNote)}</p>
+    </div>
+  </div>
+  <table style="margin-top:3mm"><tbody>${pillarRows}</tbody></table>
+  <p class="small muted" style="margin-top:2mm">${esc(d.section.visualNote)}</p>
+  ${detail}`;
+}
+
 export interface BusinessHtml {
   b: BizDict;
   front: string;
+  /** Number of the first section after the business sections. */
+  next: number;
+  pro: ProfessionalScore | null;
   recommendations: (index: number) => string;
   section: typeof section;
 }
 
-/** Sections 1–7 (business) plus a builder for section 11 (recommendations). */
-export function businessHtml(report: AuditReport, locale: Locale, t: Dict, journeyExtra = ''): BusinessHtml {
+/** Business sections (overview, classification, professionalism, platform … journey) plus a builder for recommendations. */
+export function businessHtml(report: AuditReport, locale: Locale, t: Dict, journeyExtra = '', categoryOverride: SiteCategory | null = null): BusinessHtml {
   const b = bizDicts[locale];
   const biz = report.business ?? null;
   const s = b.sections;
-  const front = biz
+  const d = proDicts[locale];
+  const pro = biz ? scoreProfessional(report, categoryOverride) : null;
+  const covered = coveredIds(biz?.recommendations ?? [], report.findings);
+  const parts: [string, string | null, string][] = biz
     ? [
-        section(1, s.overview, s.overviewSub, overview(b, biz, report, t, locale)),
-        section(2, s.platform, s.platformSub, platform(b, biz)),
-        section(3, s.structure, s.structureSub, structure(b, biz)),
-        section(4, s.products, s.productsSub, products(b, biz)),
-        section(5, s.banners, s.bannersSub, visual(b, biz)),
-        section(6, s.search, s.searchSub, search(b, biz)),
-        section(7, s.journey, s.journeySub, journey(b, biz) + journeyExtra),
-      ].join('\n')
-    : '';
-  return { b, front, section, recommendations: (index) => section(index, s.recs, s.recsSub, recommendations(b, biz, report.findings, locale, t)) };
+        [s.overview, s.overviewSub, overview(b, biz, report, t, locale)],
+        ...(biz.classification ? [[d.section.classification, d.section.classificationSub, classificationHtml(biz, pro, locale, categoryOverride)] as [string, string, string]] : []),
+        ...(pro ? [[d.section.title, d.section.sub, professionalHtml(pro, locale, covered)] as [string, string, string]] : []),
+        [s.platform, s.platformSub, platform(b, biz)],
+        [s.structure, s.structureSub, structure(b, biz)],
+        [s.products, s.productsSub, products(b, biz)],
+        [s.banners, s.bannersSub, visual(b, biz)],
+        [s.search, s.searchSub, search(b, biz)],
+        [s.journey, s.journeySub, journey(b, biz) + journeyExtra],
+      ]
+    : [];
+  const front = parts.map(([title, sub, body], i) => section(i + 1, title, sub, body)).join('\n');
+  const extra = professionalRecs(pro, covered, locale);
+  return { b, front, next: parts.length + 1, pro, section, recommendations: (index) => section(index, s.recs, s.recsSub, recommendations(b, biz, report.findings, locale, t, extra)) };
 }
